@@ -12,24 +12,20 @@ package com.kynetics.uf.android.api.v1
 import com.kynetics.uf.android.api.Communication
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.json.Json.Default.decodeFromJsonElement
 
-
-@Serializable
-@Suppress("MaxLineLength")
 /**
  * This class maps all possible messages sent by UpdateFactoryService to the clients that are
  * subscribed to its notification system.
  *
  * @see Communication.V1.Out.ServiceNotification
  */
+@Serializable
+@Suppress("MaxLineLength", "unused")
 sealed class UFServiceMessageV1 {
     /**
      * Enum of all the possible messages type
      */
-    @Serializable
     enum class MessageName {
         DOWNLOADING,
         ERROR,
@@ -94,31 +90,26 @@ sealed class UFServiceMessageV1 {
          *  Client has started the update process. Any request to cancel an update will be rejected
          *
          */
-        @Serializable
         object Updating : State(MessageName.UPDATING, "The update process is started. Any request to cancel an update will be rejected")
 
         /**
          *  Client is cancelling the last update request
          */
-        @Serializable
         object CancellingUpdate : State(MessageName.CANCELLING_UPDATE, "Last update request is being cancelled")
 
         /**
          *  Client is waiting for an authorization to start the artifacts downloading
          */
-        @Serializable
         object WaitingDownloadAuthorization : State(MessageName.WAITING_DOWNLOAD_AUTHORIZATION, "Waiting authorization to start download")
 
         /**
          *  Client is waiting for an authorization to start the update
          */
-        @Serializable
         object WaitingUpdateAuthorization : State(MessageName.WAITING_UPDATE_AUTHORIZATION, "Waiting authorization to start update")
 
         /**
          *  Client is waiting for new requests from server
          */
-        @Serializable
         object Idle : State(MessageName.IDLE, "Client is waiting for new requests from server")
 
         /**
@@ -132,10 +123,6 @@ sealed class UFServiceMessageV1 {
                 return json.encodeToString(serializer(), this)
             }
         }
-
-        override fun toJson(): String {
-            return json.encodeToString(this)
-        }
     }
 
     /**
@@ -146,7 +133,6 @@ sealed class UFServiceMessageV1 {
         /**
          * Client is contacting server to retrieve new action to execute
          */
-        @Serializable
         object Polling : Event(MessageName.POLLING, "Client is contacting server to retrieve new action to execute")
 
         /**
@@ -189,7 +175,6 @@ sealed class UFServiceMessageV1 {
         /**
          * All file needed are downloaded
          */
-        @Serializable
         object AllFilesDownloaded : Event(MessageName.ALL_FILES_DOWNLOADED, "All file needed are downloaded")
 
         /**
@@ -242,49 +227,46 @@ sealed class UFServiceMessageV1 {
                 return json.encodeToString(serializer(), this)
             }
         }
-
-        override fun toJson(): String {
-            return json.encodeToString(serializer(), this)
-        }
     }
 
-    abstract fun toJson(): String
+    @Serializable
+    private class SerializationObject(val name: MessageName, val description: String)
+
+    open fun toJson(): String {
+        return json.encodeToString(SerializationObject.serializer(), SerializationObject(name, description))
+    }
 
     companion object {
 
-        private val json = Json
+        private val json = Json { encodeDefaults = true }
 
         /**
          * Deserialize a [jsonContent] element into a corresponding object of type [UFServiceMessageV1].
-         * @throws [JsonException] in case of malformed json
          * @throws [SerializationException] if given input can not be deserialized
          * @throws [IllegalArgumentException] if given input isn't a UFServiceMessageV1 json serialization
          */
-        //fixme fix object serialization
         @Suppress("ComplexMethod")
         fun fromJson(jsonContent: String): UFServiceMessageV1 {
             val jsonElement = json.parseToJsonElement(jsonContent)
-            return when (jsonElement.jsonObject["type"]?.jsonPrimitive?.content
-                    ?.replace("com.kynetics.uf.android.api.v1.UFServiceMessageV1.State.", "")
-                ?.replace("com.kynetics.uf.android.api.v1.UFServiceMessageV1.Event.", "")?.uppercase()) {
-                               
-                MessageName.DOWNLOADING.name -> json.decodeFromJsonElement<State.Downloading>(jsonElement)
+            return when (jsonElement.jsonObject["name"]?.jsonPrimitive?.content) {
+
+                MessageName.DOWNLOADING.name -> json.decodeFromString(State.Downloading.serializer(), jsonContent)
                 MessageName.UPDATING.name -> State.Updating
                 MessageName.CANCELLING_UPDATE.name -> State.CancellingUpdate
                 MessageName.WAITING_DOWNLOAD_AUTHORIZATION.name -> State.WaitingDownloadAuthorization
                 MessageName.WAITING_UPDATE_AUTHORIZATION.name -> State.WaitingUpdateAuthorization
                 MessageName.IDLE.name -> State.Idle
 
-                MessageName.ERROR.name -> json.decodeFromJsonElement<Event.Error>(jsonElement)
-                MessageName.START_DOWNLOAD_FILE.name -> json.decodeFromJsonElement<Event.StartDownloadFile>(jsonElement)
-                MessageName.UPDATE_PROGRESS.name -> json.decodeFromJsonElement<Event.UpdateProgress>(jsonElement)/**/
-                MessageName.DOWNLOAD_PROGRESS.name -> json.decodeFromJsonElement<Event.DownloadProgress>(jsonElement)
-                MessageName.FILE_DOWNLOADED.name -> json.decodeFromJsonElement<Event.FileDownloaded>(jsonElement)
-                MessageName.UPDATE_FINISHED.name -> json.decodeFromJsonElement<Event.UpdateFinished>(jsonElement)
+                MessageName.ERROR.name -> json.decodeFromString(Event.Error.serializer(), jsonContent)
+                MessageName.START_DOWNLOAD_FILE.name ->json.decodeFromString(Event.StartDownloadFile.serializer(), jsonContent)
+                MessageName.UPDATE_PROGRESS.name -> json.decodeFromString(Event.UpdateProgress.serializer(), jsonContent)
+                MessageName.DOWNLOAD_PROGRESS.name -> json.decodeFromString(Event.DownloadProgress.serializer(), jsonContent)
+                MessageName.FILE_DOWNLOADED.name -> json.decodeFromString(Event.FileDownloaded.serializer(), jsonContent)
+                MessageName.UPDATE_FINISHED.name -> json.decodeFromString(Event.UpdateFinished.serializer(), jsonContent)
                 MessageName.POLLING.name -> Event.Polling
                 MessageName.ALL_FILES_DOWNLOADED.name -> Event.AllFilesDownloaded
-                MessageName.UPDATE_AVAILABLE.name -> json.decodeFromJsonElement<Event.UpdateAvailable>(jsonElement)
-                MessageName.CONFIGURATION_ERROR.name -> json.decodeFromJsonElement<State.ConfigurationError>(jsonElement)
+                MessageName.UPDATE_AVAILABLE.name -> json.decodeFromString(Event.UpdateAvailable.serializer(), jsonContent)
+                MessageName.CONFIGURATION_ERROR.name -> json.decodeFromString(State.ConfigurationError.serializer(), jsonContent)
 
                 else -> throw IllegalArgumentException("$jsonContent is not obtained by toJson method of ${UFServiceMessageV1::class.java.simpleName}")
             }

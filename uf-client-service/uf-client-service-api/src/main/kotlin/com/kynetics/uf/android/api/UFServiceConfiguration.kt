@@ -12,7 +12,6 @@ package com.kynetics.uf.android.api
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
 @Serializable
 /**
@@ -233,7 +232,7 @@ data class UFServiceConfiguration(
     }
 
     companion object {
-        private val json = Json
+        private val json = Json { encodeDefaults = true }
         private const val serialVersionUID = -6025361892414738765L
 
         /**
