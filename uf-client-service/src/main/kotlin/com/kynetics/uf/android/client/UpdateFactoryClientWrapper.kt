@@ -17,8 +17,22 @@ class UpdateFactoryClientWrapper(var delegate: HaraClient? = null): HaraClient {
         delegate?.forcePing()
     }
 
-    override fun init(updateFactoryClientData: HaraClientData, directoryForArtifactsProvider: DirectoryForArtifactsProvider, configDataProvider: ConfigDataProvider, deploymentPermitProvider: DeploymentPermitProvider, messageListeners: List<MessageListener>, updaters: List<Updater>, httpBuilder: OkHttpClient.Builder) {
-        delegate?.init(updateFactoryClientData, directoryForArtifactsProvider, configDataProvider, deploymentPermitProvider, messageListeners, updaters.toList())
+    override fun init(haraClientData: HaraClientData,
+                      directoryForArtifactsProvider: DirectoryForArtifactsProvider,
+                      configDataProvider: ConfigDataProvider,
+                      deploymentPermitProvider: DeploymentPermitProvider,
+                      messageListeners: List<MessageListener>,
+                      updaters: List<Updater>,
+                      downloadBehavior: DownloadBehavior,
+                      httpBuilder: OkHttpClient.Builder) {
+        delegate?.init(haraClientData,
+            directoryForArtifactsProvider,
+            configDataProvider,
+            deploymentPermitProvider,
+            messageListeners,
+            updaters.toList(),
+            downloadBehavior,
+            httpBuilder)
     }
 
     override fun startAsync() {

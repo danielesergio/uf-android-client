@@ -22,6 +22,7 @@ object HaraClientFactory {
             deploymentPermitProvider,
             messageListeners,
             updaters,
+            DownloadBehaviorImpl(),
             builder)
     }
 

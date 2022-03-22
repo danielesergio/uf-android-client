@@ -1,8 +1,6 @@
 package com.kynetics.uf.ddiclient
 
 import org.eclipse.hara.ddiapiclient.api.DdiRestConstants.Companion.CONFIG_DATA_ACTION
-import org.eclipse.hara.ddiapiclient.api.DdiRestConstants.Companion.TARGET_TOKEN_HEADER_NAME
-import org.eclipse.hara.ddiapiclient.api.DdiRestConstants.Companion.TARGET_TOKEN_REQUEST_HEADER_NAME
 import org.eclipse.hara.ddiapiclient.security.Authentication.AuthenticationType.TARGET_TOKEN_AUTHENTICATION
 import org.eclipse.hara.ddiapiclient.security.Authentication.Companion.newInstance
 import java.io.IOException
@@ -18,6 +16,7 @@ class UpdateFactoryAuthenticationRequestInterceptor(
         private val targetTokenFoundListener: TargetTokenFoundListener =
                 object : TargetTokenFoundListener {}
 ) : Interceptor {
+
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
@@ -41,5 +40,10 @@ class UpdateFactoryAuthenticationRequestInterceptor(
             authentications.remove(targetTokenAuth)
         }
         return response
+    }
+
+    companion object{
+        private const val TARGET_TOKEN_HEADER_NAME = "UF-target-token"
+        private const val TARGET_TOKEN_REQUEST_HEADER_NAME = "Expect-UF-target-token"
     }
 }
