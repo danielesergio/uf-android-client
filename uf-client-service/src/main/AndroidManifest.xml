@@ -35,7 +35,8 @@
     <uses-permission
         android:name="android.permission.WRITE_MEDIA_STORAGE"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS" />
+    <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS"
+        tools:ignore="ProtectedPermissions"/>
 
     <application
         android:icon="@drawable/uf_logo_colored"
