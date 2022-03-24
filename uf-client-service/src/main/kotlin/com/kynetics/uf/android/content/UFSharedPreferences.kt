@@ -78,11 +78,11 @@ class UFSharedPreferences private constructor(
         return selectSP(key).getString(key, defValue)
     }
 
-    fun <T : Serializable?> getObject(objKey: String?, clazz: Class<T>?): T? =
-            sharedPreferencesWithObject.getObject(objKey, clazz)
+    fun <T : Serializable?> getObject(objKey: String?): T? =
+            sharedPreferencesWithObject.getObject(objKey)
 
-    fun <T : Serializable?> getObject(objKey: String?, clazz: Class<T>?, defaultObj: T?): T? =
-            sharedPreferencesWithObject.getObject(objKey, clazz, defaultObj)
+    fun <T : Serializable?> getObject(objKey: String?, defaultObj: T?): T? =
+            sharedPreferencesWithObject.getObject(objKey, defaultObj)
 
     fun <T> putAndCommitObject(key: String?, obj: T) =
             sharedPreferencesWithObject.putAndCommitObject(key, obj)

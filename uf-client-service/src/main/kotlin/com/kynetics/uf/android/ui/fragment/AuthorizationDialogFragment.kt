@@ -52,9 +52,9 @@ class AuthorizationDialogFragment : DialogFragment() {
                 .setTitle(mTitle)
                 .setMessage(mDescription)
                 .setPositiveButton(mPositiveButton
-                ) { dialog: DialogInterface?, whichButton: Int -> onAuthorizationGrant() }
+                ) { _: DialogInterface?, _: Int -> onAuthorizationGrant() }
                 .setNegativeButton(mNegativeButton
-                ) { dialog: DialogInterface?, whichButton: Int -> onAuthorizationDenied() }
+                ) { _: DialogInterface?, _: Int -> onAuthorizationDenied() }
                 .create()
     }
 

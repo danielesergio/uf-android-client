@@ -116,7 +116,7 @@ internal object ABOtaInstaller : OtaInstaller {
         context: Context
     ): CurrentUpdateState.InstallationResult {
         if (currentUpdateState.isABInstallationPending(artifact)) {
-            val result = currentUpdateState.lastABIntallationResult(artifact)
+            val result = currentUpdateState.lastABIntallationResult()
             val message = "Installation result of Ota named ${artifact.filename} is " +
                 if (result is CurrentUpdateState.InstallationResult.Success) "success" else "failure"
             messenger.sendMessageToServer(message + result.details)

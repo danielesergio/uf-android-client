@@ -180,10 +180,7 @@ data class ConfigurationHandler(
 
     private fun getTargetAttributes(): MutableMap<String, String> {
         val targetAttributes: MutableMap<String, String>? = sharedPreferences
-                .getObject(
-                        sharedPreferencesTargetAttributes,
-                        HashMap<String, String>().javaClass
-                )
+                .getObject(sharedPreferencesTargetAttributes)
         return targetAttributes ?: HashMap()
     }
 

@@ -21,11 +21,11 @@ import java.io.*
  */
 class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferences) : SharedPreferences by sharedPreferences{
 
-    fun <T : Serializable?> getObject(objKey: String?, clazz: Class<T>?): T? {
-        return getObject(objKey, clazz, null)
+    fun <T : Serializable?> getObject(objKey: String?): T? {
+        return getObject(objKey, null)
     }
 
-    fun <T : Serializable?> getObject(objKey: String?, clazz: Class<T>?, defaultObj: T?): T? {
+    fun <T : Serializable?> getObject(objKey: String?, defaultObj: T?): T? {
         val bytes = sharedPreferences.getString(objKey, "").toByteArray()
         if (bytes.isEmpty()) {
             return defaultObj

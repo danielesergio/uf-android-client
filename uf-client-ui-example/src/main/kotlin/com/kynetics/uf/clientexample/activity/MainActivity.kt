@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mResumeUpdateFab = findViewById(R.id.fab_resume_update)
-        mResumeUpdateFab!!.setOnClickListener { view ->
+        mResumeUpdateFab!!.setOnClickListener { _ ->
             handleRemoteException {
                 mService!!.send(Communication.V1.In.ForcePing.toMessage())
             }

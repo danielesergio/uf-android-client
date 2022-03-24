@@ -44,8 +44,6 @@ class PackageInstallerBroadcastReceiver internal constructor(
 
         val result = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, SESSION_ID_NOT_FOUND)
 
-        val currentPackage = intent.getStringExtra(EXTRA_PACKAGE_NAME)
-
         when (result) {
             PackageInstaller.STATUS_FAILURE, PackageInstaller.STATUS_FAILURE_ABORTED, PackageInstaller.STATUS_FAILURE_BLOCKED, PackageInstaller.STATUS_FAILURE_CONFLICT, PackageInstaller.STATUS_FAILURE_INCOMPATIBLE, PackageInstaller.STATUS_FAILURE_INVALID, PackageInstaller.STATUS_FAILURE_STORAGE -> {
                 val errorMessage = listOf("Installation of ${artifact.filename} ($packageName) fails with error code $result", errorCodeToDescription.getValue(result)).toTypedArray()
