@@ -34,8 +34,6 @@
     <string name="shared_preferences_tenant_title" >Tenant</string>
     <string name="shared_preferences_controller_id_key" translatable="false">CONTROLLER_ID_KEY</string>
     <string name="shared_preferences_controller_id_title">Controller id</string>
-    <string name="shared_preferences_retry_delay_key" translatable="false">RETRY_DELAY_KEY</string>
-    <string name="shared_preferences_retry_delay_title" >Retry frequency on error</string>
     <string name="shared_preferences_current_state_key" translatable="false">CURRENT_STATE_KEY</string>
     <string name="shared_preferences_current_state_title" >Current state</string>
     <string name="shared_preferences_file" translatable="false">UF_SHARED_FILE</string>
@@ -50,7 +48,6 @@
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
     <string name="stop_service_dialog_message">Are you sure to disable the update system?</string>
     <string name="stop_service_dialog_title">Stop Update service</string>
-    <string name="retry_time_default">120000</string>
     <string name="shared_preferences_target_token_title">Target token</string>
     <string name="shared_preferences_gateway_token_title">Gateway token</string>
     <string name="update_factory_notification_title">Update Factory</string>

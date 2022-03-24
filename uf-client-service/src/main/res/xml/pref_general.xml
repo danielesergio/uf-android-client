@@ -71,11 +71,6 @@
         android:title="@string/shared_preferences_api_mode_title" />
 
     <Preference
-        android:defaultValue="@string/retry_time_default"
-        android:key="@string/shared_preferences_retry_delay_key"
-        android:title="@string/shared_preferences_retry_delay_title" />
-
-    <Preference
         android:inputType="textCapWords"
         android:key="@string/shared_preferences_current_state_key"
         android:title="@string/shared_preferences_current_state_title"

@@ -145,11 +145,6 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
             return
         }
 
-        if (key == getString(R.string.shared_preferences_retry_delay_key)) {
-            preference.summary = sharedPrefs.getLong(key, 12000).toString()
-            return
-        }
-
         if (key == getString(R.string.shared_preferences_target_token_received_from_server_key)){
             preference.summary = sharedPrefs.getString(key, "")
         }
