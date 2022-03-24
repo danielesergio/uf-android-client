@@ -33,7 +33,7 @@ buildscript {
 }
 
 plugins {
-    id "kotlinx-serialization" version "1.5.0" apply true
+    id "kotlinx-serialization" version "1.6.10" apply true
     id "io.gitlab.arturbosch.detekt" version "1.0.0-RC16"
     id "org.jetbrains.dokka-android" version "0.9.18"
 
