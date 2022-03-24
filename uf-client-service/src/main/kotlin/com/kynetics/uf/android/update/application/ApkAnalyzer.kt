@@ -23,10 +23,11 @@ object ApkAnalyzer {
         return null
     }
 
+    @Suppress("DEPRECATION")
     fun getVersionFromApk(context: Context, apkPath: String): Long? {
         val packageInfo = context.packageManager.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES)
         if (packageInfo != null) {
-            return java.lang.Long.valueOf(packageInfo.versionCode.toLong())
+            return packageInfo.versionCode.toLong()
         }
         return null
     }
