@@ -11,7 +11,6 @@ package com.kynetics.uf.clientexample.fragment
 
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
 import androidx.appcompat.app.AlertDialog
 import com.kynetics.uf.clientexample.activity.MainActivity
 
@@ -19,9 +18,9 @@ class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogType = arguments!!.getString(ARG_DIALOG_TYPE)
-        val titleResource = resources.getIdentifier(String.format("%s_%s", dialogType.toLowerCase(), "title"),
+        val titleResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "title"),
             "string", activity!!.packageName)
-        val contentResource = resources.getIdentifier(String.format("%s_%s", dialogType.toLowerCase(), "content"),
+        val contentResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "content"),
             "string", activity!!.packageName)
 
         return AlertDialog.Builder(activity!!)
@@ -29,9 +28,9 @@ class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
             .setTitle(titleResource)
             .setMessage(contentResource)
             .setPositiveButton(android.R.string.ok
-            ) { dialog, whichButton -> (activity as MainActivity).sendPermissionResponse(true) }
+            ) { _, _ -> (activity as MainActivity).sendPermissionResponse(true) }
             .setNegativeButton(android.R.string.cancel
-            ) { dialog, whichButton -> (activity as MainActivity).sendPermissionResponse(false) }
+            ) { _, _ -> (activity as MainActivity).sendPermissionResponse(false) }
             .create()
     }
 
