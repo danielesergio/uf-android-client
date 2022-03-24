@@ -6,6 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
+@file:Suppress("DEPRECATION")
 
 package com.kynetics.uf.android.communication
 
