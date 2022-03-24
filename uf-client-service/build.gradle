@@ -17,6 +17,7 @@ android {
     defaultConfig {
         applicationId "com.kynetics.uf.service"
         minSdkVersion 19
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
         versionCode 29
         versionName versionFromGit(project)
