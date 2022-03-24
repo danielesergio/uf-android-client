@@ -16,7 +16,6 @@ import com.kynetics.uf.android.update.CurrentUpdateState
 import org.eclipse.hara.ddiclient.core.api.Updater
 import java.io.File
 import java.io.IOException
-import java.lang.Error
 import kotlin.math.min
 
 internal object SingleCopyOtaInstaller : OtaInstaller {
@@ -67,7 +66,7 @@ internal object SingleCopyOtaInstaller : OtaInstaller {
 
     override fun onComplete(context: Context, messenger: Updater.Messenger, result: CurrentUpdateState.InstallationResult) {
         val currentUpdateState = CurrentUpdateState(context)
-        if (result is Error && !result.details.contains(WRONG_OTA_SIGNATURE_MSG)) {
+        if (result is CurrentUpdateState.InstallationResult.Error && !result.details.contains(WRONG_OTA_SIGNATURE_MSG)) {
             val lastLog = currentUpdateState.parseLastLogFile()
             for (i in 0..lastLog.size / MAX_MESSAGES_FOR_STATE) {
                 val min = min(i * MAX_MESSAGES_FOR_STATE + MAX_MESSAGES_FOR_STATE, lastLog.size)
