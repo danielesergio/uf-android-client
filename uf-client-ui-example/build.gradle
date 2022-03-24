@@ -15,7 +15,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.kynetics.uf.clientexample"
-        minSdkVersion 19
+        minSdkVersion 24
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 30
         versionCode 28
