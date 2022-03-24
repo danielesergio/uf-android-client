@@ -10,9 +10,10 @@
 package com.kynetics.uf.android.util.zip
 
 import android.util.Log
-import com.kynetics.uf.android.update.system.ABOtaInstaller
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+
+private val TAG = ZipFile::class.java.simpleName
 
 fun ZipFile.getEntryOffset(name:String): Long {
     val zipEntries = entries()
@@ -25,7 +26,7 @@ fun ZipFile.getEntryOffset(name:String): Long {
         }
         offset += entry.compressedSize
     }
-    Log.e(ABOtaInstaller.TAG, "Entry $name not found")
+    Log.e(TAG, "Entry $name not found")
     throw IllegalArgumentException("The given entry was not found")
 }
 
