@@ -7,25 +7,21 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-apply plugin: 'maven'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'org.jetbrains.dokka-android'
-apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.kynetics.uf.android.api'
 
 version versionFromGit(project)
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 28
-        versionCode 28
-        versionName version
+        targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

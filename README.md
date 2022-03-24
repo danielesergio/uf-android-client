@@ -17,8 +17,8 @@ Links to official documentation:
 ## Build
 To build the project you must replace the android.jar file as describe in [Android hidden api](https://github.com/anggrayudi/android-hidden-api).
 
-**This is the [android.jar](https://github.com/anggrayudi/android-hidden-api/files/2709802/android.zip) 
-to use because of this [issue](https://github.com/anggrayudi/android-hidden-api/issues/46)**
+**This is the [android.jar](https://github.com/Reginer/aosp-android-jar/blob/main/android-30/android.jar) 
+to use because of this [issue](https://github.com/anggrayudi/android-hidden-api/issues/84)**
 
 ## uf-client-service
 uf-client-service is an android service that run in background and manage the updates.

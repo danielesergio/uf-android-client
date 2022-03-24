@@ -8,17 +8,16 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.kynetics.uf.service"
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 29
         versionName versionFromGit(project)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

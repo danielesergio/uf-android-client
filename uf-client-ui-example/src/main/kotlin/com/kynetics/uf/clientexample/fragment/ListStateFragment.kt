@@ -12,8 +12,6 @@ package com.kynetics.uf.clientexample.fragment
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,7 +56,7 @@ class ListStateFragment : androidx.fragment.app.Fragment(), UFServiceInteraction
         return rootView
     }
 
-    override fun onAttachFragment(childFragment: androidx.fragment.app.Fragment?) {
+    override fun onAttachFragment(childFragment: Fragment) {
         super.onAttachFragment(childFragment)
         adapter?.notifyDataSetChanged()
     }
