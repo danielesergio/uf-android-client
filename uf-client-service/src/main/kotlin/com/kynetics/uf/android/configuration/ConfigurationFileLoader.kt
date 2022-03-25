@@ -40,7 +40,6 @@ class ConfigurationFileLoader(private val sh: SharedPreferences, private val con
                     .withGatewayToken(map[GATEWAY_TOKEN_CONFIGURATION_KEY])
                     .withTenant(map[TENANT_CONFIGURATION_KEY])
                     .withTargetToken(map[TARGET_TOKEN_CONFIGURATION_KEY])
-                    .withRetryDelay(30000)
                     .withControllerId(parseStringWithVariable(controllerId ?: "", context))
                     .withUrl(map[URL_CONFIGURATION_KEY])
             return if (builder.configurationIsValid()) builder.build() else null

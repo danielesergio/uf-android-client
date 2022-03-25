@@ -273,7 +273,6 @@ data class UFServiceConfiguration(
 
         if (tenant != other.tenant) return false
         if (controllerId != other.controllerId) return false
-        if (retryDelay != other.retryDelay) return false
         if (url != other.url) return false
         if (targetToken != other.targetToken) return false
         if (gatewayToken != other.gatewayToken) return false
@@ -287,7 +286,6 @@ data class UFServiceConfiguration(
     override fun hashCode(): Int {
         var result = tenant.hashCode()
         result = 31 * result + controllerId.hashCode()
-        result = 31 * result + retryDelay.hashCode()
         result = 31 * result + url.hashCode()
         result = 31 * result + targetToken.hashCode()
         result = 31 * result + gatewayToken.hashCode()
