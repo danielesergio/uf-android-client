@@ -15,27 +15,22 @@ import android.content.Intent
 import android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
-import android.os.RemoteException
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.Fragment
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import android.os.*
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceInfo
 import com.kynetics.uf.android.api.toOutV1Message
@@ -46,10 +41,11 @@ import com.kynetics.uf.clientexample.data.MessageHistory
 import com.kynetics.uf.clientexample.fragment.ListStateFragment
 import com.kynetics.uf.clientexample.fragment.MyAlertDialogFragment
 import com.kynetics.uf.clientexample.fragment.UFServiceInteractionFragment
-import java.util.Timer
+import kotlinx.android.synthetic.main.state_list.*
+import java.lang.ref.WeakReference
+import java.util.*
 import kotlin.concurrent.timer
 import kotlin.properties.Delegates
-import kotlinx.android.synthetic.main.state_list.*
 
 /**
  * @author Daniele Sergio
@@ -92,8 +88,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /**
      * Target we publish for clients to send messages to IncomingHandler.
      */
-    internal val mMessenger = Messenger(this.IncomingHandler())
-
+    internal val mMessenger:Messenger by lazy {
+        Messenger(IncomingHandler(this))
+    }
     private var mServiceExist = false
 
     /**
@@ -162,7 +159,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mService!!.send(Communication.V1.In.ForcePing.toMessage())
             }
         }
-        val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawer_layout)
+        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         val mToolbar = findViewById<Toolbar>(R.id.my_toolbar)
         setSupportActionBar(mToolbar)
 
@@ -193,7 +190,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById<View>(R.id.drawer_layout) as androidx.drawerlayout.widget.DrawerLayout
+        val drawer = findViewById<View>(R.id.drawer_layout) as DrawerLayout
         when {
             drawer.isDrawerOpen(GravityCompat.START) -> drawer.closeDrawer(GravityCompat.START)
             !twoPane -> onBackPressedWithOnePane()
@@ -222,7 +219,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menu_back -> onBackPressedWithOnePane()
         }
 
-        val drawer = findViewById<View>(R.id.drawer_layout) as androidx.drawerlayout.widget.DrawerLayout
+        val drawer = findViewById<View>(R.id.drawer_layout) as DrawerLayout
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -236,10 +233,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     /**
      * Handler of incoming messages from service.
      */
-    internal inner class IncomingHandler : Handler() {
+    internal class IncomingHandler(mainActivity: MainActivity) : Handler(Looper.getMainLooper()) {
+        private val activityRef = WeakReference(mainActivity)
+
+        private fun <T>WeakReference<T>.execute(action: T.() -> Unit){
+            get()?.let { ref ->
+                ref.action()
+            }
+        }
+
         override fun handleMessage(msg: Message) {
-            val v1Msg = msg.toOutV1Message()
-            when (v1Msg) {
+            when (val v1Msg = msg.toOutV1Message()) {
 
                 is Communication.V1.Out.CurrentServiceConfiguration
                 -> handleServiceConfigurationMsg(v1Msg)
@@ -256,49 +260,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
            Log.i(TAG, currentServiceConfiguration.conf.toString())
         }
 
-        private fun handleAuthorizationRequestMsg(authRequest: Communication.V1.Out.AuthorizationRequest) {
-            try{
-                val newFragment = MyAlertDialogFragment.newInstance(authRequest.authName)
-                newFragment.show(supportFragmentManager, null)
-            } catch (e:IllegalStateException){
-                Log.w(TAG, "Error on show alert dialog", e)
+        private fun handleAuthorizationRequestMsg(authRequest: Communication.V1.Out.AuthorizationRequest) =
+            activityRef.execute {
+                try{
+                    val newFragment = MyAlertDialogFragment.newInstance(authRequest.authName)
+                    newFragment.show(supportFragmentManager, null)
+                } catch (e:IllegalStateException){
+                    Log.w(TAG, "Error on show alert dialog", e)
+                }
             }
 
-        }
-        private fun handleServiceNotificationMsg(serviceNotification: Communication.V1.Out.ServiceNotification) {
-            val content = serviceNotification.content
-            when (content) {
-                is UFServiceMessageV1.Event -> {
-                    if (!MessageHistory.appendEvent(content)) {
-                        Toast.makeText(
-                            applicationContext,
-                            content.name.toString(),
-                            Toast.LENGTH_SHORT
-                        ).show()
+        private fun handleServiceNotificationMsg(serviceNotification: Communication.V1.Out.ServiceNotification) =
+            activityRef.execute {
+                val content = serviceNotification.content
+                when (content) {
+                    is UFServiceMessageV1.Event -> {
+                        post {
+                            if (!MessageHistory.appendEvent(content)) {
+                                Toast.makeText(
+                                    applicationContext,
+                                    content.name.toString(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                        }
+                    }
+
+                    is UFServiceMessageV1.State -> {
+                        MessageHistory.addState(MessageHistory.StateEntry(state = content))
                     }
                 }
 
-                is UFServiceMessageV1.State -> {
-                    MessageHistory.addState(MessageHistory.StateEntry(state = content))
+                supportFragmentManager.fragments
+                    .filterIsInstance<UFServiceInteractionFragment>()
+                    .forEach { fragment -> fragment.onMessageReceived(content) }
+
+                when (content) {
+                    is UFServiceMessageV1.State.WaitingDownloadAuthorization,
+                    UFServiceMessageV1.State.WaitingUpdateAuthorization -> {
+                        mResumeUpdateFab!!.setImageResource(iconByMessageName.getValue(content.name))
+                        mResumeUpdateFab!!.show()
+                    }
+
+                    is UFServiceMessageV1.State -> mResumeUpdateFab!!.hide()
+
+                    else -> { }
                 }
             }
-
-            this@MainActivity.supportFragmentManager.fragments
-                .filterIsInstance<UFServiceInteractionFragment>()
-                .forEach { fragment -> fragment.onMessageReceived(content) }
-
-            when (content) {
-                is UFServiceMessageV1.State.WaitingDownloadAuthorization,
-                UFServiceMessageV1.State.WaitingUpdateAuthorization -> {
-                    mResumeUpdateFab!!.setImageResource(iconByMessageName.getValue(content.name))
-                    mResumeUpdateFab!!.show()
-                }
-
-                is UFServiceMessageV1.State -> mResumeUpdateFab!!.hide()
-
-                else -> { }
-            }
-        }
 
         private val iconByMessageName = mapOf(
             UFServiceMessageV1.MessageName.WAITING_DOWNLOAD_AUTHORIZATION to R.drawable.ic_get_app_black_48dp,
@@ -306,7 +315,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
-    fun changePage(fragment: androidx.fragment.app.Fragment, addToBackStack: Boolean = true) {
+    fun changePage(fragment: Fragment, addToBackStack: Boolean = true) {
         val tx = supportFragmentManager.beginTransaction()
             .replace(R.id.main_content, fragment)
 
