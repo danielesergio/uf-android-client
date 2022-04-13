@@ -137,7 +137,7 @@ internal object SingleCopyOtaInstaller : OtaInstaller {
         artifact: Updater.SwModuleWithPath.Artifact,
         messenger: Updater.Messenger
     ): CurrentUpdateState.InstallationResult {
-        val result = currentUpdateState.lastIntallationResult(artifact)
+        val result = currentUpdateState.lastIntallationResult()
         val message =
             "Installation result of Ota named ${artifact.filename} is " +
                 if (result is CurrentUpdateState.InstallationResult.Success) "success" else "failure"

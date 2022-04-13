@@ -52,10 +52,9 @@ class CurrentUpdateState(context: Context) {
 
     private fun currentInstallationDir(): File = File(rootDir(), "current_installation")
 
-    fun lastIntallationResult(artifact: Updater.SwModuleWithPath.Artifact): InstallationResult {
+    fun lastIntallationResult(): InstallationResult {
         return try {
-            val result = lastInstallFile().readLines()[1].trim()
-            val response = when (result) {
+            val response = when (val result = lastInstallFile().readLines()[1].trim()) {
                 "1" -> InstallationResult.Success()
                 else -> InstallationResult.Error(listOf("last_install result code: $result"))
             }
