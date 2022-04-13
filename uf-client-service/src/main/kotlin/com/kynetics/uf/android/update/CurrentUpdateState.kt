@@ -108,9 +108,8 @@ class CurrentUpdateState(context: Context) {
 
     fun addPendingOTAInstallation(artifact: Updater.SwModuleWithPath.Artifact) {
         val file = getPendingInstallationFile(artifact)
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
+
+        file.parentFile?.mkdirs()
 
         if (!file.exists() && !file.createNewFile()) {
             throw FileSystemException(file = file, reason = "Creation error")
