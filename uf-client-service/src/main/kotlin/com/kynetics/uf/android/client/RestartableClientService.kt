@@ -15,12 +15,14 @@ import org.eclipse.hara.ddiclient.core.api.*
 import kotlinx.coroutines.*
 
 class RestartableClientService constructor(
-        private val client: UpdateFactoryClientWrapper,
-        private val  deploymentPermitProvider: DeploymentPermitProvider,
-        listeners: List<MessageListener>): HaraClient by client{
+    private val client: UpdateFactoryClientWrapper,
+    private val  deploymentPermitProvider: DeploymentPermitProvider,
+    listeners: List<MessageListener>): HaraClient by client{
     private var currentState:MessageListener.Message.State? = null
     private val _listeners:List<MessageListener>
-    private val context = newSingleThreadContext("UF restartable client service context")
+
+    private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
+
     companion object{
         val TAG: String = RestartableClientService::class.java.simpleName
         fun newInstance(
@@ -32,7 +34,7 @@ class RestartableClientService constructor(
         }
     }
 
-    fun restartService(conf:ConfigurationHandler)= GlobalScope.launch(context){
+    fun restartService(conf:ConfigurationHandler)= scope.launch{
         Log.i(TAG,"Try to restart the service")
         while (!serviceRestartable()) {
             Log.i(TAG, "Service not restartable yet.")
@@ -61,6 +63,10 @@ class RestartableClientService constructor(
 
     }
 
+    override fun stop() {
+        client.stop()
+        scope.cancel()
+    }
 
     private fun serviceRestartable():Boolean{
         return currentState !=  MessageListener.Message.State.Updating
