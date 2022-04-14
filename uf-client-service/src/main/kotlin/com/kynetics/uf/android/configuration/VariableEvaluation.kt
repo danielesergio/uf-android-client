@@ -19,10 +19,11 @@ import java.net.URI
  * @author Daniele Sergio
  */
 
+@Suppress("unused")
 enum class VariableEvaluation {
 
     FILE {
-        override fun evaluate(uri: URI, context: Context): String? {
+        override fun evaluate(uri: URI, context: Context): String {
             return File(uri.path).bufferedReader().readLine().trim()
         }
     },
@@ -38,10 +39,11 @@ enum class VariableEvaluation {
     companion object {
         private const val PROPERTY_ANDROID_ID_KEY = "ANDROID_ID"
 
+        @Suppress("RegExpRedundantEscape")
         fun parseStringWithVariable(path: String, context: Context): String {
             val regex = "\\$\\{[^$\\{\\}]*\\}".toRegex()
             return regex.replace(path) {
-                it -> VariableEvaluation.variableEvaluation(
+                variableEvaluation(
                     it.value.substringAfter("{")
                             .substringBefore("}"), context)
             }
@@ -50,7 +52,7 @@ enum class VariableEvaluation {
         private fun variableEvaluation(variable: String, context: Context): String {
             return try {
                 val uri = URI.create(variable)
-                VariableEvaluation.valueOf(uri.scheme.toUpperCase())
+                valueOf(uri.scheme.uppercase())
                         .evaluate(uri, context)
                         ?: (DEFAULT(context))
             } catch (e: IllegalArgumentException) {
