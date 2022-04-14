@@ -33,6 +33,7 @@ class AndroidMessageListener(private val service: UpdateFactoryService) : Messag
             }
             is MessageListener.Message.Event.UpdateAvailable -> currentUpdateState.setCurrentUpdateId(message.id)
             is MessageListener.Message.Event.AllFilesDownloaded -> currentUpdateState.allFileDownloaded()
+            else -> {}
         }
 
         MessengerHandler.onMessageReceived(message)
