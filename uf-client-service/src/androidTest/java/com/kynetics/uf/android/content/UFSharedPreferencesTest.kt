@@ -17,6 +17,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.reflect.Constructor
 
 
 /**
@@ -25,7 +26,7 @@ import org.junit.runner.RunWith
  * @see [Testing documentation](http://d.android.com/tools/testing)
  */
 @RunWith(AndroidJUnit4::class)
-class UFSharedPreferencesTest {
+class UFSharedPreferencesTest() {
 
     data class SharedPreferenceEntry<out T>(val key:String,val value:T){
 
@@ -83,7 +84,7 @@ class UFSharedPreferencesTest {
     fun testSecureKeysAreStoredInEncryptedSharedPreferences() {
         // Context of the app under test.
 
-        val ufSharedPreferences = UFSharedPreferences(spPlain, spSecure, secureKeys)
+        val ufSharedPreferences = buildSharedPreferences(spPlain, spSecure, secureKeys)
 
         secureSP1.putTo(ufSharedPreferences)
 
@@ -97,7 +98,7 @@ class UFSharedPreferencesTest {
     fun testUnSecureKeysAreStoredInSharedPreferences() {
         // Context of the app under test.
 
-        val ufSharedPreferences = UFSharedPreferences(spPlain, spSecure, secureKeys)
+        val ufSharedPreferences = buildSharedPreferences(spPlain, spSecure, secureKeys)
 
         key1.putTo(ufSharedPreferences)
 
@@ -108,7 +109,7 @@ class UFSharedPreferencesTest {
 
     @Test
     fun testMoveSpEntriesDuringInitialization(){
-        val ufSharedPreferences = UFSharedPreferences(spPlain, spSecure, secureKeys)
+        buildSharedPreferences(spPlain, spSecure, secureKeys)
         secureEntries.forEach {
             entry -> entry.putTo(spPlain)
         }
@@ -127,7 +128,7 @@ class UFSharedPreferencesTest {
             Assert.assertFalse(spSecure.contains(it.key))
         }
 
-        UFSharedPreferences(spPlain, spSecure, secureKeys)
+        buildSharedPreferences(spPlain, spSecure, secureKeys)
 
         secureEntries.forEach {
             Assert.assertEquals(it.value, it.retrieveFrom(spSecure))
@@ -147,4 +148,13 @@ class UFSharedPreferencesTest {
         spSecure.edit().clear().commit()
     }
 
+    private fun buildSharedPreferences(
+        sharedPreferencesWithObject: SharedPreferencesWithObject,
+        secureSharedPreferences: SharedPreferences,
+        secureKeys: Array<String>):UFSharedPreferences{
+
+        val constructor:Constructor<UFSharedPreferences> = UFSharedPreferences::class.java.declaredConstructors.first() as Constructor<UFSharedPreferences>
+        constructor.isAccessible = true
+        return constructor.newInstance(sharedPreferencesWithObject, secureSharedPreferences, secureKeys)
+    }
 }
