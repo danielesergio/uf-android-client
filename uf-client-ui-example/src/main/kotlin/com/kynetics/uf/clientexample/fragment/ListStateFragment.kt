@@ -42,6 +42,9 @@ class ListStateFragment : androidx.fragment.app.Fragment(), UFServiceInteraction
                 twoPane = it.getBoolean(ARG_TWO_PANE)
             }
         }
+        childFragmentManager.addFragmentOnAttachListener { _,_ ->
+            adapter?.notifyDataSetChanged()
+        }
     }
 
     override fun onCreateView(
@@ -54,11 +57,6 @@ class ListStateFragment : androidx.fragment.app.Fragment(), UFServiceInteraction
 
         setupRecyclerView(rootView.state_list_recycler_view)
         return rootView
-    }
-
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-        adapter?.notifyDataSetChanged()
     }
 
     var adapter: SimpleItemRecyclerViewAdapter? = null
