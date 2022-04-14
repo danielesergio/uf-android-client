@@ -40,15 +40,15 @@ class AuthorizationDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            mTitle = arguments!!.getString(ARG_TITLE)
-            mDescription = arguments!!.getString(ARG_DESCRIPTION)
-            mPositiveButton = arguments!!.getString(ARG_POSITIVE_BUTTON)
-            mNegativeButton = arguments!!.getString(ARG_NEGATIVE_BUTTON)
+            mTitle = arguments?.getString(ARG_TITLE)
+            mDescription = arguments?.getString(ARG_DESCRIPTION)
+            mPositiveButton = arguments?.getString(ARG_POSITIVE_BUTTON)
+            mNegativeButton = arguments?.getString(ARG_NEGATIVE_BUTTON)
         }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(requireActivity())
                 .setTitle(mTitle)
                 .setMessage(mDescription)
                 .setPositiveButton(mPositiveButton

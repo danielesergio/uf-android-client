@@ -60,7 +60,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
 
     override fun onStart() {
         super.onStart()
-        UpdateFactoryService.startService(context!!)
+        UpdateFactoryService.startService(requireContext())
     }
 
     override fun onResume() {
@@ -91,7 +91,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         enableDisableActivePreference(sharedPrefs)
 
         if (key == getString(R.string.shared_preferences_is_enable_key) && !(preference as SwitchPreferenceCompat).isChecked) {
-            AlertDialog.Builder(context!!)
+            AlertDialog.Builder(requireContext())
                     .setTitle(resources.getString(R.string.stop_service_dialog_title))
                     .setCancelable(false)
                     .setMessage(

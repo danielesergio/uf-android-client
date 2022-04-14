@@ -64,7 +64,7 @@ class ListStateFragment : androidx.fragment.app.Fragment(), UFServiceInteraction
     var adapter: SimpleItemRecyclerViewAdapter? = null
 
     private fun setupRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
-        adapter = SimpleItemRecyclerViewAdapter(this.activity!!, MessageHistory.ITEMS, twoPane)
+        adapter = SimpleItemRecyclerViewAdapter(requireActivity(), MessageHistory.ITEMS, twoPane)
         recyclerView.adapter = adapter
     }
 

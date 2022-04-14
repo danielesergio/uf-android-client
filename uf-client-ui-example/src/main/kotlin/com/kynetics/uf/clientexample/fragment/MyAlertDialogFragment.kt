@@ -17,13 +17,13 @@ import com.kynetics.uf.clientexample.activity.MainActivity
 class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogType = arguments!!.getString(ARG_DIALOG_TYPE)
+        val dialogType = requireArguments().getString(ARG_DIALOG_TYPE)
         val titleResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "title"),
-            "string", activity!!.packageName)
+            "string", requireActivity().packageName)
         val contentResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "content"),
-            "string", activity!!.packageName)
+            "string", requireActivity().packageName)
 
-        return AlertDialog.Builder(activity!!)
+        return AlertDialog.Builder(requireActivity())
             // .setIcon(R.drawable.alert_dialog_icon)
             .setTitle(titleResource)
             .setMessage(contentResource)
