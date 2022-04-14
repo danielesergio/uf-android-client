@@ -19,7 +19,17 @@ class RestartableClientService constructor(
     private val  deploymentPermitProvider: DeploymentPermitProvider,
     listeners: List<MessageListener>): HaraClient by client{
     private var currentState:MessageListener.Message.State? = null
-    private val _listeners:List<MessageListener>
+    private val _listeners:List<MessageListener> = listOf(
+            object: MessageListener{
+                override fun onMessage(message: MessageListener.Message) {
+                    if(message is MessageListener.Message.State){
+                        currentState = message
+                    }
+                }
+
+            },
+            *listeners.toTypedArray()
+    )
 
     private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
 
@@ -45,21 +55,6 @@ class RestartableClientService constructor(
         client.delegate = conf.buildServiceFromPreferences(deploymentPermitProvider, _listeners)
         client.startAsync()
         Log.d(TAG, "Service restarted")
-
-    }
-
-    init{
-        _listeners = listOf(
-                object: MessageListener{
-                    override fun onMessage(message: MessageListener.Message) {
-                        if(message is MessageListener.Message.State){
-                            currentState = message
-                        }
-                    }
-
-                },
-                *listeners.toTypedArray()
-        )
 
     }
 
