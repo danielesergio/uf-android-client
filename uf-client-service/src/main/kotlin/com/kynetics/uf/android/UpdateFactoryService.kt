@@ -17,10 +17,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Handler
-import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
+import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.kynetics.uf.android.api.ApiCommunicationVersion
@@ -42,6 +39,7 @@ import com.kynetics.uf.android.update.SystemUpdateType
 import de.psdev.slf4j.android.logger.AndroidLoggerAdapter
 import de.psdev.slf4j.android.logger.LogLevel
 import org.eclipse.hara.ddiclient.core.api.MessageListener
+import java.lang.ref.WeakReference
 
 /*
  * @author Daniele Sergio
@@ -56,12 +54,12 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
         deploymentPermitProvider?.allow(false)
     }
 
-    private val mMessenger = Messenger(IncomingHandler())
+    private val mMessenger = Messenger(IncomingHandler(this))
 
     private var mNotificationManager: NotificationManager? = null
     private var systemUpdateType: SystemUpdateType = SystemUpdateType.SINGLE_COPY
 
-    private var deploymentPermitProvider: AndroidDeploymentPermitProvider? = null
+    var deploymentPermitProvider: AndroidDeploymentPermitProvider? = null
     private var messageListener: MessageListener? = null
 
     override fun configureService() {
@@ -136,7 +134,14 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     }
 
     // todo add api to configure targetAttibutes (separete  d from serviceConfiguration)
-    private inner class IncomingHandler : Handler() {
+    private class IncomingHandler(service: UpdateFactoryService) : Handler(Looper.myLooper()) {
+        private val updateFactoryServiceRef = WeakReference(service)
+
+        private fun <T> WeakReference<T>.execute(action: T.() -> Unit){
+            get()?.let { ref ->
+                ref.action()
+            }
+        }
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 Communication.V1.In.ConfigureService.ID -> configureServiceFromMsg(msg)
@@ -192,10 +197,12 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             Log.i(TAG, "receive authorization response")
             if(!msg.data.containsKey(SERVICE_DATA_KEY)){
                 Log.i(TAG, "Invalid authorization response message received")
-                return;
+                return
             }
             val response = msg.data.getBoolean(SERVICE_DATA_KEY)
-            deploymentPermitProvider?.allow(response)
+            updateFactoryServiceRef.execute {
+                deploymentPermitProvider?.allow(response)
+            }
             Log.i(TAG, String.format("authorization %s", if (response) "granted" else "denied"))
         }
 
@@ -204,12 +211,12 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             val configuration =  try{
                 if(!msg.data.containsKey(SERVICE_DATA_KEY)){
                     Log.i(TAG, "Invalid configuration message received (no configuration found)")
-                    return;
+                    return
                 }
                 msg.data.getSerializable(SERVICE_DATA_KEY) as UFServiceConfiguration
             } catch (e:Throwable){
                 Log.i(TAG, "Invalid configuration message received; Error on configuration deserialize.")
-                return;
+                return
             }
             val currentConf = configurationHandler?.getCurrentConfiguration()
 
@@ -221,7 +228,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             }
 
             if (configurationHandler?.needReboot(currentConf) == true) {
-                configureService()
+                updateFactoryServiceRef.execute { configureService() }
                 Log.i(TAG, "configuration updated - restarting service")
             } else {
                 Log.i(TAG, "configuration updated - service not restarted")
