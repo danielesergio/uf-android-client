@@ -10,7 +10,6 @@ package com.kynetics.uf.android.content
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.util.Base64
 import android.util.Base64InputStream
 import android.util.Base64OutputStream
@@ -23,7 +22,7 @@ import java.io.*
 class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferences) : SharedPreferences by sharedPreferences{
 
     fun <T : Serializable?> getObject(objKey: String?): T? {
-        return getObject(objKey, null)
+        return getObject<T>(objKey, null)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -35,8 +34,7 @@ class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferenc
         try {
             val byteArray = ByteArrayInputStream(bytes)
             val base64InputStream = Base64InputStream(byteArray, Base64.DEFAULT)
-            val `in`: ObjectInputStream
-            `in` = ObjectInputStream(base64InputStream)
+            val `in` = ObjectInputStream(base64InputStream)
             return `in`.readObject() as T
         } catch (ex: IOException) {
             Log.e(TAG, ex.message, ex)
