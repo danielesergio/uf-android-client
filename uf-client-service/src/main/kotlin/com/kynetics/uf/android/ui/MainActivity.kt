@@ -13,7 +13,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
-import androidx.fragment.app.Fragment
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import com.kynetics.uf.android.R
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), OnAuthorization {
     }
 
     private fun finishActivity() {
-        Handler().postDelayed({ finish() }, 500)
+        Handler(Looper.myLooper()).postDelayed({ finish() }, 500)
     }
 
     override fun getSharedPreferences(name: String?, mode: Int): UFSharedPreferences {
