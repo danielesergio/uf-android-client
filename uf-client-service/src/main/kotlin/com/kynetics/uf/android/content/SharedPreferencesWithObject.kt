@@ -8,6 +8,7 @@
  */
 package com.kynetics.uf.android.content
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.util.Base64
@@ -25,6 +26,7 @@ class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferenc
         return getObject(objKey, null)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T : Serializable?> getObject(objKey: String?, defaultObj: T?): T? {
         val bytes = sharedPreferences.getString(objKey, "").toByteArray()
         if (bytes.isEmpty()) {
@@ -44,6 +46,7 @@ class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferenc
         return defaultObj
     }
 
+    @SuppressLint("ApplySharedPref")
     fun <T> putAndCommitObject(key: String?, obj: T) {
         val arrayOutputStream = ByteArrayOutputStream()
         val ed = sharedPreferences.edit()

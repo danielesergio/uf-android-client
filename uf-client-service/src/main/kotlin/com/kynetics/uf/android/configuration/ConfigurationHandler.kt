@@ -9,9 +9,9 @@
 
 package com.kynetics.uf.android.configuration
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
-import android.os.Environment
 import android.util.Log
 import com.kynetics.uf.android.BuildConfig
 import com.kynetics.uf.android.R
@@ -278,8 +278,8 @@ data class ConfigurationHandler(
         private const val DEVICE_NAME_TARGET_ATTRIBUTE_KEY = "device_name"
         private const val SYSTEM_UPDATE_TYPE = "system_update_type"
         private const val CLIENT_TYPE_TARGET_TOKEN_KEY = "client"
-        private val EXTERNAL_STORAGE_DIR = Environment.getExternalStorageDirectory().path
-        private val UF_CONF_FILE = "$EXTERNAL_STORAGE_DIR/UpdateFactoryConfiguration/ufConf.conf"
+        @SuppressLint("SdCardPath")
+        private const val UF_CONF_FILE = "/sdcard/UpdateFactoryConfiguration/ufConf.conf"
         private val TAG: String = ConfigurationHandler::class.java.simpleName
     }
 }

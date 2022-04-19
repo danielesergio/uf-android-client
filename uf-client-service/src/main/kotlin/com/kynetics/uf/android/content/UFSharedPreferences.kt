@@ -87,6 +87,7 @@ class UFSharedPreferences private constructor(
     fun <T> putAndCommitObject(key: String?, obj: T) =
             sharedPreferencesWithObject.putAndCommitObject(key, obj)
 
+    @Suppress("UNCHECKED_CAST")
     private fun moveSharedPreferences(sp1:SharedPreferences, sp2:SharedPreferences, moveTo:(Map.Entry<String, Any?>) -> Boolean){
         sp2.edit().apply{
             val sp1Editor = sp1.edit()
