@@ -19,13 +19,11 @@ import com.kynetics.uf.android.update.CurrentUpdateState
 import org.eclipse.hara.ddiclient.core.api.DeploymentPermitProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 interface AndroidDeploymentPermitProvider : DeploymentPermitProvider {
     fun allow(isAllowed: Boolean)
 
     companion object {
-        @ExperimentalCoroutinesApi
         fun build(
             configurationHandler: ConfigurationHandler,
             mNotificationManager: NotificationManager,

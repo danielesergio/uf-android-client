@@ -67,6 +67,15 @@ android {
 
     }
 
+    defaultConfig{
+
+        kotlinOptions {
+            freeCompilerArgs += [
+                    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+
+            ]
+        }
+    }
 
     buildTypes {
         release {
@@ -125,3 +134,5 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
     implementation 'androidx.multidex:multidex:2.0.1'
 }
+
+
