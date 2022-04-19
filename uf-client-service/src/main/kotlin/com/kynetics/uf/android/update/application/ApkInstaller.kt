@@ -11,8 +11,8 @@ package com.kynetics.uf.android.update.application
 
 import android.content.Context
 import android.os.Build
-import androidx.annotation.RequiresApi
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.Installer
 import com.kynetics.uf.android.update.InstallerSession

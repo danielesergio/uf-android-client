@@ -9,17 +9,13 @@
 
 package com.kynetics.uf.android.ui
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
-import com.kynetics.uf.android.content.EncryptedSharedPreferences
-import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment.OnAuthorization

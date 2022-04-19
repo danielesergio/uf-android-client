@@ -3,7 +3,6 @@ package com.kynetics.uf.android.api.v1
 
 import org.junit.Assert
 import org.junit.Test
-import java.lang.Exception
 
 class UFServiceMessageV1Test {
 

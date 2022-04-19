@@ -16,9 +16,9 @@ import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.ui.MainActivity
 import com.kynetics.uf.android.update.CurrentUpdateState
-import org.eclipse.hara.ddiclient.core.api.DeploymentPermitProvider
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import org.eclipse.hara.ddiclient.core.api.DeploymentPermitProvider
 
 interface AndroidDeploymentPermitProvider : DeploymentPermitProvider {
     fun allow(isAllowed: Boolean)

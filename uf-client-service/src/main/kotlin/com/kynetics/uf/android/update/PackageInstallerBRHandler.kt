@@ -12,7 +12,6 @@ package com.kynetics.uf.android.update
 import android.app.PendingIntent
 import android.content.*
 import android.util.Log
-import java.lang.Exception
 
 object PackageInstallerBRHandler {
     const val ACTION_INSTALL_COMPLETE = "com.kynetics.action.INSTALL_COMPLETED"

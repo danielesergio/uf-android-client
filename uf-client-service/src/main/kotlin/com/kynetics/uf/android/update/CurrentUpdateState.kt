@@ -18,7 +18,6 @@ import android.util.Log
 import org.eclipse.hara.ddiclient.core.api.Updater
 import java.io.File
 import java.io.FileNotFoundException
-import java.util.HashSet
 import kotlin.math.min
 
 // todo refactor

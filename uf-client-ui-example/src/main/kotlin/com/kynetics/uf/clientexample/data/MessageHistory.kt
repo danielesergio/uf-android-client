@@ -12,8 +12,7 @@ package com.kynetics.uf.clientexample.data
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import java.text.DateFormat
 import java.text.NumberFormat
-import java.util.Date
-import java.util.HashMap
+import java.util.*
 
 /**
  * Helper class for providing sample content for user interfaces created by

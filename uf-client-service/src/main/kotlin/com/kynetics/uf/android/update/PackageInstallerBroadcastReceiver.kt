@@ -13,11 +13,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
-import android.content.pm.PackageInstaller.EXTRA_PACKAGE_NAME
 import android.os.Build
-import androidx.annotation.RequiresApi
 import android.util.Log
-import com.kynetics.uf.android.update.PackageInstallerBRHandler
+import androidx.annotation.RequiresApi
 import org.eclipse.hara.ddiclient.core.api.Updater
 import java.util.concurrent.CountDownLatch
 

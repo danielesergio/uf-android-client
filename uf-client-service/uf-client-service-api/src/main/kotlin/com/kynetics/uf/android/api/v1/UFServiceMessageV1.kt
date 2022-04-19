@@ -12,7 +12,9 @@ package com.kynetics.uf.android.api.v1
 import com.kynetics.uf.android.api.Communication
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * This class maps all possible messages sent by UpdateFactoryService to the clients that are

@@ -9,21 +9,20 @@
 
 package com.kynetics.uf.clientexample.fragment
 
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.databinding.DataBindingUtil
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.clientexample.R
 import com.kynetics.uf.clientexample.data.MessageHistory
 import com.kynetics.uf.clientexample.data.format
 import com.kynetics.uf.clientexample.data.percentFormat
 import com.kynetics.uf.clientexample.databinding.StateDetailBinding
-import kotlin.math.pow
 import kotlinx.android.synthetic.main.state_detail.view.*
+import kotlin.math.pow
 
 /**
  * A fragment representing a single State detail screen.

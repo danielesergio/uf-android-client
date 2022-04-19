@@ -11,7 +11,6 @@ package com.kynetics.uf.clientexample.fragment
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +21,9 @@ import com.kynetics.uf.clientexample.activity.MainActivity
 import com.kynetics.uf.clientexample.data.MessageHistory
 import com.kynetics.uf.clientexample.data.MessageHistory.CAPACITY
 import com.kynetics.uf.clientexample.data.toDate
-import kotlin.math.min
 import kotlinx.android.synthetic.main.state_list_content.view.*
 import kotlinx.android.synthetic.main.state_list_fragment.view.*
+import kotlin.math.min
 
 class ListStateFragment : androidx.fragment.app.Fragment(), UFServiceInteractionFragment {
 

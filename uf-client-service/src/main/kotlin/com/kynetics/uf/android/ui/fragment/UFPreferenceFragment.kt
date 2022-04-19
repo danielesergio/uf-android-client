@@ -12,14 +12,9 @@ package com.kynetics.uf.android.ui.fragment
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
-import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceGroup
-import androidx.preference.SwitchPreferenceCompat
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.*
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion

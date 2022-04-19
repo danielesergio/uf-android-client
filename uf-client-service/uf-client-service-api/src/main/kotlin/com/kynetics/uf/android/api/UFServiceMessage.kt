@@ -11,7 +11,7 @@ package com.kynetics.uf.android.api
 
 import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 /**
  * This class represents the service's state (api version 0.1)

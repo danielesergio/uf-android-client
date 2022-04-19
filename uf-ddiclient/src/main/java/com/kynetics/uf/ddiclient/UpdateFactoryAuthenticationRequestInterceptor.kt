@@ -1,12 +1,12 @@
 package com.kynetics.uf.ddiclient
 
+import okhttp3.Interceptor
+import okhttp3.Response
 import org.eclipse.hara.ddiapiclient.api.DdiRestConstants.Companion.CONFIG_DATA_ACTION
+import org.eclipse.hara.ddiapiclient.security.Authentication
 import org.eclipse.hara.ddiapiclient.security.Authentication.AuthenticationType.TARGET_TOKEN_AUTHENTICATION
 import org.eclipse.hara.ddiapiclient.security.Authentication.Companion.newInstance
 import java.io.IOException
-import okhttp3.Interceptor
-import okhttp3.Response
-import org.eclipse.hara.ddiapiclient.security.Authentication
 
 /**
  * @author Daniele Sergio

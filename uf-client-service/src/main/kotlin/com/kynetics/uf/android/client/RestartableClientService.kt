@@ -11,8 +11,10 @@ package com.kynetics.uf.android.client
 
 import android.util.Log
 import com.kynetics.uf.android.configuration.ConfigurationHandler
-import org.eclipse.hara.ddiclient.core.api.*
 import kotlinx.coroutines.*
+import org.eclipse.hara.ddiclient.core.api.DeploymentPermitProvider
+import org.eclipse.hara.ddiclient.core.api.HaraClient
+import org.eclipse.hara.ddiclient.core.api.MessageListener
 
 class RestartableClientService constructor(
     private val client: UpdateFactoryClientWrapper,
