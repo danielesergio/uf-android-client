@@ -15,7 +15,8 @@ Links to official documentation:
 - [kdocs API](https://kynetics.github.io/uf-android-client/)
 
 ## Build
-To build the project you must replace the android.jar file as describe in [Android hidden api](https://github.com/anggrayudi/android-hidden-api).
+To build this project the Android SDK Platform `android.jar` should be replaced with the Android Hidden API `android.jar` file as described in [Android Hidden API README](https://github.com/anggrayudi/android-hidden-api).
+On Linux the [installation script](install_android-hidden-api-jar.sh) can be used to automatically install the `android.jar`.
 
 **This is the [android.jar](https://github.com/Reginer/aosp-android-jar/blob/main/android-30/android.jar) 
 to use because of this [issue](https://github.com/anggrayudi/android-hidden-api/issues/84)**
