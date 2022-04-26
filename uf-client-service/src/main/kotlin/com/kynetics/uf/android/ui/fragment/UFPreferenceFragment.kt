@@ -125,13 +125,14 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         }
 
         if (key == getString(R.string.shared_preferences_current_state_key)) {
-            try {
-                val messageV1 = UFServiceMessageV1.fromJson(MessengerHandler.getlastSharedMessage(ApiCommunicationVersion.V1).messageToSendOnSync as String)
-                preference.summary = messageV1.name.name
-            } catch (error: Throwable) {
+            runCatching {
+                (MessengerHandler.getlastSharedMessage(ApiCommunicationVersion.V1).messageToSendOnSync as? String)
+                    ?.let {
+                        preference.summary = UFServiceMessageV1.fromJson(it).name.name
+                    }
+            }.onFailure { error ->
                 Log.w(TAG, "Error setting current state", error)
             }
-
             return
         }
 
