@@ -20,6 +20,8 @@ class UFSharedPreferences private constructor(
         private val secureSharedPreferences: SharedPreferences,
         private val secureKeys: Array<String>): SharedPreferences by sharedPreferencesWithObject {
 
+    private val errorOnMoovingSharedPreference:Boolean
+
     companion object{
         private val TAG = UFSharedPreferences::class.java.simpleName
 
@@ -32,10 +34,18 @@ class UFSharedPreferences private constructor(
     }
 
     init {
-        Log.d(TAG, "Moving sharedPreferences to encrypted sharedPreferences")
-        moveSharedPreferences(sharedPreferencesWithObject, secureSharedPreferences) { entry -> secureKeys.contains(entry.key) }
-        Log.d(TAG, "Moving sharedPreferences to plain sharedPreferences")
-        moveSharedPreferences(secureSharedPreferences, sharedPreferencesWithObject) { entry -> !secureKeys.contains(entry.key) }
+        runCatching {
+            Log.d(TAG, "Moving $secureKeys to encrypted sharedPreferences")
+            moveSharedPreferences(sharedPreferencesWithObject, secureSharedPreferences) { entry -> secureKeys.contains(entry.key) }
+            Log.d(TAG, "$secureKeys successfully moved to encrypted sharedPreferences")
+            Log.d(TAG, "Moving other keys to plain sharedPreferences")
+            moveSharedPreferences(secureSharedPreferences, sharedPreferencesWithObject) { entry -> !secureKeys.contains(entry.key) }
+            Log.d(TAG, "Keys successfully moved to plain sharedPreferences")
+        }.onFailure {
+            Log.w(TAG, "Error on moving shared preferences", it.cause)
+        }.run {
+            errorOnMoovingSharedPreference = isFailure
+        }
     }
 
     override fun contains(key: String?): Boolean = selectSP(key).contains(key)
@@ -117,10 +127,10 @@ class UFSharedPreferences private constructor(
 
 
     private fun selectSP(key:String?): SharedPreferences{
-        return if(key in secureKeys){
-            secureSharedPreferences
-        } else {
-            sharedPreferencesWithObject
+        return when{
+            errorOnMoovingSharedPreference -> sharedPreferencesWithObject
+            key in secureKeys -> secureSharedPreferences
+            else -> sharedPreferencesWithObject
         }
     }
 
