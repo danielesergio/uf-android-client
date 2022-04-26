@@ -23,7 +23,10 @@ class UpdateFactoryAuthenticationRequestInterceptor(
         val builder = originalRequest.newBuilder()
         val isConfigDataRequest = originalRequest.url.toString().endsWith(CONFIG_DATA_ACTION)
         var targetTokenAuth: Authentication? = null
-        for (authentication in authentications) {
+        builder.removeHeader("Authorization")
+        authentications.filter { authentication ->
+            authentication.token.isNotBlank()
+        }.forEach { authentication ->
             builder.addHeader(authentication.header, authentication.headerValue)
             if (authentication.type === TARGET_TOKEN_AUTHENTICATION) {
                 targetTokenAuth = authentication
