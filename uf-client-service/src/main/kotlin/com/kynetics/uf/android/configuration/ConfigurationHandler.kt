@@ -26,7 +26,7 @@ import com.kynetics.uf.android.update.application.ApkUpdater
 import com.kynetics.uf.android.update.system.OtaUpdater
 import com.kynetics.uf.ddiclient.HaraClientFactory
 import com.kynetics.uf.ddiclient.TargetTokenFoundListener
-import org.eclipse.hara.ddiclient.core.api.*
+import org.eclipse.hara.ddiclient.api.*
 import java.io.File
 import java.security.MessageDigest
 import java.text.SimpleDateFormat

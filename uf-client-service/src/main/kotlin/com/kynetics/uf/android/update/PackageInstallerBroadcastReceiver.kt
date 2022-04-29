@@ -16,7 +16,7 @@ import android.content.pm.PackageInstaller
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import org.eclipse.hara.ddiclient.core.api.Updater
+import org.eclipse.hara.ddiclient.api.Updater
 import java.util.concurrent.CountDownLatch
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

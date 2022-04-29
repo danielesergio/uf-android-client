@@ -10,7 +10,7 @@
 package com.kynetics.uf.android.client
 
 import okhttp3.OkHttpClient
-import org.eclipse.hara.ddiclient.core.api.*
+import org.eclipse.hara.ddiclient.api.*
 
 class UpdateFactoryClientWrapper(var delegate: HaraClient? = null): HaraClient {
     override fun forcePing() {

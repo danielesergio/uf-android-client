@@ -10,7 +10,7 @@ java {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    api("com.github.eclipse:hara-ddiclient:6e65fe22950f38ee039daa75803961075c5cf196"){
+    api("com.github.eclipse:hara-ddiclient:35adf5f86ec6db5e1459471480f0cd4b68f2e8a3"){
         exclude group: "org.slf4j", module: "slf4j-simple"
     }
     implementation "com.squareup.okhttp3:okhttp:4.9.3"

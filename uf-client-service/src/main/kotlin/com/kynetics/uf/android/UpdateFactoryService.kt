@@ -38,7 +38,7 @@ import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.SystemUpdateType
 import de.psdev.slf4j.android.logger.AndroidLoggerAdapter
 import de.psdev.slf4j.android.logger.LogLevel
-import org.eclipse.hara.ddiclient.core.api.MessageListener
+import org.eclipse.hara.ddiclient.api.MessageListener
 import java.lang.ref.WeakReference
 
 /*

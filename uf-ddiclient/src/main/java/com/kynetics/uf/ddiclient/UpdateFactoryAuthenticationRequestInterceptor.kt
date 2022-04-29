@@ -2,18 +2,16 @@ package com.kynetics.uf.ddiclient
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import org.eclipse.hara.ddiapiclient.api.DdiRestConstants.Companion.CONFIG_DATA_ACTION
-import org.eclipse.hara.ddiapiclient.security.Authentication
-import org.eclipse.hara.ddiapiclient.security.Authentication.AuthenticationType.TARGET_TOKEN_AUTHENTICATION
-import org.eclipse.hara.ddiapiclient.security.Authentication.Companion.newInstance
+import org.eclipse.hara.ddi.api.DdiRestConstants.Companion.CONFIG_DATA_ACTION
+import org.eclipse.hara.ddi.security.Authentication
 import java.io.IOException
 
 /**
  * @author Daniele Sergio
  */
 class UpdateFactoryAuthenticationRequestInterceptor(
-        private val authentications: MutableSet<Authentication>,
-        private val targetTokenFoundListener: TargetTokenFoundListener =
+    private val authentications: MutableSet<Authentication>,
+    private val targetTokenFoundListener: TargetTokenFoundListener =
                 object : TargetTokenFoundListener {}
 ) : Interceptor {
 
@@ -28,7 +26,7 @@ class UpdateFactoryAuthenticationRequestInterceptor(
             authentication.token.isNotBlank()
         }.forEach { authentication ->
             builder.addHeader(authentication.header, authentication.headerValue)
-            if (authentication.type === TARGET_TOKEN_AUTHENTICATION) {
+            if (authentication.type === Authentication.AuthenticationType.TARGET_TOKEN_AUTHENTICATION) {
                 targetTokenAuth = authentication
             }
         }
@@ -38,7 +36,7 @@ class UpdateFactoryAuthenticationRequestInterceptor(
         val response = chain.proceed(builder.build())
         val targetToken = response.header(TARGET_TOKEN_HEADER_NAME)
         if (isConfigDataRequest && targetToken != null) {
-            authentications.add(newInstance(TARGET_TOKEN_AUTHENTICATION, targetToken))
+            authentications.add(Authentication.newInstance(Authentication.AuthenticationType.TARGET_TOKEN_AUTHENTICATION, targetToken))
             targetTokenFoundListener.onFound(targetToken)
             authentications.remove(targetTokenAuth)
         }

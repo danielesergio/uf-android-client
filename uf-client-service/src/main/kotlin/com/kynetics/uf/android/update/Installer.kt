@@ -10,7 +10,7 @@
 package com.kynetics.uf.android.update
 
 import android.content.Context
-import org.eclipse.hara.ddiclient.core.api.Updater
+import org.eclipse.hara.ddiclient.api.Updater
 
 interface Installer<out T> {
     fun install(

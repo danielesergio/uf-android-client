@@ -13,7 +13,7 @@ import android.content.Context
 import android.os.RecoverySystem
 import android.util.Log
 import com.kynetics.uf.android.update.CurrentUpdateState
-import org.eclipse.hara.ddiclient.core.api.Updater
+import org.eclipse.hara.ddiclient.api.Updater
 import java.io.File
 import java.io.IOException
 import kotlin.math.min

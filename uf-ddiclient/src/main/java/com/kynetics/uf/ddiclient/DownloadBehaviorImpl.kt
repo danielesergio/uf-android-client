@@ -1,6 +1,6 @@
 package com.kynetics.uf.ddiclient
 
-import org.eclipse.hara.ddiclient.core.api.DownloadBehavior
+import org.eclipse.hara.ddiclient.api.DownloadBehavior
 import kotlin.math.pow
 
 class DownloadBehaviorImpl(

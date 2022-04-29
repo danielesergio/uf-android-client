@@ -1,9 +1,9 @@
 package com.kynetics.uf.ddiclient
 
 import okhttp3.OkHttpClient
-import org.eclipse.hara.ddiapiclient.security.Authentication
-import org.eclipse.hara.ddiclient.core.HaraClientDefaultImpl
-import org.eclipse.hara.ddiclient.core.api.*
+import org.eclipse.hara.ddi.security.Authentication
+import org.eclipse.hara.ddiclient.api.*
+
 
 object HaraClientFactory {
 
