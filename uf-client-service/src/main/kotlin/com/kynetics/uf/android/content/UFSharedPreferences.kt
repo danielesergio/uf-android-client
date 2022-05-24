@@ -20,7 +20,7 @@ class UFSharedPreferences private constructor(
         private val secureSharedPreferences: SharedPreferences,
         private val secureKeys: Array<String>): SharedPreferences by sharedPreferencesWithObject {
 
-    private val errorOnMoovingSharedPreference:Boolean
+    private val errorOnMovingSharedPreference:Boolean
 
     companion object{
         private val TAG = UFSharedPreferences::class.java.simpleName
@@ -44,7 +44,7 @@ class UFSharedPreferences private constructor(
         }.onFailure {
             Log.w(TAG, "Error on moving shared preferences", it.cause)
         }.run {
-            errorOnMoovingSharedPreference = isFailure
+            errorOnMovingSharedPreference = isFailure
         }
     }
 
@@ -128,7 +128,7 @@ class UFSharedPreferences private constructor(
 
     private fun selectSP(key:String?): SharedPreferences{
         return when{
-            errorOnMoovingSharedPreference -> sharedPreferencesWithObject
+            errorOnMovingSharedPreference -> sharedPreferencesWithObject
             key in secureKeys -> secureSharedPreferences
             else -> sharedPreferencesWithObject
         }

@@ -51,7 +51,7 @@ class CurrentUpdateState(context: Context) {
 
     private fun currentInstallationDir(): File = File(rootDir(), "current_installation")
 
-    fun lastIntallationResult(): InstallationResult {
+    fun lastInstallationResult(): InstallationResult {
         return try {
             val response = when (val result = lastInstallFile().readLines()[1].trim()) {
                 "1" -> InstallationResult.Success()
@@ -203,7 +203,7 @@ class CurrentUpdateState(context: Context) {
     }
 
     // todo refactor use pending file to store last installation  slot name
-    fun lastABIntallationResult(): InstallationResult {
+    fun lastABInstallationResult(): InstallationResult {
         return try {
             val currentSlotName = SystemProperties.get(LAST_LOST_NAME_PROPERTY_KEY)
             val previousSlotName = sharedPreferences.getString(LAST_SLOT_NAME_SHAREDPREFERENCES_KEY, "")
