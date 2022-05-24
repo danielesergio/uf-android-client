@@ -23,6 +23,7 @@ android {
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "lib-proguard-rules.txt"
     }
 
     dataBinding {
