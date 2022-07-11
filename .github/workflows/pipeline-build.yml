@@ -1,0 +1,30 @@
+name: build-action
+
+on:
+  push:
+    branches-ignore:
+      - 'gh-pages'
+  pull_request:
+    branches-ignore:
+      - 'gh-pages'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Override Android SDK
+        run: ./install_android-hidden-api-jar.sh
+
+      - name: Gradle build
+        env:
+          KYNETICS_KEYSTORE_PASS: ${{ secrets.KYNETICS_KEYSTORE_PASS }}
+          KYNETICS_KEY_PASS: ${{ secrets.KYNETICS_KEY_PASS }}
+          KYNETICS_KEY_ALIAS: ${{ secrets.KYNETICS_KEY_ALIAS }}
+
+        run: ./gradlew build
