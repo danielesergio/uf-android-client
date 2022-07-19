@@ -53,18 +53,16 @@ android {
                 v2SigningEnabled true
                 v1SigningEnabled true
             }
-        } else if(project.properties.containsKey("uf-android-client-service.storePath")){
-            debug {
-                keyAlias project.properties['uf-android-client-service.keyAlias']
-                keyPassword project.properties['uf-android-client-service.keyPassword']
-                storeFile file(project.properties['uf-android-client-service.storePath'])
-                storePassword project.properties['uf-android-client-service.storePassword']
-                v2SigningEnabled true
-                v1SigningEnabled true
-            }
-
         }
 
+        aosp_platform {
+            storePassword "keystore"
+            keyAlias "platform_aosp"
+            keyPassword "keystore"
+            storeFile file('../keystore/public.jks')
+            v2SigningEnabled true
+            v1SigningEnabled true
+        }
     }
 
     defaultConfig{
@@ -97,12 +95,10 @@ android {
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
                 matchingFallbacks = ['release', 'debug']
             }
-        } else {
-            debug{
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-                signingConfig signingConfigs.debug
-            }
+        }
+        debug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -134,5 +130,3 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.1")
     implementation 'androidx.multidex:multidex:2.0.1'
 }
-
-
