@@ -42,6 +42,15 @@ android {
             v1SigningEnabled true
         }
 
+        rockchip_platform {
+            storePassword "keystore"
+            keyAlias "platform_rockchip"
+            keyPassword "keystore"
+            storeFile file('../keystore/public.jks')
+            v2SigningEnabled true
+            v1SigningEnabled true
+        }
+
         aosp_platform {
             storePassword "keystore"
             keyAlias "platform_aosp"
@@ -70,6 +79,13 @@ android {
 
         nxp_platform_key {
             signingConfig signingConfigs.nxp_platform
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['release', 'debug']
+        }
+
+        rockchip_platform_key {
+            signingConfig signingConfigs.rockchip_platform
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             matchingFallbacks = ['release', 'debug']
