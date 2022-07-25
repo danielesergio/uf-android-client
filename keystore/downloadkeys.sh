@@ -16,6 +16,6 @@ cd $BASE_PWD
 
 mkdir nxp && cd nxp
 curl -o platform.x509.pem "https://source.codeaurora.org/external/imx/android-imx/device/fsl/plain/common/security/platform.x509.pem?h=android-11.0.0_2.6.0"
-curl -o platform.pk8 "https://source.codeaurora.org/external/imx/android-imx/device/fsl/plain/common/security/platform.pk8?h=android-11.0.0_2.6.0_2"
+curl -o platform.pk8 "https://source.codeaurora.org/external/imx/android-imx/device/fsl/plain/common/security/platform.pk8?h=android-11.0.0_2.6.0"
 
 cd $BASE_PWD
