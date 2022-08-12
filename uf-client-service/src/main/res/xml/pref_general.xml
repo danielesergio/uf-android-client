@@ -17,7 +17,7 @@
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <EditTextPreference
+    <com.kynetics.uf.android.ui.preferences.EditTextValidateNotEmptyPreference
         android:inputType="textCapWords"
         android:key="@string/shared_preferences_server_url_key"
         android:title="@string/shared_preferences_server_url_title"
@@ -25,7 +25,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true" />
 
-    <EditTextPreference
+    <com.kynetics.uf.android.ui.preferences.EditTextValidateNotEmptyPreference
         android:inputType="textCapWords"
         android:key="@string/shared_preferences_tenant_key"
         android:title="@string/shared_preferences_tenant_title"
@@ -33,7 +33,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true" />
 
-    <EditTextPreference
+    <com.kynetics.uf.android.ui.preferences.EditTextValidateNotEmptyPreference
         android:inputType="textCapWords"
         android:key="@string/shared_preferences_controller_id_key"
         android:title="@string/shared_preferences_controller_id_title"
@@ -81,5 +81,11 @@
     <Preference
         android:key="@string/shared_preferences_system_update_type_key"
         android:title="@string/shared_preferences_system_update_type_title" />
+
+    <com.kynetics.uf.android.ui.preferences.EditTextValidateSchedulePreference
+        android:key="@string/shared_preferences_schedule_update_key"
+        android:title="@string/shared_preferences_schedule_update_title"
+        android:maxLines="1"
+        android:selectAllOnFocus="true" />
 
 </PreferenceScreen>
