@@ -14,6 +14,7 @@ object HaraClientFactory {
         deploymentPermitProvider: DeploymentPermitProvider,
         messageListeners: List<MessageListener>,
         updaters: List<Updater>,
+        forceDeploymentPermitProvider: DeploymentPermitProvider,
         builder:OkHttpClient.Builder
     ): HaraClient  = HaraClientDefaultImpl().apply{
         init(haraClientData,
@@ -23,6 +24,7 @@ object HaraClientFactory {
             messageListeners,
             updaters,
             DownloadBehaviorImpl(),
+            forceDeploymentPermitProvider,
             builder)
     }
 
@@ -33,6 +35,7 @@ object HaraClientFactory {
         deploymentPermitProvider: DeploymentPermitProvider,
         messageListeners: List<MessageListener>,
         updaters: List<Updater>,
+        forceDeploymentPermitProvider: DeploymentPermitProvider,
         targetTokenFoundListener:TargetTokenFoundListener):HaraClient =
         newInstance(haraClientData,
             directoryForArtifactsProvider,
@@ -40,6 +43,7 @@ object HaraClientFactory {
             deploymentPermitProvider,
             messageListeners,
             updaters,
+            forceDeploymentPermitProvider,
             getOkHttpBuilder(targetTokenFoundListener, haraClientData))
 
     fun newHawkbitClient(
@@ -48,6 +52,7 @@ object HaraClientFactory {
         configDataProvider: ConfigDataProvider,
         deploymentPermitProvider: DeploymentPermitProvider,
         messageListeners: List<MessageListener>,
+        forceDeploymentPermitProvider: DeploymentPermitProvider,
         updaters: List<Updater>):HaraClient =
         newInstance(haraClientData,
             directoryForArtifactsProvider,
@@ -55,6 +60,7 @@ object HaraClientFactory {
             deploymentPermitProvider,
             messageListeners,
             updaters,
+            forceDeploymentPermitProvider,
             OkHttpClient.Builder())
 
 

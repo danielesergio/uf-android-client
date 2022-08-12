@@ -20,18 +20,20 @@ class UpdateFactoryClientWrapper(var delegate: HaraClient? = null): HaraClient {
     override fun init(haraClientData: HaraClientData,
                       directoryForArtifactsProvider: DirectoryForArtifactsProvider,
                       configDataProvider: ConfigDataProvider,
-                      deploymentPermitProvider: DeploymentPermitProvider,
+                      softDeploymentPermitProvider: DeploymentPermitProvider,
                       messageListeners: List<MessageListener>,
                       updaters: List<Updater>,
                       downloadBehavior: DownloadBehavior,
+                      forceDeploymentPermitProvider: DeploymentPermitProvider,
                       httpBuilder: OkHttpClient.Builder) {
         delegate?.init(haraClientData,
             directoryForArtifactsProvider,
             configDataProvider,
-            deploymentPermitProvider,
+            softDeploymentPermitProvider,
             messageListeners,
             updaters.toList(),
             downloadBehavior,
+            forceDeploymentPermitProvider,
             httpBuilder)
     }
 

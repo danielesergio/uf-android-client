@@ -124,14 +124,15 @@ data class ConfigurationHandler(
     fun apiModeIsEnabled() = sharedPreferences.getBoolean(sharedPreferencesApiModeKey, false)
 
     fun buildServiceFromPreferences(
-            deploymentPermitProvider: DeploymentPermitProvider,
-            listeners: List<MessageListener>
+        softDeploymentPermitProvider: DeploymentPermitProvider,
+        forceDeploymentPermitProvider: DeploymentPermitProvider,
+        listeners: List<MessageListener>
     ): HaraClient? {
         val serviceConfiguration = getCurrentConfiguration()
         var newService: HaraClient? = null
         if (serviceConfiguration.isEnable()) {
             try {
-                newService = serviceConfiguration.toService(deploymentPermitProvider, listeners)
+                newService = serviceConfiguration.toService(softDeploymentPermitProvider, forceDeploymentPermitProvider, listeners)
             } catch (e: RuntimeException) {
                 newService = null
                 MessengerHandler.onConfigurationError(listOf(e.message ?: "Error"))
@@ -213,6 +214,7 @@ data class ConfigurationHandler(
 
     private fun UFServiceConfiguration.toService(
         deploymentPermitProvider: DeploymentPermitProvider,
+        forceDeploymentPermitProvider: DeploymentPermitProvider,
         listeners: List<MessageListener>
     ): HaraClient {
         return if(isUpdateFactoryServe){
@@ -225,6 +227,7 @@ data class ConfigurationHandler(
                     deploymentPermitProvider,
                     listeners,
                     listOf(OtaUpdater(context),ApkUpdater(context)),
+                    forceDeploymentPermitProvider,
                     getTargetTokenListener()
             )
         } else {
@@ -236,6 +239,7 @@ data class ConfigurationHandler(
                     buildConfigDataProvider(),
                     deploymentPermitProvider,
                     listeners,
+                    forceDeploymentPermitProvider,
                     listOf(OtaUpdater(context),ApkUpdater(context))
             )
         }

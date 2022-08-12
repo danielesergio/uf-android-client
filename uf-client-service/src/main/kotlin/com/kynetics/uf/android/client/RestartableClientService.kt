@@ -18,7 +18,8 @@ import org.eclipse.hara.ddiclient.api.MessageListener
 
 class RestartableClientService constructor(
     private val client: UpdateFactoryClientWrapper,
-    private val  deploymentPermitProvider: DeploymentPermitProvider,
+    private val  softDeploymentPermitProvider: DeploymentPermitProvider,
+    private val forceDeploymentPermitProvider: DeploymentPermitProvider,
     listeners: List<MessageListener>): HaraClient by client{
     private var currentState:MessageListener.Message.State? = null
     private val _listeners:List<MessageListener> = listOf(
@@ -38,10 +39,11 @@ class RestartableClientService constructor(
     companion object{
         val TAG: String = RestartableClientService::class.java.simpleName
         fun newInstance(
-                deploymentPermitProvider: DeploymentPermitProvider, listeners: List<MessageListener>): RestartableClientService {
+            softDeploymentPermitProvider: DeploymentPermitProvider, forceDeploymentPermitProvider: DeploymentPermitProvider, listeners: List<MessageListener>): RestartableClientService {
             return RestartableClientService(
                     UpdateFactoryClientWrapper(null),
-                    deploymentPermitProvider,
+                    softDeploymentPermitProvider,
+                    forceDeploymentPermitProvider,
                     listeners)
         }
     }
@@ -54,7 +56,7 @@ class RestartableClientService constructor(
         }
         Log.d(TAG, "Restarting service")
         client.stop()
-        client.delegate = conf.buildServiceFromPreferences(deploymentPermitProvider, _listeners)
+        client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, forceDeploymentPermitProvider, _listeners)
         client.startAsync()
         Log.d(TAG, "Service restarted")
 

@@ -30,6 +30,7 @@ import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.MessageHandler
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
+import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.AndroidMessageListener
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
@@ -47,11 +48,11 @@ import java.lang.ref.WeakReference
 class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
 
     override fun authorizationGranted() {
-        deploymentPermitProvider?.allow(true)
+        softDeploymentPermitProvider?.allow(true)
     }
 
     override fun authorizationDenied() {
-        deploymentPermitProvider?.allow(false)
+        softDeploymentPermitProvider?.allow(false)
     }
 
     private val mMessenger = Messenger(IncomingHandler(this))
@@ -59,12 +60,14 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     private var mNotificationManager: NotificationManager? = null
     private var systemUpdateType: SystemUpdateType = SystemUpdateType.SINGLE_COPY
 
-    var deploymentPermitProvider: AndroidDeploymentPermitProvider? = null
+    var softDeploymentPermitProvider: AndroidDeploymentPermitProvider? = null
+    var forceDeploymentPermitProvider: AndroidForceDeploymentPermitProvider? = null
     private var messageListener: MessageListener? = null
 
     override fun configureService() {
         if(ufService == null){
-            ufService = RestartableClientService.newInstance(deploymentPermitProvider!!,listOf(messageListener!!))
+            forceDeploymentPermitProvider = AndroidForceDeploymentPermitProvider.build(configurationHandler!!)
+            ufService = RestartableClientService.newInstance(softDeploymentPermitProvider!!,forceDeploymentPermitProvider!!, listOf(messageListener!!))
         }
         when {
             configurationHandler!=null -> {
@@ -90,7 +93,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
         configurationHandler = ConfigurationHandler( this, getSharedPreferences(sharedPreferencesFile, Context.MODE_PRIVATE))
         systemUpdateType = SystemUpdateType.getSystemUpdateType()
         ufServiceCommand = this
-        deploymentPermitProvider = AndroidDeploymentPermitProvider.build(configurationHandler!!, mNotificationManager!!, this)
+        softDeploymentPermitProvider = AndroidDeploymentPermitProvider.build(configurationHandler!!, mNotificationManager!!, this)
         messageListener = AndroidMessageListener(this)
         currentUpdateState = CurrentUpdateState(this)
 
@@ -201,7 +204,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             }
             val response = msg.data.getBoolean(SERVICE_DATA_KEY)
             updateFactoryServiceRef.execute {
-                deploymentPermitProvider?.allow(response)
+                softDeploymentPermitProvider?.allow(response)
             }
             Log.i(TAG, String.format("authorization %s", if (response) "granted" else "denied"))
         }
