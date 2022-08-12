@@ -81,6 +81,7 @@ data class ConfigurationHandler(
             putString(sharedPreferencesServerUrlKey, configuration.url)
             putString(sharedPreferencesGatewayToken, configuration.gatewayToken)
             putString(sharedPreferencesTargetToken, configuration.targetToken)
+            putString(sharedPreferencesScheduleUpdate, configuration.scheduleUpdate)
             putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode())
             putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable())
             putBoolean(sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)
@@ -101,6 +102,7 @@ data class ConfigurationHandler(
                     .withTargetToken(getTargetToken())
                     .withTenant(getString(sharedPreferencesTenantKey, ""))
                     .withUrl(getString(sharedPreferencesServerUrlKey, ""))
+                    .withScheduleUpdate(sharedPreferencesScheduleUpdate)
                     .build()
         }
     }
@@ -122,6 +124,8 @@ data class ConfigurationHandler(
     }
 
     fun apiModeIsEnabled() = sharedPreferences.getBoolean(sharedPreferencesApiModeKey, false)
+
+    fun getScheduleUpdate() = sharedPreferences.getString(sharedPreferencesScheduleUpdate, "* * * ? * *")
 
     fun buildServiceFromPreferences(
         softDeploymentPermitProvider: DeploymentPermitProvider,
@@ -268,6 +272,7 @@ data class ConfigurationHandler(
     private val sharedPreferencesTargetTokenReceivedFromServer = context.getString(R.string.shared_preferences_target_token_received_from_server_key)
     private val sharedPreferencesTargetAttributes = context.getString(R.string.shared_preferences_args_key)
     private val sharedPreferencesIsUpdateFactoryServerType = context.getString(R.string.shared_preferences_is_update_factory_server_type_key)
+    private val sharedPreferencesScheduleUpdate = context.getString(R.string.shared_preferences_schedule_update_key)
     private val currentUpdateState: CurrentUpdateState = CurrentUpdateState(context)
 
     companion object {

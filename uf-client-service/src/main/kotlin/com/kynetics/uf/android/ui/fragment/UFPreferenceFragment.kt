@@ -12,9 +12,10 @@ package com.kynetics.uf.android.ui.fragment
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
+import com.cronutils.descriptor.CronDescriptor
+import com.kynetics.uf.android.HaraCronParser
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion
@@ -26,30 +27,12 @@ import com.kynetics.uf.android.communication.MessengerHandler
  */
 class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    var startingSharedPreferences: Map<String, Any?> = mutableMapOf()
-
-    private var notEmptyEditTextListener = Preference.OnPreferenceChangeListener { _, newValue ->
-        if (newValue.toString().trim { it <= ' ' } == "") {
-            Toast.makeText(activity, "Filed can't be empty",
-                    Toast.LENGTH_LONG).show()
-            false
-        } else {
-            true
-        }
-    }
+    private var startingSharedPreferences: Map<String, Any?> = mutableMapOf()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.sharedPreferencesName = getString(R.string.shared_preferences_file)
         setPreferencesFromResource(R.xml.pref_general, rootKey)
         preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-
-        val editTextKey = arrayOf(getString(R.string.shared_preferences_controller_id_key), getString(R.string.shared_preferences_tenant_key), getString(R.string.shared_preferences_server_url_key))
-
-        for (key in editTextKey) {
-            val editTextPreference = findPreference(key) as EditTextPreference
-            editTextPreference.onPreferenceChangeListener = notEmptyEditTextListener
-        }
-
         startingSharedPreferences = preferenceScreen.sharedPreferences.all
     }
 
@@ -81,7 +64,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
             return
         }
         val sharedPrefs = preferenceManager.sharedPreferences
-        val preference = findPreference(key)
+        val preference:Preference? = findPreference(key)
         updatePreference(preference, key, sharedPrefs)
         enableDisableActivePreference(sharedPrefs)
 
@@ -101,8 +84,8 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
     }
 
     private fun enableDisableActivePreference(shp: SharedPreferences) {
-        val activePreference = findPreference(getString(R.string.shared_preferences_is_enable_key))
-        activePreference.isEnabled =
+        val activePreference:Preference? = findPreference(getString(R.string.shared_preferences_is_enable_key))
+        activePreference?.isEnabled =
                 !(shp.getString(getString(R.string.shared_preferences_server_url_key), "").isEmpty() ||
                 shp.getString(getString(R.string.shared_preferences_tenant_key), "").isEmpty() ||
                 shp.getString(getString(R.string.shared_preferences_controller_id_key), "").isEmpty())
@@ -121,7 +104,13 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
 
         if (preference is EditTextPreference) {
             val editTextPreference = preference as EditTextPreference?
-            editTextPreference!!.summary = editTextPreference.text
+
+            if(editTextPreference?.key == getString(R.string.shared_preferences_schedule_update_key)){
+                val cronDescription = CronDescriptor.instance().describe(HaraCronParser.parse(editTextPreference.text))
+                editTextPreference.summary = "$cronDescription ( ${editTextPreference.text} )"
+            } else {
+                editTextPreference!!.summary = editTextPreference.text
+            }
         }
 
         if (key == getString(R.string.shared_preferences_current_state_key)) {

@@ -40,7 +40,8 @@ data class UFServiceConfiguration(
         private val isApiMode: Boolean,
         private val isEnable: Boolean,
         val isUpdateFactoryServe: Boolean,
-        val targetAttributes: Map<String, String>
+        val targetAttributes: Map<String, String>,
+        val scheduleUpdate: String
 ) : java.io.Serializable {
 
     private val apiMode: Boolean = false
@@ -84,6 +85,7 @@ data class UFServiceConfiguration(
         private var targetToken: String? = ""
         private var gatewayToken: String? = ""
         private var targetAttributes: Map<String, String> = mutableMapOf()
+        private var scheduleUpdate: String = "* * * ? * *"
         /**
          * Configure the tenant parameter
          */
@@ -200,6 +202,14 @@ data class UFServiceConfiguration(
         }
 
         /**
+         * Configure the schedule update parameter
+         */
+        fun withScheduleUpdate(expression: String): Builder {
+            this.scheduleUpdate = expression
+            return this
+        }
+
+        /**
          * Build an instance of UFServiceConfigure with the configured parameters
          *
          * @throws IllegalStateException when the retryDelay parameter is lower then 0
@@ -213,7 +223,7 @@ data class UFServiceConfiguration(
                     targetToken ?: "",
                     gatewayToken ?: "",
                     apiMode, enable, isUpdateFactoryServer,
-                    targetAttributes)
+                    targetAttributes, scheduleUpdate)
         }
 
         /**
@@ -280,6 +290,7 @@ data class UFServiceConfiguration(
         if (isEnable() != other.isEnable()) return false
         if (isUpdateFactoryServe != other.isUpdateFactoryServe) return false
         if (targetAttributes != other.targetAttributes) return false
+        if(scheduleUpdate != other.scheduleUpdate) return false
         return true
     }
 
@@ -293,6 +304,7 @@ data class UFServiceConfiguration(
         result = 31 * result + isEnable().hashCode()
         result = 31 * result + isUpdateFactoryServe.hashCode()
         result = 31 * result + targetAttributes.hashCode()
+        result = 31 * result + scheduleUpdate.hashCode()
         return result
     }
 }
