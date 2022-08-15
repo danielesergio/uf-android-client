@@ -28,7 +28,8 @@ fun MessageListener.Message.toUFMessage(): UFServiceMessageV1 {
 
         is MessageListener.Message.Event.Error -> UFServiceMessageV1.Event.Error(details)
         is MessageListener.Message.Event.Polling -> UFServiceMessageV1.Event.Polling
-        is MessageListener.Message.Event.AllFilesDownloaded -> UFServiceMessageV1.Event.AllFilesDownloaded
+        //fixme Handle NoUpdate message event
+        is MessageListener.Message.Event.AllFilesDownloaded, is MessageListener.Message.Event.NoUpdate -> UFServiceMessageV1.Event.AllFilesDownloaded
         is MessageListener.Message.Event.StartDownloadFile -> UFServiceMessageV1.Event.StartDownloadFile(fileName)
         is MessageListener.Message.Event.DownloadProgress -> UFServiceMessageV1.Event.DownloadProgress(fileName, percentage)
         is MessageListener.Message.Event.FileDownloaded -> UFServiceMessageV1.Event.FileDownloaded(fileDownloaded)
