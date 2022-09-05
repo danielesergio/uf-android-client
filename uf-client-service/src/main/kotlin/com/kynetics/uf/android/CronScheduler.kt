@@ -12,18 +12,18 @@ object CronScheduler {
 
     private var authJob: Job? = null
 
-    fun schedule(timeWindows: UFServiceConfiguration.TimeWindows, authorize:()->Unit){
+    fun schedule(timeWindows: UFServiceConfiguration.TimeWindows, action:()->Unit){
         with(ExecutionTime.forCron(HaraCronParser.parse(timeWindows.cronExpression))){
             val now: ZonedDateTime = ZonedDateTime.now()
             val nextExecution = nextExecution(now).get()
             val lastExecution = lastExecution(now).get()
             authJob?.cancel()
             if(isNowOnValidTimeWindow(lastExecution.toLocalTime(), lastExecution.plusSeconds(timeWindows.windowSize).toLocalTime())){
-                authorize()
+                action()
             }else{
                 authJob = GlobalScope.launch(Dispatchers.IO) {
                     delay(Duration.between(now, nextExecution).toMillis())
-                    authorize()
+                    action()
                 }
             }
         }
