@@ -13,8 +13,7 @@ abstract class EditTextValidator(private val editText: EditText) : TextWatcher {
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
     final override fun afterTextChanged(s: Editable?) {
-        val text = editText.text.toString()
-        validate(text)
+        validate(s?.toString() ?: "")
             .onFailure { error ->
                 editText.error = error.message
             }
