@@ -61,13 +61,11 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     private var systemUpdateType: SystemUpdateType = SystemUpdateType.SINGLE_COPY
 
     var softDeploymentPermitProvider: AndroidDeploymentPermitProvider? = null
-    var forceDeploymentPermitProvider: AndroidForceDeploymentPermitProvider? = null
     private var messageListener: MessageListener? = null
 
     override fun configureService() {
         if(ufService == null){
-            forceDeploymentPermitProvider = AndroidForceDeploymentPermitProvider.build(configurationHandler!!)
-            ufService = RestartableClientService.newInstance(softDeploymentPermitProvider!!,forceDeploymentPermitProvider!!, listOf(messageListener!!))
+            ufService = RestartableClientService.newInstance(softDeploymentPermitProvider!!, listOf(messageListener!!))
         }
         when {
             configurationHandler!=null -> {

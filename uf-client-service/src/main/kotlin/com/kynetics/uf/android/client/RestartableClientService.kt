@@ -10,6 +10,7 @@
 package com.kynetics.uf.android.client
 
 import android.util.Log
+import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 import kotlinx.coroutines.*
 import org.eclipse.hara.ddiclient.api.DeploymentPermitProvider
@@ -18,8 +19,7 @@ import org.eclipse.hara.ddiclient.api.MessageListener
 
 class RestartableClientService constructor(
     private val client: UpdateFactoryClientWrapper,
-    private val  softDeploymentPermitProvider: DeploymentPermitProvider,
-    private val forceDeploymentPermitProvider: DeploymentPermitProvider,
+    private val softDeploymentPermitProvider: DeploymentPermitProvider,
     listeners: List<MessageListener>): HaraClient by client{
     private var currentState:MessageListener.Message.State? = null
     private val _listeners:List<MessageListener> = listOf(
@@ -39,11 +39,10 @@ class RestartableClientService constructor(
     companion object{
         val TAG: String = RestartableClientService::class.java.simpleName
         fun newInstance(
-            softDeploymentPermitProvider: DeploymentPermitProvider, forceDeploymentPermitProvider: DeploymentPermitProvider, listeners: List<MessageListener>): RestartableClientService {
+            softDeploymentPermitProvider: DeploymentPermitProvider, listeners: List<MessageListener>): RestartableClientService {
             return RestartableClientService(
                     UpdateFactoryClientWrapper(null),
                     softDeploymentPermitProvider,
-                    forceDeploymentPermitProvider,
                     listeners)
         }
     }
@@ -56,7 +55,8 @@ class RestartableClientService constructor(
         }
         Log.d(TAG, "Restarting service")
         client.stop()
-        client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, forceDeploymentPermitProvider, _listeners)
+        client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, AndroidForceDeploymentPermitProvider.build(
+            conf.getCurrentConfiguration().updateWindows), _listeners)
         client.startAsync()
         Log.d(TAG, "Service restarted")
 
