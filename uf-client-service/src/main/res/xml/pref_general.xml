@@ -82,10 +82,20 @@
         android:key="@string/shared_preferences_system_update_type_key"
         android:title="@string/shared_preferences_system_update_type_title" />
 
-    <com.kynetics.uf.android.ui.preferences.EditTextValidateSchedulePreference
-        android:key="@string/shared_preferences_schedule_update_key"
-        android:title="@string/shared_preferences_schedule_update_title"
-        android:maxLines="1"
-        android:selectAllOnFocus="true" />
+    <PreferenceCategory
+        android:title="@string/force_update_label">
+        <com.kynetics.uf.android.ui.preferences.EditTextValidateSchedulePreference
+            android:key="@string/shared_preferences_schedule_update_cron_expresison_key"
+            android:title="@string/shared_preferences_schedule_update_title"
+            android:maxLines="1"
+            android:selectAllOnFocus="true" />
+
+        <EditTextPreference
+            android:defaultValue="3600"
+            android:title="@string/time_windows_size_label"
+            android:inputType="number"
+            android:key="@string/shared_preferences_schedule_update_windows_size_key" />
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

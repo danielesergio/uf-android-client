@@ -279,17 +279,17 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
                     MessageHandler.Action.AUTH_DOWNLOAD_DENIED
             ) {
                 override val extra = MainActivity.INTENT_TYPE_EXTRA_VALUE_DOWNLOAD
-                override val event = MessageListener.Message.State.WaitingDownloadAuthorization
+                override val event = "WaitingDownloadAuthorization"
             },
 
             UPDATE(MessageHandler.Action.AUTH_UPDATE_GRANTED,
                     MessageHandler.Action.AUTH_UPDATE_DENIED) {
                 override val extra: Int = MainActivity.INTENT_TYPE_EXTRA_VALUE_REBOOT
-                override val event = MessageListener.Message.State.WaitingUpdateAuthorization
+                override val event = "WaitingUpdateAuthorization"
             };
 
             abstract val extra: Int
-            abstract val event: MessageListener.Message.State
+            abstract val event: String
         }
 
         @JvmStatic

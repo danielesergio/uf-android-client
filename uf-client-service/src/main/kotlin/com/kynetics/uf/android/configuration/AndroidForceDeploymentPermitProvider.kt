@@ -1,6 +1,7 @@
 package com.kynetics.uf.android.configuration
 
 import com.kynetics.uf.android.CronScheduler
+import com.kynetics.uf.android.api.UFServiceConfiguration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import org.eclipse.hara.ddiclient.api.DeploymentPermitProvider
@@ -9,7 +10,7 @@ interface AndroidForceDeploymentPermitProvider: DeploymentPermitProvider {
 
     companion object{
 
-        fun build(configurationHandler: ConfigurationHandler):AndroidForceDeploymentPermitProvider{
+        fun build(timeWindows: UFServiceConfiguration.TimeWindows):AndroidForceDeploymentPermitProvider{
             return object : AndroidForceDeploymentPermitProvider{
 
                 private var forceResponse = CompletableDeferred<Boolean>()
@@ -18,9 +19,7 @@ interface AndroidForceDeploymentPermitProvider: DeploymentPermitProvider {
                     forceResponse.complete(false)
                     forceResponse = CompletableDeferred()
 
-                    val cronExpression = configurationHandler.getScheduleUpdate()
-
-                    CronScheduler.schedule(cronExpression!!){
+                    CronScheduler.schedule(timeWindows){
                         forceResponse.complete(true)
                     }
 

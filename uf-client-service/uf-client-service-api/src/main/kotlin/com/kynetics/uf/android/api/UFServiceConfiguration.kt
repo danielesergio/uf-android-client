@@ -41,8 +41,19 @@ data class UFServiceConfiguration(
         private val isEnable: Boolean,
         val isUpdateFactoryServe: Boolean,
         val targetAttributes: Map<String, String>,
-        val scheduleUpdate: String
+        val updateWindows: TimeWindows
 ) : java.io.Serializable {
+
+    @Serializable
+    data class TimeWindows(
+        val cronExpression:String = ALWAYS,
+        val windowSize: Long = DEFAULT_WINDOW_SIZE
+    ): java.io.Serializable {
+        companion object{
+            const val ALWAYS:String = "* * * ? * *"
+            const val DEFAULT_WINDOW_SIZE: Long = 3600
+        }
+    }
 
     private val apiMode: Boolean = false
     private val enable: Boolean  = false
@@ -85,7 +96,7 @@ data class UFServiceConfiguration(
         private var targetToken: String? = ""
         private var gatewayToken: String? = ""
         private var targetAttributes: Map<String, String> = mutableMapOf()
-        private var scheduleUpdate: String = "* * * ? * *"
+        private var forceUpdateWindows: TimeWindows = TimeWindows()
         /**
          * Configure the tenant parameter
          */
@@ -202,10 +213,10 @@ data class UFServiceConfiguration(
         }
 
         /**
-         * Configure the schedule update parameter
+         * Configure the update windows for force update
          */
-        fun withScheduleUpdate(expression: String): Builder {
-            this.scheduleUpdate = expression
+        fun withForceUpdateWindows(timeWindows: TimeWindows): Builder {
+            this.forceUpdateWindows = timeWindows
             return this
         }
 
@@ -223,7 +234,7 @@ data class UFServiceConfiguration(
                     targetToken ?: "",
                     gatewayToken ?: "",
                     apiMode, enable, isUpdateFactoryServer,
-                    targetAttributes, scheduleUpdate)
+                    targetAttributes, forceUpdateWindows)
         }
 
         /**
@@ -290,7 +301,7 @@ data class UFServiceConfiguration(
         if (isEnable() != other.isEnable()) return false
         if (isUpdateFactoryServe != other.isUpdateFactoryServe) return false
         if (targetAttributes != other.targetAttributes) return false
-        if(scheduleUpdate != other.scheduleUpdate) return false
+        if(updateWindows != other.updateWindows) return false
         return true
     }
 
@@ -304,7 +315,7 @@ data class UFServiceConfiguration(
         result = 31 * result + isEnable().hashCode()
         result = 31 * result + isUpdateFactoryServe.hashCode()
         result = 31 * result + targetAttributes.hashCode()
-        result = 31 * result + scheduleUpdate.hashCode()
+        result = 31 * result + updateWindows.hashCode()
         return result
     }
 }

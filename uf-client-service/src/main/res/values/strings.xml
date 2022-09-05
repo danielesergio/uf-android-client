@@ -54,7 +54,10 @@
     <string name="update_factory_label">Update Factory</string>
     <string name="shared_preferences_system_update_type_key">SYSTEM_UPDATE_TYPE_KEY</string>
     <string name="shared_preferences_system_update_type_title">System Update Type</string>
-    <string name="shared_preferences_schedule_update_key">SCHEDULE_UPDATE_KEY</string>
+    <string name="shared_preferences_schedule_update_cron_expresison_key">SCHEDULE_UPDATE_KEY</string>
     <string name="shared_preferences_schedule_update_title">Schedule Update</string>
+    <string name="shared_preferences_schedule_update_windows_size_key">SCHEDULE_UPDATE_WINDOWS_SIZE</string>
+    <string name="force_update_label">Force update</string>
+    <string name="time_windows_size_label">Time windows duration in seconds</string>
 
 </resources>
