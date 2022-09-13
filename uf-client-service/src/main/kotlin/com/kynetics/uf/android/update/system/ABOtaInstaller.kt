@@ -249,8 +249,7 @@ internal object ABOtaInstaller : OtaInstaller {
                     percentage = currentPhaseProgress
                 ))
 
-                MessengerHandler.sendMessage(Communication.V1.Out.ServiceNotification.ID)
-                while (currentPhaseProgress >= queue.peek() ?: 1.0 && queue.isNotEmpty()) {
+                while (currentPhaseProgress >= (queue.peek() ?: 1.0) && queue.isNotEmpty()) {
                     queue.poll()
                 }
             }

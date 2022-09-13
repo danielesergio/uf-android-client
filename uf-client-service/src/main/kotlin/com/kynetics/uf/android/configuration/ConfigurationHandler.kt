@@ -141,7 +141,6 @@ data class ConfigurationHandler(
             } catch (e: RuntimeException) {
                 newService = null
                 MessengerHandler.onConfigurationError(listOf(e.message ?: "Error"))
-                MessengerHandler.sendMessage(Communication.V1.Out.ServiceNotification.ID)
                 Log.e(TAG, e.message, e)
             }
         }

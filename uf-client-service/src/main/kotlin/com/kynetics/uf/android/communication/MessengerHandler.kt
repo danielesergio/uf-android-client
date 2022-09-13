@@ -39,15 +39,18 @@ object MessengerHandler {
 
     fun onAction(action: MessageHandler.Action) = updateMessage { mh -> mh.onAction(action) }
 
-    fun onMessageReceived(msg: MessageListener.Message) = updateMessage { mh -> mh.onMessage(msg) }
+    fun onMessageReceived(msg: MessageListener.Message) = updateMessageAndNotify { mh -> mh.onMessage(msg) }
 
-    fun onConfigurationError(details: List<String>) = updateMessage{ mh -> mh.onConfigurationError(details)}
+    fun onConfigurationError(details: List<String>) = updateMessageAndNotify{ mh -> mh.onConfigurationError(details)}
 
-    fun onAndroidMessage(msg: UFServiceMessageV1) = updateMessage { mh -> mh.onAndroidMessage( msg) }
+    fun onAndroidMessage(msg: UFServiceMessageV1) = updateMessageAndNotify { mh -> mh.onAndroidMessage( msg) }
 
     private fun updateMessage(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) = lastSharedMessagesByVersion.forEach {
         lastSharedMessagesByVersion[it.key] = map(it.value)
     }
+
+    private fun updateMessageAndNotify(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) =
+        updateMessage(map).also { sendMessage(Communication.V1.Out.ServiceNotification.ID) }
 
     internal fun sendMessage(messageContent: Serializable?, code: Int, messenger: Messenger?) {
         if (messenger == null) {
