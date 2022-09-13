@@ -50,22 +50,22 @@ object MessengerHandler {
     }
 
     private fun updateMessageAndNotify(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) =
-        updateMessage(map).also { sendMessage(Communication.V1.Out.ServiceNotification.ID) }
+        updateMessage(map).also { sendBroadcastMessage(Communication.V1.Out.ServiceNotification.ID) }
 
-    internal fun sendMessage(messageContent: Serializable?, code: Int, messenger: Messenger?) {
-        if (messenger == null) {
+    internal fun response(messageContent: Serializable?, code: Int, replyTo: Messenger?) {
+        if (replyTo == null) {
             Log.i(TAG, "Response isn't' sent because there isn't a receiver (replyTo is null)")
             return
         }
         val message = getMessage(messageContent, code)
         try {
-            messenger.send(message)
+            replyTo.send(message)
         } catch (e: RemoteException) {
             e.printStackTrace()
         }
     }
 
-    internal fun sendMessage(messageCode: Int, message: Serializable? = null) {
+    internal fun sendBroadcastMessage(messageCode: Int, message: Serializable? = null) {
         mClients.keys.filter { hasMessage(mClients.getValue(it)) }
                 .forEach { messenger ->
                     try {

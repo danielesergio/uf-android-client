@@ -35,7 +35,7 @@ interface AndroidDeploymentPermitProvider : DeploymentPermitProvider {
 
                 private fun allowedAsync(auth: UpdateFactoryService.Companion.AuthorizationType): Deferred<Boolean> {
                     if (configurationHandler.apiModeIsEnabled()) {
-                        MessengerHandler.sendMessage(Communication.V1.Out.AuthorizationRequest.ID, auth.name)
+                        MessengerHandler.sendBroadcastMessage(Communication.V1.Out.AuthorizationRequest.ID, auth.name)
                     } else {
                         showAuthorizationDialog(auth)
                     }

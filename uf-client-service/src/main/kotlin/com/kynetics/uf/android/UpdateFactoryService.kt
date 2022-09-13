@@ -30,7 +30,6 @@ import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.MessageHandler
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
-import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.AndroidMessageListener
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
@@ -178,14 +177,14 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
                 return
             }
 
-            MessengerHandler.sendMessage(
+            MessengerHandler.response(
                     configurationHandler?.getCurrentConfiguration(),
                     Communication.V1.Out.CurrentServiceConfiguration.ID,
                     msg.replyTo
             )
             val api = ApiCommunicationVersion.fromVersionCode(msg.data.getInt(SERVICE_API_VERSION_KEY, 0))
             if (MessengerHandler.hasMessage(api)) {
-                MessengerHandler.sendMessage(
+                MessengerHandler.response(
                         MessengerHandler.getlastSharedMessage(api).messageToSendOnSync,
                         Communication.V1.Out.ServiceNotification.ID,
                         msg.replyTo
