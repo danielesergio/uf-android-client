@@ -37,28 +37,18 @@ object MessengerHandler {
         return lastSharedMessagesByVersion.getValue(version).hasMessage()
     }
 
-    fun onAction(action: MessageHandler.Action) {
-        lastSharedMessagesByVersion.forEach {
-            lastSharedMessagesByVersion[it.key] = it.value.onAction(action)
-        }
+    fun onAction(action: MessageHandler.Action) = updateMessage { mh -> mh.onAction(action) }
+
+    fun onMessageReceived(msg: MessageListener.Message) = updateMessage { mh -> mh.onMessage(msg) }
+
+    fun onConfigurationError(details: List<String>) = updateMessage{ mh -> mh.onConfigurationError(details)}
+
+    fun onAndroidMessage(msg: UFServiceMessageV1) = updateMessage { mh -> mh.onAndroidMessage( msg) }
+
+    private fun updateMessage(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) = lastSharedMessagesByVersion.forEach {
+        lastSharedMessagesByVersion[it.key] = map(it.value)
     }
 
-    fun onMessageReceived(msg: MessageListener.Message) {
-        lastSharedMessagesByVersion.forEach {
-            lastSharedMessagesByVersion[it.key] = it.value.onMessage(msg)
-        }
-    }
-
-    fun onConfigurationError(details: List<String>) {
-        lastSharedMessagesByVersion.forEach {
-            lastSharedMessagesByVersion[it.key] = it.value.onConfigurationError(details)
-        }
-    }
-    fun onAndroidMessage(msg: UFServiceMessageV1) {
-        lastSharedMessagesByVersion.forEach {
-            lastSharedMessagesByVersion[it.key] = it.value.onAndroidMessage(msg)
-        }
-    }
     internal fun sendMessage(messageContent: Serializable?, code: Int, messenger: Messenger?) {
         if (messenger == null) {
             Log.i(TAG, "Response isn't' sent because there isn't a receiver (replyTo is null)")
