@@ -27,7 +27,7 @@ abstract class AbstractCommunicationApi(
 ):GenericCommunicationApi {
 
     protected abstract val api: ApiCommunicationVersion
-    //        val api = ApiCommunicationVersion.fromVersionCode(msg.data.getInt(SERVICE_API_VERSION_KEY, 0))
+
     companion object{
         val TAG:String = AbstractCommunicationApi::class.java.simpleName
     }
