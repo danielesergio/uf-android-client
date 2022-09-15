@@ -15,10 +15,9 @@ import android.util.Log
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfiguration
-import com.kynetics.uf.android.configuration.ConfigurationHandler
-import com.kynetics.uf.android.api.Communication.Companion.SERVICE_API_VERSION_KEY
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
+import com.kynetics.uf.android.configuration.ConfigurationHandler
 
 abstract class AbstractCommunicationApi(
     private val configurationHandler: ConfigurationHandler,
@@ -33,10 +32,12 @@ abstract class AbstractCommunicationApi(
     }
 
     override fun subscribeClient(messenger: Messenger?, apiVersion: ApiCommunicationVersion) {
+        Log.i(TAG, "receive subscription request")
         MessengerHandler.subscribeClient(messenger, apiVersion)
     }
 
     override fun unsubscribeClient(messenger: Messenger?) {
+        Log.i(TAG, "receive un-subscription request")
         MessengerHandler.unsubscribeClient(messenger)
     }
 
@@ -65,6 +66,7 @@ abstract class AbstractCommunicationApi(
     }
 
     override fun forcePing() {
+        Log.i(TAG, "receive request to resume suspend state")
         ufService.forcePing()
     }
 
@@ -102,23 +104,13 @@ abstract class AbstractCommunicationApi(
         when (msg.what) {
             Communication.V1.In.ConfigureService.ID -> configureService(msg)
 
-            Communication.V1.In.RegisterClient.ID -> {
-                Log.i(TAG, "receive subscription request")
-                subscribeClient(msg.replyTo, ApiCommunicationVersion.fromVersionCode(msg.data.getInt(
-                    SERVICE_API_VERSION_KEY, 0)))
-            }
+            Communication.V1.In.RegisterClient.ID -> subscribeClient(msg.replyTo, api)
 
-            Communication.V1.In.UnregisterClient.ID -> {
-                Log.i(TAG, "receive un-subscription request")
-                unsubscribeClient(msg.replyTo)
-            }
+            Communication.V1.In.UnregisterClient.ID -> unsubscribeClient(msg.replyTo)
 
             Communication.V1.In.AuthorizationResponse.ID -> authorizationResponse(msg)
 
-            Communication.V1.In.ForcePing.id -> {
-                Log.i(TAG, "receive request to resume suspend state")
-                forcePing()
-            }
+            Communication.V1.In.ForcePing.id -> forcePing()
 
             Communication.V1.In.Sync.ID -> sync(msg.replyTo)
 
