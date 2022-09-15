@@ -58,7 +58,11 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
 
     var softDeploymentPermitProvider: AndroidDeploymentPermitProvider? = null
     private var messageListener: MessageListener? = null
-    
+
+    private var sharedPreferencesFile: String? = null
+    private var configurationHandler: ConfigurationHandler? = null
+    private var ufService: RestartableClientService? = null
+
     private val api: CommunicationApi by lazy {
         CommunicationFacade.newInstance(
             configurationHandler!!,
@@ -66,7 +70,6 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             softDeploymentPermitProvider!!
         )
     }
-
     override fun configureService() {
         if(ufService == null){
             ufService = RestartableClientService.newInstance(softDeploymentPermitProvider!!, listOf(messageListener!!))
@@ -219,9 +222,6 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
         @JvmStatic
         var ufServiceCommand: UpdateFactoryServiceCommand? = null
         private const val FORCE_PING_ACTION = "ForcePing"
-        private var sharedPreferencesFile: String? = null
-        private var configurationHandler: ConfigurationHandler? = null
-        private var ufService: RestartableClientService? = null
         private const val CHANNEL_ID = "UPDATE_FACTORY_NOTIFICATION_CHANNEL_ID"
         const val NOTIFICATION_ID = 1
         private val TAG = UpdateFactoryService::class.java.simpleName
