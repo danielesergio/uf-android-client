@@ -20,13 +20,10 @@ import android.content.IntentFilter
 import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.kynetics.uf.android.api.ApiCommunicationVersion
-import com.kynetics.uf.android.api.Communication
-import com.kynetics.uf.android.api.Communication.Companion.SERVICE_API_VERSION_KEY
-import com.kynetics.uf.android.api.Communication.V1.Companion.SERVICE_DATA_KEY
-import com.kynetics.uf.android.api.UFServiceConfiguration
 import com.kynetics.uf.android.apicomptibility.ApiVersion
 import com.kynetics.uf.android.client.RestartableClientService
+import com.kynetics.uf.android.communication.CommunicationApi
+import com.kynetics.uf.android.communication.CommunicationFacade
 import com.kynetics.uf.android.communication.MessageHandler
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
@@ -61,6 +58,14 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
 
     var softDeploymentPermitProvider: AndroidDeploymentPermitProvider? = null
     private var messageListener: MessageListener? = null
+    
+    private val api: CommunicationApi by lazy {
+        CommunicationFacade.newInstance(
+            configurationHandler!!,
+            ufService!!,
+            softDeploymentPermitProvider!!
+        )
+    }
 
     override fun configureService() {
         if(ufService == null){
@@ -143,97 +148,9 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
             }
         }
         override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                Communication.V1.In.ConfigureService.ID -> configureServiceFromMsg(msg)
-
-                Communication.V1.In.RegisterClient.ID -> {
-                    Log.i(TAG, "receive subscription request")
-                    MessengerHandler.subscribeClient(msg.replyTo, ApiCommunicationVersion.fromVersionCode(msg.data.getInt(SERVICE_API_VERSION_KEY, 0)))
-                }
-
-                Communication.V1.In.UnregisterClient.ID -> {
-                    Log.i(TAG, "receive unsubscription request")
-                    MessengerHandler.unsubscribeClient(msg.replyTo)
-                }
-
-                Communication.V1.In.AuthorizationResponse.ID -> authorizationResponse(msg)
-
-                Communication.V1.In.ForcePing.id -> {
-                    Log.i(TAG, "receive request to resume suspend state")
-                    ufService?.forcePing()
-                }
-
-                Communication.V1.In.Sync.ID -> sync(msg)
-
-                else -> Log.i(TAG, "Invalid message receive (what == ${msg.what})")
-            }
+            updateFactoryServiceRef.execute { api.onMessage(msg) }
         }
 
-        private fun sync(msg: Message) {
-            Log.i(TAG, "received sync request")
-
-            if (msg.replyTo == null) {
-                Log.i(TAG, "command ignored because field replyTo is null")
-                return
-            }
-
-            MessengerHandler.response(
-                    configurationHandler?.getCurrentConfiguration(),
-                    Communication.V1.Out.CurrentServiceConfiguration.ID,
-                    msg.replyTo
-            )
-            val api = ApiCommunicationVersion.fromVersionCode(msg.data.getInt(SERVICE_API_VERSION_KEY, 0))
-            if (MessengerHandler.hasMessage(api)) {
-                MessengerHandler.response(
-                        MessengerHandler.getlastSharedMessage(api).messageToSendOnSync,
-                        Communication.V1.Out.ServiceNotification.ID,
-                        msg.replyTo
-                )
-            }
-            Log.i(TAG, "client synced")
-        }
-
-        private fun authorizationResponse(msg: Message) {
-            Log.i(TAG, "receive authorization response")
-            if(!msg.data.containsKey(SERVICE_DATA_KEY)){
-                Log.i(TAG, "Invalid authorization response message received")
-                return
-            }
-            val response = msg.data.getBoolean(SERVICE_DATA_KEY)
-            updateFactoryServiceRef.execute {
-                softDeploymentPermitProvider?.allow(response)
-            }
-            Log.i(TAG, String.format("authorization %s", if (response) "granted" else "denied"))
-        }
-
-        private fun configureServiceFromMsg(msg: Message) {
-            Log.i(TAG, "receive configuration update request")
-            val configuration =  try{
-                if(!msg.data.containsKey(SERVICE_DATA_KEY)){
-                    Log.i(TAG, "Invalid configuration message received (no configuration found)")
-                    return
-                }
-                msg.data.getSerializable(SERVICE_DATA_KEY) as UFServiceConfiguration
-            } catch (e:Throwable){
-                Log.i(TAG, "Invalid configuration message received; Error on configuration deserialize.")
-                return
-            }
-            val currentConf = configurationHandler?.getCurrentConfiguration()
-
-            if (currentConf != configuration) {
-                configurationHandler?.saveServiceConfigurationToSharedPreferences(configuration)
-                Log.i(TAG, "configuration updated")
-            } else {
-                Log.i(TAG, "new configuration equals to current configuration")
-            }
-
-            if (configurationHandler?.needReboot(currentConf) == true) {
-                updateFactoryServiceRef.execute { configureService() }
-                Log.i(TAG, "configuration updated - restarting service")
-            } else {
-                Log.i(TAG, "configuration updated - service not restarted")
-            }
-        }
     }
 
     override fun onBind(intent: Intent): IBinder? {
