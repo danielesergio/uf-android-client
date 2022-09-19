@@ -1,7 +1,8 @@
 package com.kynetics.uf.android
 
+import android.util.Log
 import com.cronutils.model.time.ExecutionTime
-import com.kynetics.uf.android.api.UFServiceConfiguration
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import kotlinx.coroutines.*
 import java.time.Duration
 import java.time.LocalTime
@@ -9,27 +10,38 @@ import java.time.ZonedDateTime
 
 @OptIn(DelicateCoroutinesApi::class)
 object CronScheduler {
+    private val TAG:String = CronScheduler::class.java.simpleName
 
     private var authJob: Job? = null
 
-    fun schedule(timeWindows: UFServiceConfiguration.TimeWindows, action:()->Unit){
+    fun schedule(timeWindows: UFServiceConfigurationV2.TimeWindows, action:()->Unit){
         with(ExecutionTime.forCron(HaraCronParser.parse(timeWindows.cronExpression))){
             val now: ZonedDateTime = ZonedDateTime.now()
-            val nextExecution = nextExecution(now).get()
-            val lastExecution = lastExecution(now).get()
+            val nextExecution = nextExecution(now)
+            val lastExecution = lastExecution(now)
             authJob?.cancel()
-            if(isNowOnValidTimeWindow(lastExecution.toLocalTime(), lastExecution.plusSeconds(timeWindows.windowSize).toLocalTime())){
-                action()
-            }else{
-                authJob = GlobalScope.launch(Dispatchers.IO) {
-                    delay(Duration.between(now, nextExecution).toMillis())
-                    action()
+            when{
+                lastExecution.isPresent &&
+                        isNowOnValidTimeWindow(
+                            now.toLocalTime(),
+                            lastExecution.get().toLocalTime(),
+                            lastExecution.get().plusSeconds(timeWindows.windowSize).toLocalTime()) ->{
+                                action()
+                            }
+                nextExecution.isPresent -> {
+                    authJob = GlobalScope.launch(Dispatchers.IO) {
+                        delay(Duration.between(now, nextExecution.get()).toMillis())
+                        action()
+                    }
+                }
+                else -> {
+                    Log.w(TAG, "Next execution not exist")
                 }
             }
         }
     }
 
-    private fun isNowOnValidTimeWindow(last: LocalTime, next: LocalTime) : Boolean{
-        return LocalTime.now().isAfter(last) && LocalTime.now().isBefore(next)
+    private fun isNowOnValidTimeWindow(now:LocalTime, last: LocalTime, next: LocalTime) : Boolean{
+        return now.isAfter(last) && now.isBefore(next)
     }
 }
