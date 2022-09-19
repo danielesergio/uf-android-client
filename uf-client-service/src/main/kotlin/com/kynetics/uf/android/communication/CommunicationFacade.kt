@@ -53,7 +53,7 @@ class CommunicationFacade private constructor(
                         softDeploymentPermitProvider
                     ),
 
-                    ApiCommunicationVersion.V1 to CommunicationApiV0_1Impl(
+                    ApiCommunicationVersion.V1 to CommunicationApiV1Impl(
                         configurationHandler,
                         restartableClientService,
                         softDeploymentPermitProvider
