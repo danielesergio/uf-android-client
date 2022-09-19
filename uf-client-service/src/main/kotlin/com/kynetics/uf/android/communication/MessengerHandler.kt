@@ -26,7 +26,8 @@ object MessengerHandler {
 
     private val lastSharedMessagesByVersion = mutableMapOf(
             ApiCommunicationVersion.V0_1 to V0(),
-            ApiCommunicationVersion.V1 to V1()
+            ApiCommunicationVersion.V1 to V1(),
+            ApiCommunicationVersion.V1_1 to V1()
     )
 
     private val mClients = mutableMapOf<Messenger, ApiCommunicationVersion>()

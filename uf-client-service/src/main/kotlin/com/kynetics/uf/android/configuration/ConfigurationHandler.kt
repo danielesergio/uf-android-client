@@ -17,9 +17,9 @@ import com.kynetics.uf.android.BuildConfig
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.Communication
-import com.kynetics.uf.android.api.UFServiceConfiguration
-import com.kynetics.uf.android.api.UFServiceConfiguration.TimeWindows.Companion.ALWAYS
-import com.kynetics.uf.android.api.UFServiceConfiguration.TimeWindows.Companion.DEFAULT_WINDOW_SIZE
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
+import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.ALWAYS
+import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.DEFAULT_WINDOW_SIZE
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.update.CurrentUpdateState
@@ -37,24 +37,17 @@ import java.util.*
 data class ConfigurationHandler(
     private val context: UpdateFactoryService,
     private val sharedPreferences: UFSharedPreferences
-) {
+):ConfigurationLoaderFromIntent {
 
-    fun getConfigurationFromFile(): UFServiceConfiguration? = configurationFile.newFileConfiguration
+    fun getConfigurationFromFile(): UFServiceConfigurationV2? = configurationFile.newFileConfiguration
 
-    fun getServiceConfigurationFromIntent(intent: Intent): UFServiceConfiguration? {
+    override fun getServiceConfigurationFromIntent(intent: Intent): UFServiceConfigurationV2? {
         Log.i(TAG, "Loading new configuration from intent")
-        val serializable = intent.getSerializableExtra(Communication.V1.SERVICE_DATA_KEY)
         val string = intent.getStringExtra(Communication.V1.SERVICE_DATA_KEY)
         return try {
             when {
-
-                serializable is String -> UFServiceConfiguration.fromJson(serializable)
-
-                serializable is UFServiceConfiguration -> serializable
-
-                string != null -> UFServiceConfiguration.fromJson(string)
-
-                else -> null
+                string != null -> UFServiceConfigurationV2.fromJson(string)
+                else -> super.getServiceConfigurationFromIntent(intent)
             }
         } catch (e: Throwable) {
             Log.w(TAG, "Deserialization error", e)
@@ -69,7 +62,7 @@ data class ConfigurationHandler(
     }
 
     fun saveServiceConfigurationToSharedPreferences(
-        configuration: UFServiceConfiguration?
+        configuration: UFServiceConfigurationV2?
     ) {
         if (configuration == null) {
             return
@@ -85,8 +78,8 @@ data class ConfigurationHandler(
             putString(sharedPreferencesTargetToken, configuration.targetToken)
             putString(sharedPreferencesCronExpression, configuration.updateWindows.cronExpression)
             putLong(sharedPreferencesUpdateWindowSize, configuration.updateWindows.windowSize)
-            putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode())
-            putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable())
+            putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode)
+            putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable)
             putBoolean(sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)
             apply()
         }
@@ -94,19 +87,20 @@ data class ConfigurationHandler(
         sharedPreferences.putAndCommitObject(sharedPreferencesTargetAttributes, configuration.targetAttributes)
     }
 
-    fun getCurrentConfiguration(): UFServiceConfiguration {
+    fun getCurrentConfiguration(): UFServiceConfigurationV2 {
         return with(sharedPreferences){
-            UFServiceConfiguration.builder()
-                    .withTargetAttributes(getTargetAttributes())
-                    .withEnable(getBoolean(sharedPreferencesServiceEnableKey, false))
-                    .withApiMode(getBoolean(sharedPreferencesApiModeKey, true))
-                    .withControllerId(getString(sharedPreferencesControllerIdKey, ""))
-                    .withGatewayToken(getString(sharedPreferencesGatewayToken, ""))
-                    .withTargetToken(getTargetToken())
-                    .withTenant(getString(sharedPreferencesTenantKey, ""))
-                    .withUrl(getString(sharedPreferencesServerUrlKey, ""))
-                    .withForceUpdateWindows(UFServiceConfiguration.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesUpdateWindowSize, "$DEFAULT_WINDOW_SIZE")!!.toLong()))
-                    .build()
+            UFServiceConfigurationV2(
+                tenant = getString(sharedPreferencesTenantKey, "")!!,
+                controllerId = getString(sharedPreferencesControllerIdKey, "")!!,
+                url = getString(sharedPreferencesServerUrlKey, "")!!,
+                targetToken = getTargetToken(),
+                gatewayToken = getString(sharedPreferencesGatewayToken, "")!!,
+                isApiMode = getBoolean(sharedPreferencesApiModeKey, true),
+                isEnable = getBoolean(sharedPreferencesServiceEnableKey, false),
+                isUpdateFactoryServe = getBoolean(sharedPreferencesIsUpdateFactoryServerType, true),
+                targetAttributes = getTargetAttributes(),
+                updateWindows = UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesUpdateWindowSize, "$DEFAULT_WINDOW_SIZE")!!.toLong())
+            )
         }
     }
 
@@ -119,7 +113,7 @@ data class ConfigurationHandler(
         }
     }
 
-    private fun isTargetTokenReceivedFromServerOld(newConf: UFServiceConfiguration):Boolean{
+    private fun isTargetTokenReceivedFromServerOld(newConf: UFServiceConfigurationV2):Boolean{
         val currentConf = getCurrentConfiguration()
         return currentConf.controllerId != newConf.controllerId
                 || currentConf.tenant != newConf.tenant
@@ -135,7 +129,7 @@ data class ConfigurationHandler(
     ): HaraClient? {
         val serviceConfiguration = getCurrentConfiguration()
         var newService: HaraClient? = null
-        if (serviceConfiguration.isEnable()) {
+        if (serviceConfiguration.isEnable) {
             try {
                 newService = serviceConfiguration.toService(softDeploymentPermitProvider, forceDeploymentPermitProvider, listeners)
             } catch (e: RuntimeException) {
@@ -147,10 +141,10 @@ data class ConfigurationHandler(
         return newService
     }
 
-    fun needReboot(oldConf:UFServiceConfiguration?): Boolean {
+    fun needReboot(oldConf: UFServiceConfigurationV2?): Boolean {
         val newConf = getCurrentConfiguration()
-        return newConf.copy(targetAttributes = emptyMap(), isApiMode = newConf.isApiMode(), isEnable = newConf.isEnable()) !=
-                oldConf?.copy(targetAttributes = emptyMap(), isApiMode = oldConf.isApiMode(), isEnable = oldConf.isEnable())
+        return newConf.copy(targetAttributes = emptyMap()) !=
+                oldConf?.copy(targetAttributes = emptyMap())
     }
 
     private fun buildConfigDataProvider(): ConfigDataProvider {
@@ -216,7 +210,7 @@ data class ConfigurationHandler(
         return this.joinToString("") { "%02x".format(it) }
     }
 
-    private fun UFServiceConfiguration.toService(
+    private fun UFServiceConfigurationV2.toService(
         deploymentPermitProvider: DeploymentPermitProvider,
         forceDeploymentPermitProvider: DeploymentPermitProvider,
         listeners: List<MessageListener>
@@ -249,7 +243,7 @@ data class ConfigurationHandler(
         }
     }
 
-    private fun UFServiceConfiguration.toClientData(): HaraClientData {
+    private fun UFServiceConfigurationV2.toClientData(): HaraClientData {
         return HaraClientData(
                 tenant,
                 controllerId,

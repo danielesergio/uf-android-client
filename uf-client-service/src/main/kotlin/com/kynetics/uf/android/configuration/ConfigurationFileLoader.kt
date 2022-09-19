@@ -10,8 +10,7 @@ package com.kynetics.uf.android.configuration
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.kynetics.uf.android.api.UFServiceConfiguration
-import com.kynetics.uf.android.api.UFServiceConfiguration.Companion.builder
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.configuration.VariableEvaluation.Companion.parseStringWithVariable
 import java.io.BufferedReader
 import java.io.File
@@ -26,22 +25,28 @@ import java.security.NoSuchAlgorithmException
  */
 class ConfigurationFileLoader(private val sh: SharedPreferences, private val configurationFilePath: String, private val context: Context) {
     private val map: MutableMap<String, String> = HashMap()
-    val newFileConfiguration: UFServiceConfiguration?
+    val newFileConfiguration: UFServiceConfigurationV2?
         get() {
             if (!configurationFileFound() || !isNewConfigurationFile) {
                 return null
             }
-            val controllerId = map[CONTROLLER_ID_CONFIGURATION_KEY]
-            val builder = builder()
-                    .withEnable(getBooleanConfiguration(ENABLE_CONFIGURATION_KEY))
-                    .withApiMode(apiModeConfiguration)
-                    .withIsUpdateFactoryServer(getBooleanConfiguration(IS_UPDATE_FACTORY_SERVER_KEY))
-                    .withGatewayToken(map[GATEWAY_TOKEN_CONFIGURATION_KEY])
-                    .withTenant(map[TENANT_CONFIGURATION_KEY])
-                    .withTargetToken(map[TARGET_TOKEN_CONFIGURATION_KEY])
-                    .withControllerId(parseStringWithVariable(controllerId ?: "", context))
-                    .withUrl(map[URL_CONFIGURATION_KEY])
-            return if (builder.configurationIsValid()) builder.build() else null
+
+            return  UFServiceConfigurationV2(
+                isEnable = getBooleanConfiguration(ENABLE_CONFIGURATION_KEY),
+                isApiMode = apiModeConfiguration,
+                isUpdateFactoryServe = getBooleanConfiguration(IS_UPDATE_FACTORY_SERVER_KEY),
+                gatewayToken = map.getOrDefault(GATEWAY_TOKEN_CONFIGURATION_KEY, ""),
+                targetToken = map.getOrDefault(TARGET_TOKEN_CONFIGURATION_KEY, ""),
+                tenant = map.getOrDefault(TENANT_CONFIGURATION_KEY, ""),
+                controllerId = parseStringWithVariable(map.getOrDefault(CONTROLLER_ID_CONFIGURATION_KEY, ""), context),
+                url = map.getOrDefault(URL_CONFIGURATION_KEY,"")
+            ).run {
+                if(isValid){
+                    this
+                } else {
+                    null
+                }
+            }
         }
 
     private val apiModeConfiguration: Boolean

@@ -29,6 +29,7 @@ import kotlinx.serialization.json.Json
  *  Hawkbit server
  * @property targetAttributes target's tags
  */
+@Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2")
 data class UFServiceConfiguration(
         val tenant: String,
         val controllerId: String,
@@ -41,19 +42,7 @@ data class UFServiceConfiguration(
         private val isEnable: Boolean,
         val isUpdateFactoryServe: Boolean,
         val targetAttributes: Map<String, String>,
-        val updateWindows: TimeWindows
 ) : java.io.Serializable {
-
-    @Serializable
-    data class TimeWindows(
-        val cronExpression:String = ALWAYS,
-        val windowSize: Long = DEFAULT_WINDOW_SIZE
-    ): java.io.Serializable {
-        companion object{
-            const val ALWAYS:String = "* * * ? * *"
-            const val DEFAULT_WINDOW_SIZE: Long = 3600
-        }
-    }
 
     private val apiMode: Boolean = false
     private val enable: Boolean  = false
@@ -96,7 +85,6 @@ data class UFServiceConfiguration(
         private var targetToken: String? = ""
         private var gatewayToken: String? = ""
         private var targetAttributes: Map<String, String> = mutableMapOf()
-        private var forceUpdateWindows: TimeWindows = TimeWindows()
         /**
          * Configure the tenant parameter
          */
@@ -213,14 +201,6 @@ data class UFServiceConfiguration(
         }
 
         /**
-         * Configure the update windows for force update
-         */
-        fun withForceUpdateWindows(timeWindows: TimeWindows): Builder {
-            this.forceUpdateWindows = timeWindows
-            return this
-        }
-
-        /**
          * Build an instance of UFServiceConfigure with the configured parameters
          *
          * @throws IllegalStateException when the retryDelay parameter is lower then 0
@@ -234,7 +214,7 @@ data class UFServiceConfiguration(
                     targetToken ?: "",
                     gatewayToken ?: "",
                     apiMode, enable, isUpdateFactoryServer,
-                    targetAttributes, forceUpdateWindows)
+                    targetAttributes)
         }
 
         /**
@@ -301,7 +281,6 @@ data class UFServiceConfiguration(
         if (isEnable() != other.isEnable()) return false
         if (isUpdateFactoryServe != other.isUpdateFactoryServe) return false
         if (targetAttributes != other.targetAttributes) return false
-        if(updateWindows != other.updateWindows) return false
         return true
     }
 
@@ -315,7 +294,6 @@ data class UFServiceConfiguration(
         result = 31 * result + isEnable().hashCode()
         result = 31 * result + isUpdateFactoryServe.hashCode()
         result = 31 * result + targetAttributes.hashCode()
-        result = 31 * result + updateWindows.hashCode()
         return result
     }
 }

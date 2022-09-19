@@ -15,9 +15,11 @@ package com.kynetics.uf.android.api
  * @property versionCode the ApiCommunicationVersion's version code number
  * @property versionName the ApiCommunicationVersion's version name
  */
+@Suppress("MemberVisibilityCanBePrivate")
 enum class ApiCommunicationVersion(val versionCode: Int, val versionName: String) {
     V0_1(0, "0.1"),
-    V1(1, "1.0");
+    V1(1, "1.0"),
+    V1_1(2, "1.1.0");
 
     companion object {
 

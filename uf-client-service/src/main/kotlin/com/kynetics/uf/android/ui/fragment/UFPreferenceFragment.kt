@@ -19,7 +19,7 @@ import com.kynetics.uf.android.HaraCronParser
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion
-import com.kynetics.uf.android.api.UFServiceConfiguration
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.android.communication.MessengerHandler
 
@@ -107,7 +107,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
             val editTextPreference = preference as EditTextPreference?
 
             if(editTextPreference?.key == getString(R.string.shared_preferences_schedule_update_cron_expresison_key)){
-                val cronExpression = editTextPreference.text ?: UFServiceConfiguration.TimeWindows.ALWAYS
+                val cronExpression = editTextPreference.text ?: UFServiceConfigurationV2.TimeWindows.ALWAYS
                 val cronDescription = CronDescriptor.instance().describe(HaraCronParser.parse(cronExpression))
                 editTextPreference.summary = "$cronDescription ( $cronExpression )"
             } else {

@@ -15,9 +15,7 @@ import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication.Companion.SERVICE_API_VERSION_KEY
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
-import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
-import java.util.*
 
 class CommunicationFacade private constructor(
     private val communicationApis: Map<ApiCommunicationVersion, CommunicationApi>
@@ -57,7 +55,14 @@ class CommunicationFacade private constructor(
                         configurationHandler,
                         restartableClientService,
                         softDeploymentPermitProvider
+                    ),
+
+                    ApiCommunicationVersion.V1_1 to CommunicationApiV1_1Impl(
+                        configurationHandler,
+                        restartableClientService,
+                        softDeploymentPermitProvider
                     )
+
                 )
             )
         }

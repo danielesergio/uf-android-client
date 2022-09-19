@@ -9,8 +9,9 @@
 
 package com.kynetics.uf.android.communication
 
-import android.os.Message
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
 
-interface CommunicationApi {
-    fun onMessage(msg:Message)
+interface CommunicationApiV1_1:GenericCommunicationApi{
+    fun configureService(newConf: UFServiceConfigurationV2)
+
 }

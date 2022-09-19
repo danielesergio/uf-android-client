@@ -20,6 +20,7 @@ import com.kynetics.uf.android.api.v1.UFServiceMessageV1
  * @throws IllegalArgumentException if the message can't be transformed to an
  *   [Communication.V1.Out] instance.
  */
+@Suppress("DEPRECATION")
 fun Message.toOutV1Message(): Communication.V1.Out {
     return when (this.what) {
         Communication.V1.Out.ServiceNotification.ID ->
@@ -35,6 +36,10 @@ fun Message.toOutV1Message(): Communication.V1.Out {
             Communication.V1.SERVICE_DATA_KEY
         )!!)
 
+        Communication.V1.Out.CurrentServiceConfigurationV2.ID -> Communication.V1.Out.CurrentServiceConfigurationV2(
+            UFServiceConfigurationV2.fromJson(data.getString(Communication.V1.SERVICE_DATA_KEY))
+        )
+
         else -> throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
     }
 }
@@ -42,6 +47,7 @@ fun Message.toOutV1Message(): Communication.V1.Out {
 /**
  * Class that maps all messages that are exchanged with the [com.kynetics.uf.android.UpdateFactoryService]
  */
+@Suppress("KDocUnresolvedReference")
 sealed class Communication(val id: Int) {
 
     companion object {
@@ -77,7 +83,7 @@ sealed class Communication(val id: Int) {
             open fun toMessage(): Message {
                 val msg = Message.obtain(null, id)
                 val bundleWithApiVersion = bundle()
-                bundleWithApiVersion.putInt(SERVICE_API_VERSION_KEY, ApiCommunicationVersion.V1.versionCode)
+                bundleWithApiVersion.putInt(SERVICE_API_VERSION_KEY, ApiCommunicationVersion.V1_1.versionCode)
                 msg.data = bundleWithApiVersion
                 return msg
             }
@@ -109,7 +115,9 @@ sealed class Communication(val id: Int) {
              *  @property conf the service configuration
              *  @see UFServiceConfiguration
              */
-            class ConfigureService(val conf: UFServiceConfiguration) : In(ID) {
+            @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.Communication.V1.In.ConfigureServiceV2")
+            @Suppress("DEPRECATION")
+            class ConfigureService(@Suppress("MemberVisibilityCanBePrivate") val conf: UFServiceConfiguration) : In(ID) {
                 companion object {
                     const val ID = 1
                 }
@@ -120,6 +128,27 @@ sealed class Communication(val id: Int) {
                 override fun bundle(): Bundle {
                     return super.bundle().apply {
                         putSerializable(SERVICE_DATA_KEY, conf)
+                    }
+                }
+            }
+
+            /**
+             *  Class use to build a message to configure the service
+             *
+             *  @property conf the service configuration
+             *  @see UFServiceConfigurationV2
+             */
+            class ConfigureServiceV2(@Suppress("MemberVisibilityCanBePrivate") val conf: UFServiceConfigurationV2) : In(ID) {
+                companion object {
+                    const val ID = 10
+                }
+
+                /**
+                 * @suppress
+                 */
+                override fun bundle(): Bundle {
+                    return super.bundle().apply {
+                        putSerializable(SERVICE_DATA_KEY, conf.toJson())
                     }
                 }
             }
@@ -152,7 +181,7 @@ sealed class Communication(val id: Int) {
              * Class use to build a message to grant / denied  an authorization
              *
              */
-            class AuthorizationResponse(val granted: Boolean) : In(ID) {
+            class AuthorizationResponse(@Suppress("MemberVisibilityCanBePrivate")  val granted: Boolean) : In(ID) {
                 companion object {
                     const val ID = 6
                 }
@@ -236,12 +265,28 @@ sealed class Communication(val id: Int) {
              * sends to the client as response of a [Communication.V1.In.Sync] message.
              * @property conf is the service's configuration
              */
+            @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.Communication.V1.Out.CurrentServiceConfigurationV2")
+            @Suppress("DEPRECATION", "MemberVisibilityCanBePrivate")
             class CurrentServiceConfiguration(val conf: UFServiceConfiguration) : Out(ID) {
                 /**
                  * @suppress
                  */
                 companion object {
                     const val ID = 9
+                }
+            }
+
+            /**
+             * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
+             * sends to the client as response of a [Communication.V1.In.Sync] message.
+             * @property conf is the service's configuration
+             */
+            class CurrentServiceConfigurationV2(@Suppress("MemberVisibilityCanBePrivate")  val conf: UFServiceConfigurationV2) : Out(ID) {
+                /**
+                 * @suppress
+                 */
+                companion object {
+                    const val ID = 11
                 }
             }
         }

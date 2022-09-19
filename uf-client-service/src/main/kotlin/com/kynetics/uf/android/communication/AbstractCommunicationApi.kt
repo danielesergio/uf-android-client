@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.kynetics.uf.android.communication
 
 import android.os.Message
@@ -20,8 +22,8 @@ import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
 abstract class AbstractCommunicationApi(
-    private val configurationHandler: ConfigurationHandler,
-    private val ufService:RestartableClientService,
+    protected val configurationHandler: ConfigurationHandler,
+    protected val ufService:RestartableClientService,
     private val softDeploymentPermitProvider: AndroidDeploymentPermitProvider
 ):GenericCommunicationApi {
 
@@ -50,7 +52,7 @@ abstract class AbstractCommunicationApi(
         }
 
         MessengerHandler.response(
-            configurationHandler.getCurrentConfiguration(),
+            configurationHandler.getCurrentConfiguration().toUFServiceConfiguration(),
             Communication.V1.Out.CurrentServiceConfiguration.ID,
             messenger
         )
@@ -73,8 +75,8 @@ abstract class AbstractCommunicationApi(
     override fun configureService(newConf: UFServiceConfiguration) {
         val currentConf = configurationHandler.getCurrentConfiguration()
 
-        if (currentConf != newConf) {
-            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf)
+        if (currentConf != newConf.toUFServiceConfiguration()) {
+            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf.toUFServiceConfiguration())
             Log.i(TAG, "configuration updated")
         } else {
             Log.i(TAG, "new configuration equals to current configuration")
