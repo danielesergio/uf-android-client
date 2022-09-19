@@ -23,7 +23,7 @@ import androidx.core.app.NotificationCompat
 import com.kynetics.uf.android.apicomptibility.ApiVersion
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.CommunicationApi
-import com.kynetics.uf.android.communication.CommunicationFacade
+import com.kynetics.uf.android.communication.CommunicationApiStrategy
 import com.kynetics.uf.android.communication.MessageHandler
 import com.kynetics.uf.android.communication.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
@@ -64,7 +64,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     private var ufService: RestartableClientService? = null
 
     private val api: CommunicationApi by lazy {
-        CommunicationFacade.newInstance(
+        CommunicationApiStrategy.newInstance(
             configurationHandler!!,
             ufService!!,
             softDeploymentPermitProvider!!

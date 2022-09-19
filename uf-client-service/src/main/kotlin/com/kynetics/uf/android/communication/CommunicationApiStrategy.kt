@@ -17,7 +17,7 @@ import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
-class CommunicationFacade private constructor(
+class CommunicationApiStrategy private constructor(
     private val communicationApis: Map<ApiCommunicationVersion, CommunicationApi>
 ):CommunicationApi {
 
@@ -36,14 +36,14 @@ class CommunicationFacade private constructor(
     private fun Message.getApiVersionCode():Int = data.getInt(SERVICE_API_VERSION_KEY, 0)
 
     companion object{
-        private val TAG:String = CommunicationFacade::class.java.simpleName
+        private val TAG:String = CommunicationApiStrategy::class.java.simpleName
 
         fun newInstance(
             configurationHandler: ConfigurationHandler,
             restartableClientService: RestartableClientService,
             softDeploymentPermitProvider: AndroidDeploymentPermitProvider
-        ) :CommunicationFacade{
-            return CommunicationFacade(
+        ) :CommunicationApiStrategy{
+            return CommunicationApiStrategy(
                 mapOf(
                     ApiCommunicationVersion.V0_1 to CommunicationApiV0_1Impl(
                         configurationHandler,
