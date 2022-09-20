@@ -9,7 +9,7 @@
 
 @file:Suppress("DEPRECATION")
 
-package com.kynetics.uf.android.communication
+package com.kynetics.uf.android.communication.impl
 
 import android.os.Message
 import android.os.Messenger
@@ -18,6 +18,9 @@ import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfiguration
 import com.kynetics.uf.android.client.RestartableClientService
+import com.kynetics.uf.android.communication.GenericCommunicationApi
+import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.toUFServiceConfiguration
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
@@ -25,7 +28,7 @@ abstract class AbstractCommunicationApi(
     protected val configurationHandler: ConfigurationHandler,
     protected val ufService:RestartableClientService,
     private val softDeploymentPermitProvider: AndroidDeploymentPermitProvider
-):GenericCommunicationApi {
+): GenericCommunicationApi {
 
     protected abstract val api: ApiCommunicationVersion
 

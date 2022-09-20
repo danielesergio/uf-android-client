@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package com.kynetics.uf.android.communication
+package com.kynetics.uf.android.communication.impl
 
 import android.os.Message
 import android.os.Messenger
@@ -16,6 +16,9 @@ import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.client.RestartableClientService
+import com.kynetics.uf.android.communication.CommunicationApiV1_1
+import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.toUFServiceConfiguration
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
@@ -24,7 +27,8 @@ class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
                                ufService: RestartableClientService,
                                softDeploymentPermitProvider: AndroidDeploymentPermitProvider
 ):
-    AbstractCommunicationApi(configurationHandler, ufService, softDeploymentPermitProvider), CommunicationApiV1_1{
+    AbstractCommunicationApi(configurationHandler, ufService, softDeploymentPermitProvider),
+    CommunicationApiV1_1 {
     override val api: ApiCommunicationVersion = ApiCommunicationVersion.V1_1
 
     override fun configureService(newConf: UFServiceConfigurationV2) {

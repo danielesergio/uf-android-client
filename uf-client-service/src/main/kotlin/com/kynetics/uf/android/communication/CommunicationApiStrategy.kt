@@ -14,6 +14,9 @@ import android.util.Log
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication.Companion.SERVICE_API_VERSION_KEY
 import com.kynetics.uf.android.client.RestartableClientService
+import com.kynetics.uf.android.communication.impl.CommunicationApiV0_1Impl
+import com.kynetics.uf.android.communication.impl.CommunicationApiV1Impl
+import com.kynetics.uf.android.communication.impl.CommunicationApiV1_1Impl
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
