@@ -13,7 +13,23 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
+@Suppress("KDocUnresolvedReference")
 @Serializable
+/**
+ * This class represent the [com.kynetics.uf.android.UpdateFactoryService]'s configuration
+ *
+ * @property tenant the tenant
+ * @property controllerId id of the controller
+ * @property url of update server
+ * @property targetToken target token
+ * @property gatewayToken gateway token
+ * @property isApiMode true to ask user authorization sending message to client, false to use dialog
+ * @property isEnable true to enable the service, false to disable it
+ * @property isUpdateFactoryServe true when the server is an UpdateServer, false when the server is an
+ *  Hawkbit server
+ * @property targetAttributes target's tags
+ * @property updateWindows configuration parameters for time-windows updates
+ */
 data class UFServiceConfigurationV2(
     val tenant: String,
     val controllerId: String,
@@ -27,6 +43,14 @@ data class UFServiceConfigurationV2(
     val updateWindows: TimeWindows = TimeWindows()
 ){
     @Serializable
+    /**
+     * Class to configure the force update behaviour. It defines when a force update can be applied
+     * based on a schedule defined as cron expression (QUARTZ) and a number of seconds.
+     *
+     * @property cronExpression, a cron expression (QUARTZ) that defines the update windows
+     *  beginning time.
+     * @property windowSize, duration of update windows in seconds. Min value is 1.
+     */
     data class TimeWindows(
         val cronExpression:String = ALWAYS,
         val windowSize: Long = DEFAULT_WINDOW_SIZE
