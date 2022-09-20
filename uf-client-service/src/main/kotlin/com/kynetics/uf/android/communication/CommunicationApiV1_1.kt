@@ -11,6 +11,7 @@ package com.kynetics.uf.android.communication
 
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 
+@Suppress("ClassName")
 interface CommunicationApiV1_1:GenericCommunicationApi{
     fun configureService(newConf: UFServiceConfigurationV2)
 
