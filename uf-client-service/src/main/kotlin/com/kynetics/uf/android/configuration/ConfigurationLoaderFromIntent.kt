@@ -13,7 +13,6 @@ import android.content.Intent
 import android.util.Log
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
-import com.kynetics.uf.android.communication.toUFServiceConfiguration
 
 @Suppress("DEPRECATION")
 interface ConfigurationLoaderFromIntent {

@@ -9,7 +9,7 @@
 
 @file:Suppress("DEPRECATION")
 
-package com.kynetics.uf.android.communication
+package com.kynetics.uf.android.configuration
 
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 
