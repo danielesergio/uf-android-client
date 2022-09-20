@@ -15,6 +15,7 @@ import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.communication.toUFServiceConfiguration
 
+@Suppress("DEPRECATION")
 interface ConfigurationLoaderFromIntent {
     fun getServiceConfigurationFromIntent(intent: Intent): UFServiceConfigurationV2? {
         Log.i(TAG, "Loading new configuration from intent")
