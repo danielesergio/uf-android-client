@@ -35,9 +35,7 @@ data class UFServiceConfigurationV2(
             const val ALWAYS:String = "* * * ? * *"
             const val DEFAULT_WINDOW_SIZE: Long = 3600
         }
-        val isValid:Boolean by lazy{
-            true
-        }
+        val isValid:Boolean = windowSize > 1
     }
 
     val isValid:Boolean by lazy{
