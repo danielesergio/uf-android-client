@@ -54,9 +54,9 @@ data class ConfigurationHandler(
             null
         }.apply {
             if(this != null){
-                Log.i(TAG, "No configuration found in intent")
-            } else {
                 Log.i(TAG, "Loaded new configuration from intent")
+            } else {
+                Log.i(TAG, "No configuration found in intent")
             }
         }
     }
