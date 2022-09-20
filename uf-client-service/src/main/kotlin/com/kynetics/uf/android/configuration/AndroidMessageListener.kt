@@ -13,9 +13,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
 import com.kynetics.uf.android.UpdateFactoryService
-import com.kynetics.uf.android.api.Communication
-import com.kynetics.uf.android.communication.MessageHandler
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessageHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.update.CurrentUpdateState
 import org.eclipse.hara.ddiclient.api.MessageListener
 

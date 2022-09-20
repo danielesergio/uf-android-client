@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020  Kynetics  LLC
+ * Copyright © 2017-2022  Kynetics  LLC
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,7 +8,7 @@
  */
 @file:Suppress("DEPRECATION")
 
-package com.kynetics.uf.android.communication
+package com.kynetics.uf.android.communication.messenger
 
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.UFServiceMessage

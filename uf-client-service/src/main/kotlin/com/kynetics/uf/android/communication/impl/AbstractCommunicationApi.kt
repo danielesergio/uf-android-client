@@ -19,7 +19,7 @@ import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfiguration
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.GenericCommunicationApi
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.communication.toUFServiceConfiguration
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler

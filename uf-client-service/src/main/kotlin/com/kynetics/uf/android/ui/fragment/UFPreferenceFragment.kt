@@ -21,7 +21,7 @@ import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 
 /**
  * A simple [PreferenceFragmentCompat] subclass.

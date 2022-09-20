@@ -16,9 +16,8 @@ import android.os.UpdateEngine
 import android.os.UpdateEngineCallback
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.util.zip.getEntryOffset
 import org.eclipse.hara.ddiclient.api.Updater

@@ -13,7 +13,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.Communication
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.ui.MainActivity
 import com.kynetics.uf.android.update.CurrentUpdateState
 import kotlinx.coroutines.CompletableDeferred

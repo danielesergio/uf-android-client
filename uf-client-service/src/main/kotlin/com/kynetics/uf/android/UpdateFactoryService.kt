@@ -24,8 +24,8 @@ import com.kynetics.uf.android.apicomptibility.ApiVersion
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.CommunicationApi
 import com.kynetics.uf.android.communication.CommunicationApiStrategy
-import com.kynetics.uf.android.communication.MessageHandler
-import com.kynetics.uf.android.communication.MessengerHandler
+import com.kynetics.uf.android.communication.messenger.MessageHandler
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.AndroidMessageListener
 import com.kynetics.uf.android.configuration.ConfigurationHandler
@@ -188,8 +188,8 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
 
     companion object {
         enum class AuthorizationType(
-                val toActionOnGranted: MessageHandler.Action,
-                val toActionOnDenied: MessageHandler.Action
+            val toActionOnGranted: MessageHandler.Action,
+            val toActionOnDenied: MessageHandler.Action
         ) {
             DOWNLOAD(
                     MessageHandler.Action.AUTH_DOWNLOAD_GRANTED,
@@ -199,7 +199,8 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
                 override val event = "WaitingDownloadAuthorization"
             },
 
-            UPDATE(MessageHandler.Action.AUTH_UPDATE_GRANTED,
+            UPDATE(
+                MessageHandler.Action.AUTH_UPDATE_GRANTED,
                     MessageHandler.Action.AUTH_UPDATE_DENIED) {
                 override val extra: Int = MainActivity.INTENT_TYPE_EXTRA_VALUE_REBOOT
                 override val event = "WaitingUpdateAuthorization"
