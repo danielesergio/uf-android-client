@@ -35,6 +35,7 @@ class RestartableClientService constructor(
     )
 
     private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private var restartJob:Job? = null
 
     companion object{
         val TAG: String = RestartableClientService::class.java.simpleName
@@ -47,19 +48,21 @@ class RestartableClientService constructor(
         }
     }
 
-    fun restartService(conf:ConfigurationHandler)= scope.launch{
-        Log.i(TAG,"Try to restart the service")
-        while (!serviceRestartable()) {
-            Log.i(TAG, "Service not restartable yet.")
-            delay(10000)
+    fun restartService(conf:ConfigurationHandler){
+        restartJob?.cancel()
+        restartJob = scope.launch{
+            Log.i(TAG,"Try to restart the service")
+            while (!serviceRestartable()) {
+                Log.i(TAG, "Service not restartable yet.")
+                delay(10000)
+            }
+            Log.d(TAG, "Restarting service")
+            client.stop()
+            client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, AndroidForceDeploymentPermitProvider.build(
+                conf.getCurrentConfiguration().updateWindows), _listeners)
+            client.startAsync()
+            Log.d(TAG, "Service restarted")
         }
-        Log.d(TAG, "Restarting service")
-        client.stop()
-        client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, AndroidForceDeploymentPermitProvider.build(
-            conf.getCurrentConfiguration().updateWindows), _listeners)
-        client.startAsync()
-        Log.d(TAG, "Service restarted")
-
     }
 
     override fun stop() {
