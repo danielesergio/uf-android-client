@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), OnAuthorization {
     }
 
     private fun finishActivity() {
-        Handler(Looper.myLooper()).postDelayed({ finish() }, 500)
+        Handler(Looper.myLooper()!!).postDelayed({ finish() }, 500)
     }
 
     override fun getSharedPreferences(name: String?, mode: Int): UFSharedPreferences {

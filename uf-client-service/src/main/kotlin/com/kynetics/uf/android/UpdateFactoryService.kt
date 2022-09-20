@@ -142,7 +142,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     }
 
     // todo add api to configure targetAttibutes (separete  d from serviceConfiguration)
-    private class IncomingHandler(service: UpdateFactoryService) : Handler(Looper.myLooper()) {
+    private class IncomingHandler(service: UpdateFactoryService) : Handler(Looper.myLooper()!!) {
         private val updateFactoryServiceRef = WeakReference(service)
 
         private fun <T> WeakReference<T>.execute(action: T.() -> Unit){

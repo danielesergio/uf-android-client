@@ -87,9 +87,9 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
     private fun enableDisableActivePreference(shp: SharedPreferences) {
         val activePreference:Preference? = findPreference(getString(R.string.shared_preferences_is_enable_key))
         activePreference?.isEnabled =
-                !(shp.getString(getString(R.string.shared_preferences_server_url_key), "").isEmpty() ||
-                shp.getString(getString(R.string.shared_preferences_tenant_key), "").isEmpty() ||
-                shp.getString(getString(R.string.shared_preferences_controller_id_key), "").isEmpty())
+                !(shp.getString(getString(R.string.shared_preferences_server_url_key), "")!!.isEmpty() ||
+                shp.getString(getString(R.string.shared_preferences_tenant_key), "")!!.isEmpty() ||
+                shp.getString(getString(R.string.shared_preferences_controller_id_key), "")!!.isEmpty())
     }
 
     private fun updatePreference(preference: Preference?, key: String, sharedPrefs: SharedPreferences) {

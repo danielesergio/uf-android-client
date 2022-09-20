@@ -35,7 +35,7 @@ object ApkAnalyzer {
     fun verifySharedUserId(context: Context, apkPath: String): Boolean {
         val packageInfo = context.packageManager
             .getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES)
-        val apkPackage = packageInfo.packageName
+        val apkPackage = packageInfo?.packageName
         if (packageInfo != null && apkPackage != null) {
             val newSharedUserId = packageInfo.sharedUserId
             return try {

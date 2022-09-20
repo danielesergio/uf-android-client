@@ -1,0 +1,19 @@
+/*
+ * Copyright © 2017-2022  Kynetics  LLC
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
+@file:Suppress("UNUSED_PARAMETER")
+
+package android.os
+
+object SystemProperties {
+    @JvmStatic
+    fun get(key:String):String{
+        TODO("os mock")
+    }
+}

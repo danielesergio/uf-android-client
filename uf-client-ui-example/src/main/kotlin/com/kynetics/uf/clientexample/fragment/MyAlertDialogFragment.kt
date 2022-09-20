@@ -18,9 +18,9 @@ class MyAlertDialogFragment : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogType = requireArguments().getString(ARG_DIALOG_TYPE)
-        val titleResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "title"),
+        val titleResource = resources.getIdentifier(String.format("%s_%s", dialogType?.lowercase(), "title"),
             "string", requireActivity().packageName)
-        val contentResource = resources.getIdentifier(String.format("%s_%s", dialogType.lowercase(), "content"),
+        val contentResource = resources.getIdentifier(String.format("%s_%s", dialogType?.lowercase(), "content"),
             "string", requireActivity().packageName)
 
         return AlertDialog.Builder(requireActivity())

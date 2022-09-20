@@ -51,7 +51,7 @@ object ApkInstaller : Installer<Unit> {
 
             else -> {
                 val countDownLatch = CountDownLatch(1)
-                val packageName = getPackageFromApk(context, apk.absolutePath)
+                val packageName = getPackageFromApk(context, apk.absolutePath)?:""
                 val packageVersion = getVersionFromApk(context, apk.absolutePath)
                 val installerSession = InstallerSession.newInstance(
                     context,

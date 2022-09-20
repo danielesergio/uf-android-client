@@ -27,7 +27,7 @@ class SharedPreferencesWithObject(private val sharedPreferences: SharedPreferenc
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Serializable?> getObject(objKey: String?, defaultObj: T?): T? {
-        val bytes = sharedPreferences.getString(objKey, "").toByteArray()
+        val bytes = sharedPreferences.getString(objKey, "")!!.toByteArray()
         if (bytes.isEmpty()) {
             return defaultObj
         }

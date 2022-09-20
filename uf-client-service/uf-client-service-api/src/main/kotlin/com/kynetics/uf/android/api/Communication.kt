@@ -22,26 +22,30 @@ import com.kynetics.uf.android.api.v1.UFServiceMessageV1
  */
 @Suppress("DEPRECATION")
 fun Message.toOutV1Message(): Communication.V1.Out {
-    return when (this.what) {
-        Communication.V1.Out.ServiceNotification.ID ->
-            Communication.V1.Out.ServiceNotification(UFServiceMessageV1.fromJson(data.getString(
-                Communication.V1.SERVICE_DATA_KEY)!!))
+    return runCatching {
+        when (this.what) {
+            Communication.V1.Out.ServiceNotification.ID ->
+                Communication.V1.Out.ServiceNotification(UFServiceMessageV1.fromJson(data.getString(
+                    Communication.V1.SERVICE_DATA_KEY)!!))
 
-        Communication.V1.Out.CurrentServiceConfiguration.ID ->
-            Communication.V1.Out.CurrentServiceConfiguration(data.getSerializable(Communication.V1.SERVICE_DATA_KEY
-        ) as UFServiceConfiguration)
+            Communication.V1.Out.CurrentServiceConfiguration.ID ->
+                Communication.V1.Out.CurrentServiceConfiguration(data.getSerializable(Communication.V1.SERVICE_DATA_KEY
+                ) as UFServiceConfiguration)
 
-        Communication.V1.Out.AuthorizationRequest.ID ->
-            Communication.V1.Out.AuthorizationRequest(data.getString(
-            Communication.V1.SERVICE_DATA_KEY
-        )!!)
+            Communication.V1.Out.AuthorizationRequest.ID ->
+                Communication.V1.Out.AuthorizationRequest(data.getString(
+                    Communication.V1.SERVICE_DATA_KEY
+                )!!)
 
-        Communication.V1.Out.CurrentServiceConfigurationV2.ID -> Communication.V1.Out.CurrentServiceConfigurationV2(
-            UFServiceConfigurationV2.fromJson(data.getString(Communication.V1.SERVICE_DATA_KEY))
-        )
+            Communication.V1.Out.CurrentServiceConfigurationV2.ID -> Communication.V1.Out.CurrentServiceConfigurationV2(
+                UFServiceConfigurationV2.fromJson(data.getString(Communication.V1.SERVICE_DATA_KEY)!!)
+            )
 
-        else -> throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
-    }
+            else -> throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
+        }
+    }.onFailure {
+        throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
+    }.getOrThrow()
 }
 
 /**

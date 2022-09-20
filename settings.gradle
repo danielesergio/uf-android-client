@@ -16,3 +16,4 @@ pluginManagement {
     }
 }
 include ':uf-client-service', ':uf-client-ui-example', ':uf-client-service:uf-client-service-api', ':uf-ddiclient'
+include ':os-mock'

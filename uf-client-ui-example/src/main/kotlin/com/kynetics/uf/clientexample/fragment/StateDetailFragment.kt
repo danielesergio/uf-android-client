@@ -65,7 +65,7 @@ class StateDetailFragment : androidx.fragment.app.Fragment(), UFServiceInteracti
         // here data must be an instance of the class MarsDataProvider
         if (item != null) {
             binding!!.data = item!!
-            adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, item!!.events)
+            adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, item!!.events)
             view.events_list.adapter = adapter
         }
         binding!!.root.details_list?.adapter
@@ -107,7 +107,7 @@ class StateDetailFragment : androidx.fragment.app.Fragment(), UFServiceInteracti
                 binding?.root?.details_title?.visibility = View.VISIBLE
                 binding?.root?.details_list?.visibility = View.VISIBLE
                 binding?.root?.details_list?.adapter =
-                    ArrayAdapter(activity, android.R.layout.simple_list_item_1, stateDetail!!.details)
+                    ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, stateDetail!!.details)
 
                 item!!.events.forEach {
                     onMessageReceived(it.event)
@@ -116,7 +116,7 @@ class StateDetailFragment : androidx.fragment.app.Fragment(), UFServiceInteracti
 
             else -> {
                 binding?.root?.details_list?.adapter =
-                    ArrayAdapter(activity, android.R.layout.simple_list_item_1,
+                    ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1,
                         listOf<String>())
             }
         }

@@ -25,7 +25,7 @@ class InstallerSession private constructor(private val context: Context,
                                            private val packageInstaller: PackageInstaller,
         // TODO: 07/02/19 unregister sessionCallback
                                            private val sessionId: Int) {
-    fun writeSession(file: File, name: String?) {
+    fun writeSession(file: File, name: String) {
         val sizeBytes = file.length()
         Log.v(TAG, "apk size :$sizeBytes")
         try {
