@@ -2,7 +2,7 @@ package com.kynetics.uf.android.ui.preferences
 
 import android.content.Context
 import android.util.AttributeSet
-import com.kynetics.uf.android.HaraCronParser
+import com.kynetics.uf.android.cron.HaraCronParser
 
 class EditTextValidateSchedulePreference(
     context: Context,

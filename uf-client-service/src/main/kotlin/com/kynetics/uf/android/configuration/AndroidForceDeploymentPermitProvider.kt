@@ -1,6 +1,6 @@
 package com.kynetics.uf.android.configuration
 
-import com.kynetics.uf.android.CronScheduler
+import com.kynetics.uf.android.cron.CronScheduler
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred

@@ -15,7 +15,7 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
 import com.cronutils.descriptor.CronDescriptor
-import com.kynetics.uf.android.HaraCronParser
+import com.kynetics.uf.android.cron.HaraCronParser
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion
