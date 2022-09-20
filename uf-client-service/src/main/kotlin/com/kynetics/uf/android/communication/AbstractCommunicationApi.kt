@@ -29,25 +29,25 @@ abstract class AbstractCommunicationApi(
 
     protected abstract val api: ApiCommunicationVersion
 
-    companion object{
-        val TAG:String = AbstractCommunicationApi::class.java.simpleName
+    private val tag:String by lazy {
+        "${AbstractCommunicationApi::class.java.simpleName}-${api.versionCode}"
     }
 
     override fun subscribeClient(messenger: Messenger?, apiVersion: ApiCommunicationVersion) {
-        Log.i(TAG, "receive subscription request")
+        Log.i(tag, "receive subscription request")
         MessengerHandler.subscribeClient(messenger, apiVersion)
     }
 
     override fun unsubscribeClient(messenger: Messenger?) {
-        Log.i(TAG, "receive un-subscription request")
+        Log.i(tag, "receive un-subscription request")
         MessengerHandler.unsubscribeClient(messenger)
     }
 
     override fun sync(messenger: Messenger?) {
-        Log.i(TAG, "received sync request")
+        Log.i(tag, "received sync request")
 
         if (messenger == null) {
-            Log.i(TAG, "command ignored because field replyTo is null")
+            Log.i(tag, "command ignored because field replyTo is null")
             return
         }
 
@@ -64,11 +64,11 @@ abstract class AbstractCommunicationApi(
                 messenger
             )
         }
-        Log.i(TAG, "client synced")
+        Log.i(tag, "client synced")
     }
 
     override fun forcePing() {
-        Log.i(TAG, "receive request to resume suspend state")
+        Log.i(tag, "receive request to resume suspend state")
         ufService.forcePing()
     }
 
@@ -77,29 +77,29 @@ abstract class AbstractCommunicationApi(
 
         if (currentConf != newConf.toUFServiceConfiguration()) {
             configurationHandler.saveServiceConfigurationToSharedPreferences(newConf.toUFServiceConfiguration())
-            Log.i(TAG, "configuration updated")
+            Log.i(tag, "configuration updated")
         } else {
-            Log.i(TAG, "new configuration equals to current configuration")
+            Log.i(tag, "new configuration equals to current configuration")
         }
 
         if (configurationHandler.needReboot(currentConf)) {
             ufService.restartService(configurationHandler)
-            Log.i(TAG, "configuration updated - restarting service")
+            Log.i(tag, "configuration updated - restarting service")
         } else {
-            Log.i(TAG, "configuration updated - service not restarted")
+            Log.i(tag, "configuration updated - service not restarted")
         }
     }
 
     override fun authorizationResponse(msg: Message) {
-        Log.i(TAG, "receive authorization response")
+        Log.i(tag, "receive authorization response")
         if(!msg.data.containsKey(Communication.V1.SERVICE_DATA_KEY)){
-            Log.i(TAG, "Invalid authorization response message received")
+            Log.i(tag, "Invalid authorization response message received")
             return
         }
         val response = msg.data.getBoolean(Communication.V1.SERVICE_DATA_KEY)
         softDeploymentPermitProvider.allow(response)
 
-        Log.i(TAG, String.format("authorization %s", if (response) "granted" else "denied"))
+        Log.i(tag, String.format("authorization %s", if (response) "granted" else "denied"))
     }
 
     override fun onMessage(msg: Message) {
@@ -116,20 +116,20 @@ abstract class AbstractCommunicationApi(
 
             Communication.V1.In.Sync.ID -> sync(msg.replyTo)
 
-            else -> Log.i(TAG, "Invalid message receive (what == ${msg.what})")
+            else -> Log.i(tag, "Invalid message receive (what == ${msg.what})")
         }
     }
 
     private fun configureService(msg: Message) {
-        Log.i(TAG, "receive configuration update request")
+        Log.i(tag, "receive configuration update request")
         val configuration =  try{
             if(!msg.data.containsKey(Communication.V1.SERVICE_DATA_KEY)){
-                Log.i(TAG, "Invalid configuration message received (no configuration found)")
+                Log.i(tag, "Invalid configuration message received (no configuration found)")
                 return
             }
             msg.data.getSerializable(Communication.V1.SERVICE_DATA_KEY) as UFServiceConfiguration
         } catch (e:Throwable){
-            Log.i(TAG, "Invalid configuration message received; Error on configuration deserialize.")
+            Log.i(tag, "Invalid configuration message received; Error on configuration deserialize.")
             return
         }
         configureService(configuration)

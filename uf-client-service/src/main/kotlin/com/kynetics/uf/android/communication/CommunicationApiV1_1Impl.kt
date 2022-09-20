@@ -32,16 +32,16 @@ class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
 
         if (currentConf != newConf) {
             configurationHandler.saveServiceConfigurationToSharedPreferences(newConf)
-            Log.i(AbstractCommunicationApi.TAG, "configuration updated")
+            Log.i(TAG, "configuration updated")
         } else {
-            Log.i(AbstractCommunicationApi.TAG, "new configuration equals to current configuration")
+            Log.i(TAG, "new configuration equals to current configuration")
         }
 
         if (configurationHandler.needReboot(currentConf)) {
             ufService.restartService(configurationHandler)
-            Log.i(AbstractCommunicationApi.TAG, "configuration updated - restarting service")
+            Log.i(TAG, "configuration updated - restarting service")
         } else {
-            Log.i(AbstractCommunicationApi.TAG, "configuration updated - service not restarted")
+            Log.i(TAG, "configuration updated - service not restarted")
         }
     }
 
@@ -83,7 +83,7 @@ class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
                 Log.i(TAG, "Invalid configuration message received (no configuration found)")
                 return
             }
-            UFServiceConfigurationV2.fromJson(msg.data.getString(Communication.V1.SERVICE_DATA_KEY))
+            UFServiceConfigurationV2.fromJson(msg.data.getString(Communication.V1.SERVICE_DATA_KEY)!!)
         } catch (e:Throwable){
             Log.i(TAG, "Invalid configuration message received; Error on configuration deserialize.")
             return
