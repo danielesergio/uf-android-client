@@ -143,8 +143,8 @@ data class ConfigurationHandler(
 
     fun needReboot(oldConf: UFServiceConfigurationV2?): Boolean {
         val newConf = getCurrentConfiguration()
-        return newConf.copy(targetAttributes = emptyMap()) !=
-                oldConf?.copy(targetAttributes = emptyMap())
+        return newConf.copy(targetAttributes = mutableMapOf()) !=
+                oldConf?.copy(targetAttributes = mutableMapOf())
     }
 
     private fun buildConfigDataProvider(): ConfigDataProvider {
@@ -180,11 +180,11 @@ data class ConfigurationHandler(
     private fun getTargetAttributes(): MutableMap<String, String> {
         val targetAttributes: MutableMap<String, String>? = sharedPreferences
                 .getObject(sharedPreferencesTargetAttributes)
-        return targetAttributes ?: HashMap()
+        return targetAttributes ?: mutableMapOf()
     }
 
     private fun decorateTargetAttribute(): Map<String, String> {
-        val targetAttributes = getTargetAttributes()
+        val targetAttributes = getTargetAttributes().toMutableMap()
         targetAttributes[CLIENT_TYPE_TARGET_TOKEN_KEY] = "Android"
         targetAttributes[CLIENT_VERSION_TARGET_ATTRIBUTE_KEY] = BuildConfig.VERSION_NAME // TODO: 4/17/18 refactor
         targetAttributes[CLIENT_VERSION_CODE_ATTRIBUTE_KEY] = BuildConfig.VERSION_CODE.toString()
