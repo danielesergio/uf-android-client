@@ -65,7 +65,7 @@ class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
         }
 
         MessengerHandler.response(
-            configurationHandler.getCurrentConfiguration().toUFServiceConfiguration(),
+            configurationHandler.getCurrentConfiguration().toJson(),
             Communication.V1.Out.CurrentServiceConfigurationV2.ID,
             messenger
         )
