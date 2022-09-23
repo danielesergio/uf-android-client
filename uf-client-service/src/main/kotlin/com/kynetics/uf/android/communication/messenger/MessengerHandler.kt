@@ -25,9 +25,9 @@ object MessengerHandler {
     private val TAG = MessengerHandler::class.java.simpleName
 
     private val lastSharedMessagesByVersion = mutableMapOf(
-            ApiCommunicationVersion.V0_1 to V0(),
-            ApiCommunicationVersion.V1 to V1(),
-            ApiCommunicationVersion.V1_1 to V1()
+            ApiCommunicationVersion.V0_1 to MessageHandlerFactory.newV0(),
+            ApiCommunicationVersion.V1 to MessageHandlerFactory.newV1(),
+            ApiCommunicationVersion.V1_1 to MessageHandlerFactory.newV1_1()
     )
 
     private val mClients = mutableMapOf<Messenger, ApiCommunicationVersion>()

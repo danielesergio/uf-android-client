@@ -10,7 +10,7 @@
 
 package com.kynetics.uf.android.communication.messenger
 
-import com.kynetics.uf.android.api.ApiCommunicationVersion
+import android.util.Log
 import com.kynetics.uf.android.api.UFServiceMessage
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.android.converter.toUFMessage
@@ -28,7 +28,6 @@ interface MessageHandler<out T : Serializable?> {
         UPDATE_FINISH
     }
 
-    val apiCommunicationVersion: ApiCommunicationVersion
     val messageToSendOnSync: T
     val currentMessage: T
 
@@ -53,8 +52,6 @@ data class V0(
     override val currentMessage: UFServiceMessage? = null,
     private val suspend: UFServiceMessage.Suspend = UFServiceMessage.Suspend.NONE
 ) : MessageHandler<UFServiceMessage?> {
-
-    override val apiCommunicationVersion = ApiCommunicationVersion.V0_1
     override val messageToSendOnSync: UFServiceMessage? = currentMessage
 
     override fun onAction(action: MessageHandler.Action): MessageHandler<UFServiceMessage?> {
@@ -89,12 +86,11 @@ data class V0(
     }
 }
 
-data class V1(
+data class V1x(
     override val messageToSendOnSync: String? = null,
-    override val currentMessage: String? = null
+    override val currentMessage: String? = null,
+    val msgMapper: (UFServiceMessageV1) -> UFServiceMessageV1 = {msg -> msg}
 ) : MessageHandler<String?> {
-
-    override val apiCommunicationVersion = ApiCommunicationVersion.V1
 
     override fun onMessage(msg: MessageListener.Message): MessageHandler<String?> {
         return onAndroidMessage(msg.toUFMessage())
@@ -106,15 +102,32 @@ data class V1(
     }
 
     override fun onAndroidMessage(msg: UFServiceMessageV1): MessageHandler<String?> {
-        return when (msg) {
+        Log.i("v1", "onAndroidMessage $msg")
+        return when (val finalMsg = msgMapper(msg)) {
             is UFServiceMessageV1.Event -> {
-                copy(currentMessage = msg.toJson())
+                copy(currentMessage = finalMsg.toJson())
             }
 
             is UFServiceMessageV1.State -> {
-                val currentMessage = msg.toJson()
+                val currentMessage = finalMsg.toJson()
                 copy(messageToSendOnSync = currentMessage, currentMessage = currentMessage)
             }
         }
     }
+}
+
+object MessageHandlerFactory{
+    fun newV0(): V0 = V0()
+
+    fun newV1():V1x = V1x(
+        msgMapper = { msg:UFServiceMessageV1 ->
+            when(msg){
+                is UFServiceMessageV1.State.WaitingUpdateWindow ->{ UFServiceMessageV1.State.WaitingUpdateAuthorization }
+                else -> msg
+            }.also { Log.i("v1", "mapping $msg to $this") }
+        }
+    )
+
+    @Suppress("FunctionName")
+    fun newV1_1():V1x = V1x()
 }
