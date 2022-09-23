@@ -107,8 +107,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Toast.LENGTH_SHORT).show()
 
             handleRemoteException {
-                mService!!.send(Communication.V1.In.RegisterClient(mMessenger).toMessage())
-                mService!!.send(Communication.V1.In.Sync(mMessenger).toMessage())
+                mService?.send(Communication.V1.In.RegisterClient(mMessenger).toMessage())
+                mService?.send(Communication.V1.In.Sync(mMessenger).toMessage())
             }
             mIsBound = true
         }
@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mResumeUpdateFab = findViewById(R.id.fab_resume_update)
         mResumeUpdateFab!!.setOnClickListener { _ ->
             handleRemoteException {
-                mService!!.send(Communication.V1.In.ForcePing.toMessage())
+                mService?.send(Communication.V1.In.ForcePing.toMessage())
             }
         }
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -210,9 +210,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.force_ping -> {
                 Log.d(TAG, "Force Ping Request")
                 handleRemoteException {
-                    if (mService != null) {
-                        mService!!.send(Communication.V1.In.ForcePing.toMessage())
-                    }
+                    mService?.send(Communication.V1.In.ForcePing.toMessage())
                 }
             }
 
@@ -226,7 +224,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun sendPermissionResponse(response: Boolean) {
         handleRemoteException {
-            mService!!.send(Communication.V1.In.AuthorizationResponse(response).toMessage())
+            mService?.send(Communication.V1.In.AuthorizationResponse(response).toMessage())
         }
     }
 
@@ -376,13 +374,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (mIsBound) {
             // If we have received the service, and hence registered with
             // it, then now is the time to unregister.
-            if (mService != null) {
-                try {
-                    mService!!.send(Communication.V1.In.UnregisterClient(mMessenger).toMessage())
-                } catch (e: RemoteException) {
-                    // There is nothing special we need to do if the service
-                    // has crashed.
-                }
+            try {
+                mService?.send(Communication.V1.In.UnregisterClient(mMessenger).toMessage())
+            } catch (e: RemoteException) {
+                // There is nothing special we need to do if the service
+                // has crashed.
             }
 
             // Detach our existing connection.
