@@ -243,14 +243,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         override fun handleMessage(msg: Message) {
-            when (val v1Msg = msg.toOutV1Message()) {
+            runCatching {
+                when (val v1Msg = msg.toOutV1Message()) {
 
-                is Communication.V1.Out.CurrentServiceConfiguration
-                -> handleServiceConfigurationMsg(v1Msg)
+                    is Communication.V1.Out.CurrentServiceConfiguration -> handleServiceConfigurationMsg(v1Msg)
 
-                is Communication.V1.Out.AuthorizationRequest -> handleAuthorizationRequestMsg(v1Msg)
+                    is Communication.V1.Out.AuthorizationRequest -> handleAuthorizationRequestMsg(v1Msg)
 
-                is Communication.V1.Out.ServiceNotification -> handleServiceNotificationMsg(v1Msg)
+                    is Communication.V1.Out.ServiceNotification -> handleServiceNotificationMsg(v1Msg)
+                }
+            }.onFailure {
+                Log.w(TAG, "Cannot handle the $msg message", it)
             }
         }
 
