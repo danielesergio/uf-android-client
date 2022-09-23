@@ -44,7 +44,7 @@ fun Message.toOutV1Message(): Communication.V1.Out {
             else -> throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
         }
     }.onFailure {
-        throw IllegalArgumentException("This message isn't sent by UF client (with api v1)")
+        throw IllegalArgumentException("This message isn't sent by UF client (with api v1)", it)
     }.getOrThrow()
 }
 
