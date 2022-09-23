@@ -12,7 +12,9 @@ package com.kynetics.uf.android.client
 import android.util.Log
 import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
+import com.kynetics.uf.android.cron.CronScheduler
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import org.eclipse.hara.ddiclient.api.DeploymentPermitProvider
 import org.eclipse.hara.ddiclient.api.HaraClient
 import org.eclipse.hara.ddiclient.api.MessageListener
@@ -20,6 +22,7 @@ import org.eclipse.hara.ddiclient.api.MessageListener
 class RestartableClientService constructor(
     private val client: UpdateFactoryClientWrapper,
     private val softDeploymentPermitProvider: DeploymentPermitProvider,
+
     listeners: List<MessageListener>): HaraClient by client{
     private var currentState:MessageListener.Message.State? = null
     private val _listeners:List<MessageListener> = listOf(
@@ -35,7 +38,29 @@ class RestartableClientService constructor(
     )
 
     private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
-    private var restartJob:Job? = null
+    private val channel: Channel<ConfigurationHandler> = Channel(Channel.CONFLATED)
+
+    private var job:Job = scope.launch {
+        for(conf in channel){
+            runCatching {
+                Log.i(TAG,"Try to restart the service")
+                while (!serviceRestartable()) {
+                    Log.i(TAG, "Service not restartable yet.")
+                    delay(10000)
+                }
+                Log.d(TAG, "Restarting service")
+                client.stop()
+                CronScheduler.removeScheduledJob(CRON_TAG)
+                client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider,
+                    AndroidForceDeploymentPermitProvider.build(CRON_TAG, conf.getCurrentConfiguration().updateWindows),
+                    _listeners)
+                client.startAsync()
+                Log.d(TAG, "Service restarted")
+            }.onFailure {
+                Log.d(TAG, "Error on restarting service", it)
+            }
+        }
+    }
 
     companion object{
         val TAG: String = RestartableClientService::class.java.simpleName
@@ -46,24 +71,11 @@ class RestartableClientService constructor(
                     softDeploymentPermitProvider,
                     listeners)
         }
+
+        private const val CRON_TAG = "ForceDeploymentTag"
     }
 
-    fun restartService(conf:ConfigurationHandler){
-        restartJob?.cancel()
-        restartJob = scope.launch{
-            Log.i(TAG,"Try to restart the service")
-            while (!serviceRestartable()) {
-                Log.i(TAG, "Service not restartable yet.")
-                delay(10000)
-            }
-            Log.d(TAG, "Restarting service")
-            client.stop()
-            client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider, AndroidForceDeploymentPermitProvider.build(
-                conf.getCurrentConfiguration().updateWindows), _listeners)
-            client.startAsync()
-            Log.d(TAG, "Service restarted")
-        }
-    }
+    fun restartService(conf:ConfigurationHandler) = channel.trySend(conf)
 
     override fun stop() {
         client.stop()
