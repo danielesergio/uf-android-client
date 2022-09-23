@@ -77,7 +77,7 @@ data class ConfigurationHandler(
             putString(sharedPreferencesGatewayToken, configuration.gatewayToken)
             putString(sharedPreferencesTargetToken, configuration.targetToken)
             putString(sharedPreferencesCronExpression, configuration.updateWindows.cronExpression)
-            putLong(sharedPreferencesUpdateWindowSize, configuration.updateWindows.windowSize)
+            putString(sharedPreferencesUpdateWindowSize, "${configuration.updateWindows.windowSize}")
             putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode)
             putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable)
             putBoolean(sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)

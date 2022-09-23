@@ -90,7 +90,7 @@
             android:maxLines="1"
             android:selectAllOnFocus="true" />
 
-        <EditTextPreference
+        <com.kynetics.uf.android.ui.preferences.NumbersPreference
             android:defaultValue="3600"
             android:title="@string/time_windows_size_label"
             android:inputType="number"
