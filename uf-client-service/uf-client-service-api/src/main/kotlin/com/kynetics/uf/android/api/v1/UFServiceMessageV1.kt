@@ -44,7 +44,8 @@ sealed class UFServiceMessageV1 {
         POLLING,
         ALL_FILES_DOWNLOADED,
         UPDATE_AVAILABLE,
-        CONFIGURATION_ERROR
+        CONFIGURATION_ERROR,
+        WAITING_UPDATE_WINDOW,
     }
 
     override fun toString(): String {
@@ -108,6 +109,16 @@ sealed class UFServiceMessageV1 {
          *  Client is waiting for an authorization to start the update
          */
         object WaitingUpdateAuthorization : State(MessageName.WAITING_UPDATE_AUTHORIZATION, "Waiting authorization to start update")
+
+        /**
+         * Client is waiting the update windows to apply the update
+         */
+        @Serializable
+        data class WaitingUpdateWindow(val secondsFromNextUpdateWindow:Long?): State(MessageName.WAITING_UPDATE_WINDOW, "Waiting for the next update window to apply the update"){
+            override fun toJson(): String {
+                return json.encodeToString(serializer(), this)
+            }
+        }
 
         /**
          *  Client is waiting for new requests from server
@@ -269,6 +280,7 @@ sealed class UFServiceMessageV1 {
                 MessageName.ALL_FILES_DOWNLOADED.name -> Event.AllFilesDownloaded
                 MessageName.UPDATE_AVAILABLE.name -> json.decodeFromString(Event.UpdateAvailable.serializer(), jsonContent)
                 MessageName.CONFIGURATION_ERROR.name -> json.decodeFromString(State.ConfigurationError.serializer(), jsonContent)
+                MessageName.WAITING_UPDATE_WINDOW.name -> json.decodeFromString(State.WaitingUpdateWindow.serializer(), jsonContent)
 
                 else -> throw IllegalArgumentException("$jsonContent is not obtained by toJson method of ${UFServiceMessageV1::class.java.simpleName}")
             }
