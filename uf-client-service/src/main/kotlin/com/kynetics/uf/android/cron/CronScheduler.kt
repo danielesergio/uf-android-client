@@ -20,19 +20,21 @@ import java.util.*
 object CronScheduler {
     private val TAG:String = CronScheduler::class.java.simpleName
 
-    private var authJob: Job? = null
+    private var scheduledJobs: MutableMap<String, Job> = mutableMapOf()
 
     sealed interface Status{
         data class Error(val details:List<String>):Status
         data class Scheduled(val seconds:Long):Status
     }
 
-    fun schedule(timeWindows: UFServiceConfigurationV2.TimeWindows, action:()->Unit):Status{
+    fun schedule(tag:String,
+                 timeWindows: UFServiceConfigurationV2.TimeWindows,
+                 action:()->Unit):Status{
         with(ExecutionTime.forCron(HaraCronParser.parse(timeWindows.cronExpression))){
             val now: ZonedDateTime = ZonedDateTime.now()
             val lastExecution = lastExecution(now)
             val nextExecution = timeToNextExecution(now)
-            authJob?.cancel()
+            scheduledJobs[tag]?.cancel()
             return when{
                 isInTimeWindows(now, lastExecution, timeWindows) ->{
                     action()
@@ -42,7 +44,7 @@ object CronScheduler {
                 nextExecution.isPresent -> {
                     runCatching{
                         val delay = nextExecution.get().toMillis()
-                        authJob = GlobalScope.launch(Dispatchers.IO) {
+                        scheduledJobs[tag] = GlobalScope.launch(Dispatchers.IO) {
                             delay(delay)
                             action()
                         }
@@ -61,6 +63,7 @@ object CronScheduler {
         }
     }
 
+    fun removeScheduledJob(tag:String) = scheduledJobs[tag]?.cancel()
 
     private fun isInTimeWindows(now:ZonedDateTime,
                                 lastExecution: Optional<ZonedDateTime>,

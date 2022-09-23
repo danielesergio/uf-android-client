@@ -12,7 +12,7 @@ interface AndroidForceDeploymentPermitProvider: DeploymentPermitProvider {
 
     companion object{
 
-        fun build(timeWindows: UFServiceConfigurationV2.TimeWindows):AndroidForceDeploymentPermitProvider{
+        fun build(tag:String, timeWindows: UFServiceConfigurationV2.TimeWindows):AndroidForceDeploymentPermitProvider{
             return object : AndroidForceDeploymentPermitProvider{
 
                 private var forceResponse = CompletableDeferred<Boolean>()
@@ -21,7 +21,7 @@ interface AndroidForceDeploymentPermitProvider: DeploymentPermitProvider {
                     forceResponse.complete(false)
                     forceResponse = CompletableDeferred()
 
-                    CronScheduler.schedule(timeWindows){
+                    CronScheduler.schedule(tag, timeWindows){
                         forceResponse.complete(true)
                     }.also { status ->
                         when(status){
