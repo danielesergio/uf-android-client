@@ -13,9 +13,8 @@ import android.util.Log
 import com.cronutils.model.time.ExecutionTime
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import kotlinx.coroutines.*
-import java.time.Duration
-import java.time.LocalTime
 import java.time.ZonedDateTime
+import java.util.*
 
 @OptIn(DelicateCoroutinesApi::class)
 object CronScheduler {
@@ -23,34 +22,51 @@ object CronScheduler {
 
     private var authJob: Job? = null
 
-    fun schedule(timeWindows: UFServiceConfigurationV2.TimeWindows, action:()->Unit){
+    sealed interface Status{
+        data class Error(val details:List<String>):Status
+        data class Scheduled(val seconds:Long):Status
+    }
+
+    fun schedule(timeWindows: UFServiceConfigurationV2.TimeWindows, action:()->Unit):Status{
         with(ExecutionTime.forCron(HaraCronParser.parse(timeWindows.cronExpression))){
             val now: ZonedDateTime = ZonedDateTime.now()
-            val nextExecution = nextExecution(now)
             val lastExecution = lastExecution(now)
+            val nextExecution = timeToNextExecution(now)
             authJob?.cancel()
-            when{
-                lastExecution.isPresent &&
-                        isNowOnValidTimeWindow(
-                            now.toLocalTime(),
-                            lastExecution.get().toLocalTime(),
-                            lastExecution.get().plusSeconds(timeWindows.windowSize).toLocalTime()) ->{
-                                action()
-                            }
-                nextExecution.isPresent -> {
-                    authJob = GlobalScope.launch(Dispatchers.IO) {
-                        delay(Duration.between(now, nextExecution.get()).toMillis())
-                        action()
-                    }
+            return when{
+                isInTimeWindows(now, lastExecution, timeWindows) ->{
+                    action()
+                    Status.Scheduled(0)
                 }
+
+                nextExecution.isPresent -> {
+                    runCatching{
+                        val delay = nextExecution.get().toMillis()
+                        authJob = GlobalScope.launch(Dispatchers.IO) {
+                            delay(delay)
+                            action()
+                        }
+                        Status.Scheduled(nextExecution.get().seconds)
+                    }.onFailure { exception ->
+                        Log.w(TAG, "Error on scheduling next job", exception)
+                        return Status.Error(listOf("Error on scheduling next job", exception.message?:""))
+                    }.getOrThrow()
+                }
+
                 else -> {
                     Log.w(TAG, "Next execution not exist")
+                    Status.Error(listOf("Next update windows not exist", "Check the cron expression"))
                 }
             }
         }
     }
 
-    private fun isNowOnValidTimeWindow(now:LocalTime, last: LocalTime, next: LocalTime) : Boolean{
-        return now.isAfter(last) && now.isBefore(next)
+
+    private fun isInTimeWindows(now:ZonedDateTime,
+                                lastExecution: Optional<ZonedDateTime>,
+                                timeWindows: UFServiceConfigurationV2.TimeWindows):Boolean{
+        return lastExecution.isPresent &&
+                now.isAfter(lastExecution.get()) &&
+                now.isBefore(lastExecution.get().plusSeconds(timeWindows.windowSize))
     }
 }
