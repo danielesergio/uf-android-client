@@ -48,6 +48,7 @@ object CronScheduler {
                             delay(delay)
                             action()
                         }
+                        Log.i(TAG, "Job scheduled will start in ${nextExecution.get().seconds} seconds")
                         Status.Scheduled(nextExecution.get().seconds)
                     }.onFailure { exception ->
                         Log.w(TAG, "Error on scheduling next job", exception)
