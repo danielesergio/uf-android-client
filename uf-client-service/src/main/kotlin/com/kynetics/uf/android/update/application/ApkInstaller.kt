@@ -15,8 +15,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.Installer
-import com.kynetics.uf.android.update.InstallerSession
-import com.kynetics.uf.android.update.UpdateConfirmationTimeoutProvider
 import com.kynetics.uf.android.update.application.ApkAnalyzer.getPackageFromApk
 import com.kynetics.uf.android.update.application.ApkAnalyzer.getVersionFromApk
 import com.kynetics.uf.android.update.application.ApkAnalyzer.verifySharedUserId
