@@ -229,14 +229,14 @@ internal object ABOtaInstaller : OtaInstaller {
         private var previousState = Int.MAX_VALUE
         private val queue = ArrayBlockingQueue<Double>(MAX_MESSAGES_PER_PHASE, true)
 
-        override fun onStatusUpdate(i: Int, v: Float) { // i==status  v==percent
-            Log.d(TAG, "status:$i")
-            Log.d(TAG, "percent:$v")
-            val currentPhaseProgress = min(v.toDouble(),100.0)
-            val newPhase = previousState != i
+        override fun onStatusUpdate(status: Int, percent: Float) { // i==status  v==percent
+            Log.d(TAG, "status:$status")
+            Log.d(TAG, "percent:$percent")
+            val currentPhaseProgress = min(percent.toDouble(),100.0)
+            val newPhase = previousState != status
             if (newPhase) {
-                previousState = i
-                messenger.sendMessageToServer(UPDATE_STATUS.getValue(i))
+                previousState = status
+                messenger.sendMessageToServer(UPDATE_STATUS.getValue(status))
                 queue.clear()
                 queue.addAll((1 until MAX_MESSAGES_PER_PHASE).map { it.toDouble() / MAX_MESSAGES_PER_PHASE })
             }
@@ -244,7 +244,7 @@ internal object ABOtaInstaller : OtaInstaller {
             val limit = queue.peek() ?: 1.0
             if (currentPhaseProgress > limit || currentPhaseProgress == 1.0 || newPhase) {
                 MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.UpdateProgress(
-                    phaseName = UPDATE_STATUS.getValue(i),
+                    phaseName = UPDATE_STATUS.getValue(status),
                     percentage = currentPhaseProgress
                 ))
 
@@ -253,7 +253,7 @@ internal object ABOtaInstaller : OtaInstaller {
                 }
             }
 
-            if (i == UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT) {
+            if (status == UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT) {
                 val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
                 pm!!.reboot(null)
                 Log.w(TAG, "Reboot fail")
@@ -263,12 +263,12 @@ internal object ABOtaInstaller : OtaInstaller {
             }
         }
 
-        override fun onPayloadApplicationComplete(errorNum: Int) {
+        override fun onPayloadApplicationComplete(error: Int) {
             Log.d(
                 TAG,
-                "onPayloadApplicationComplete: $errorNum"
+                "onPayloadApplicationComplete: $error"
             )
-            updateStatus.complete(errorNum)
+            updateStatus.complete(error)
         }
     }
 }

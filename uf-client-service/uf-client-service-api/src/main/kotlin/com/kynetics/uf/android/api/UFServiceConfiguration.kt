@@ -7,6 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.kynetics.uf.android.api
 
 import kotlinx.serialization.Serializable
@@ -54,6 +56,7 @@ data class UFServiceConfiguration(
     /**
      * Json serialization
      */
+    @Suppress("unused")
     fun toJson(): String {
         return json.encodeToString(serializer(), this)
     }
@@ -220,6 +223,7 @@ data class UFServiceConfiguration(
         /**
          * Validate the [UFServiceConfiguration] that is built using the [build] method
          */
+        @Suppress("unused")
         fun configurationIsValid(): Boolean {
             return (notEmptyString(tenant) &&
                     notEmptyString(controllerId) &&
@@ -249,6 +253,7 @@ data class UFServiceConfiguration(
          * @throws [JsonException] in case of malformed json
          * @throws [SerializationException] if given input can not be deserialized
          */
+        @Suppress("KDocUnresolvedReference")
         @JvmStatic
         fun fromJson(data: String): UFServiceConfiguration {
             return json.decodeFromString(serializer(), data)

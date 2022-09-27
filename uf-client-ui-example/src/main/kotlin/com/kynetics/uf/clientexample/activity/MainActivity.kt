@@ -242,6 +242,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         override fun handleMessage(msg: Message) {
             runCatching {
+                @Suppress("DEPRECATION")
                 when (val v1Msg = msg.toOutV1Message()) {
 
                     is Communication.V1.Out.CurrentServiceConfiguration -> handleServiceConfigurationMsg(v1Msg)
@@ -249,6 +250,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     is Communication.V1.Out.AuthorizationRequest -> handleAuthorizationRequestMsg(v1Msg)
 
                     is Communication.V1.Out.ServiceNotification -> handleServiceNotificationMsg(v1Msg)
+
+                    is Communication.V1.Out.CurrentServiceConfigurationV2 -> handleServiceConfigurationV2Msg(v1Msg)
                 }
             }.onFailure {
                 Log.w(TAG, "Cannot handle the $msg message", it)
@@ -256,10 +259,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         private fun handleServiceConfigurationMsg(
+            @Suppress("DEPRECATION")
             currentServiceConfiguration: Communication.V1.Out.CurrentServiceConfiguration
         ) {
            Log.i(TAG, currentServiceConfiguration.conf.toString())
         }
+
+        private fun handleServiceConfigurationV2Msg(
+            currentServiceConfiguration: Communication.V1.Out.CurrentServiceConfigurationV2
+        ) {
+            Log.i(TAG, currentServiceConfiguration.conf.toString())
+        }
+
+
 
         private fun handleAuthorizationRequestMsg(authRequest: Communication.V1.Out.AuthorizationRequest) =
             activityRef.execute {

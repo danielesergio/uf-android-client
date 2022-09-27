@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-@file:Suppress("ClassName")
+@file:Suppress("ClassName", "DEPRECATION")
 
 package com.kynetics.uf.android.communication
 
