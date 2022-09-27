@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017-2020  Kynetics  LLC
+ * Copyright © 2017-2022  Kynetics  LLC
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,16 +7,13 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package com.kynetics.uf.android.update
+package com.kynetics.uf.android.update.system
 
 import android.content.Context
 import android.os.Build
 import android.os.SystemProperties
 import androidx.annotation.RequiresApi
 import com.kynetics.uf.android.R
-import com.kynetics.uf.android.update.system.ABOtaInstaller
-import com.kynetics.uf.android.update.system.OtaInstaller
-import com.kynetics.uf.android.update.system.SingleCopyOtaInstaller
 
 enum class SystemUpdateType(val readableName: String) {
 

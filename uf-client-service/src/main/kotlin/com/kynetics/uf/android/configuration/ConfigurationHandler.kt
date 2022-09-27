@@ -23,7 +23,7 @@ import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companio
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.update.CurrentUpdateState
-import com.kynetics.uf.android.update.SystemUpdateType
+import com.kynetics.uf.android.update.system.SystemUpdateType
 import com.kynetics.uf.android.update.application.ApkUpdater
 import com.kynetics.uf.android.update.system.OtaUpdater
 import com.kynetics.uf.ddiclient.HaraClientFactory

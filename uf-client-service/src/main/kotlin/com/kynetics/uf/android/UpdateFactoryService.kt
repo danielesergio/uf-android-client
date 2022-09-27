@@ -32,7 +32,7 @@ import com.kynetics.uf.android.configuration.ConfigurationHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.ui.MainActivity
 import com.kynetics.uf.android.update.CurrentUpdateState
-import com.kynetics.uf.android.update.SystemUpdateType
+import com.kynetics.uf.android.update.system.SystemUpdateType
 import de.psdev.slf4j.android.logger.AndroidLoggerAdapter
 import de.psdev.slf4j.android.logger.LogLevel
 import org.eclipse.hara.ddiclient.api.MessageListener
