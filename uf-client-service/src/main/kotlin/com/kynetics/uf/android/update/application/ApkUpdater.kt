@@ -12,6 +12,7 @@ package com.kynetics.uf.android.update.application
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import com.kynetics.uf.android.api.UFServiceInfo
 import com.kynetics.uf.android.update.AndroidUpdater
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.application.ApkAnalyzer.getPackageFromApk
@@ -62,6 +63,14 @@ class ApkUpdater(context: Context) : AndroidUpdater(context) {
         modules.flatMap { it.artifacts }
             .filter { !currentUpdateState.isPackageInstallationTerminated(
                 getPackageFromApk(context, it.path), getVersionFromApk(context, it.path))
+            }.sortedWith { artifact1, artifact2 ->
+                val pk1 = getPackageFromApk(context, artifact1.path) ?: ""
+                val pk2 = getPackageFromApk(context, artifact2.path) ?: ""
+                when {
+                    pk1 == UFServiceInfo.SERVICE_PACKAGE_NAME -> -1
+                    pk2 == UFServiceInfo.SERVICE_PACKAGE_NAME -> 1
+                    else -> artifact1.filename.compareTo(artifact2.filename)
+                }
             }.forEach { a ->
                 Log.d(TAG, "install artifact ${a.filename} from file ${a.path}")
                 try {
