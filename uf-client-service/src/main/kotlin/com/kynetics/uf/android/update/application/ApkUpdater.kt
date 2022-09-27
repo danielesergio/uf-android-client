@@ -72,7 +72,7 @@ class ApkUpdater(context: Context) : AndroidUpdater(context) {
                     else -> artifact1.filename.compareTo(artifact2.filename)
                 }
             }.forEach { a ->
-                Log.d(TAG, "install artifact ${a.filename} from file ${a.path}")
+                Log.d(TAG, "install artifact ${a.filename} (${ getPackageFromApk(context, a.path) }) from file ${a.path}")
                 try {
                     ApkInstaller.install(a, currentUpdateState, messenger, context)
                 } catch (t: Throwable) { // new client replace with IOException | IllegalArgumentException e
