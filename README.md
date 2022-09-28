@@ -6,46 +6,50 @@
 <a href="https://jitpack.io/#kynetics/uf-android-client"><img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/kynetics/uf-android-client"></a>
 </p>
 
-UFAndroidClient is an Android application that applies app (apk) and system (OTA) software updates received from an [UpdateFactory](https://www.kynetics.com/iot-platform-update-factory) or [Hawkbit](https://eclipse.org/hawkbit/) server.
+UFAndroidClient is an Android application that applies app (apk) and system (OTA for single copy or double copy system) software updates received from an [UpdateFactory](https://www.kynetics.com/iot-platform-update-factory) or [Hawkbit](https://eclipse.org/hawkbit/) server.
 
 Links to official documentation:
+- [overview](https://docs.updatefactory.io/devices/android/android-client/)
 - [installation](https://docs.updatefactory.io/devices/android/android-client-packages/)
 - [configuration file](https://docs.updatefactory.io/devices/android/android-config-files/)
 - [third-party integration](https://docs.updatefactory.io/devices/android/third-party-integration-v1/)
+- [troubleshooting](https://docs.updatefactory.io/devices/android/android-troubleshooting/)
 - [kdocs API](https://kynetics.github.io/uf-android-client/)
-
-## Build
-To build this project the Android SDK Platform `android.jar` should be replaced with the Android Hidden API `android.jar` file as described in [Android Hidden API README](https://github.com/anggrayudi/android-hidden-api).
-On Linux the [installation script](install_android-hidden-api-jar.sh) can be used to automatically install the `android.jar`.
-
-**This is the [android.jar](https://github.com/Reginer/aosp-android-jar/blob/main/android-30/android.jar) 
-to use because of this [issue](https://github.com/anggrayudi/android-hidden-api/issues/84)**
 
 ## uf-client-service
 uf-client-service is an android service that run in background and manage the updates.
 
-uf-client-service must be install as **SYSTEM** application. [Android hidden api](https://github.com/anggrayudi/android-hidden-api) 
-are used from the version 1.0 to support update of systems with double partitions.
+uf-client-service must be install as **SYSTEM** application.
 
 ### State diagrams
 #### Main
-![UF STM Main](https://drive.google.com/uc?export=view&id=1g8r0gk7tNlrCbquzMlhXmDDGMxYc6kxT)
+![UF STM Main](https://drive.google.com/uc?export=view&id=1FXw8Au_NmpAaJhVkhzwV9ED1-nfdtMXG)
 #### Update
-![UF STM Update](https://drive.google.com/uc?export=view&id=1-EWX7pIpEWcBf3RFFW8MBhleooD8Nbp8)
+![UF STM Update](https://drive.google.com/uc?export=view&id=1OMwLV1RwluYuMvEukEcDgLAbb9OjEVMa)
 
-## uf-client-ui-example
-Uf-client-ui-example is an example of application that use the uf-client-service
+## Modules
+- **uf-client-service**: service implementation that apply the updates received by the update factory server
+- **uf-client-service-api**: service api used by the third-party apps to communicate with the *uf-client-service*
+- **os-mock**: mock implementation of the android hidden api used by the *uf-client-service*
+- **uf-ddiclient**: hara-ddiclient customization for Android and Update Factory
+- **uf-client-ui-example**: an example of application that use the uf-client-service via *uf-client-service-api*
 
 ## Third-Party Libraries
-* [uf-ddiclient](https://github.com/Kynetics/uf-ddiclient) library
+* [hara-ddiclient](https://github.com/eclipse/hara-ddiclient) - [Eclipse Public License 2.0](https://github.com/eclipse/hara-ddiclient/blob/master/LICENSE)
+* [slf4j-android-logger](https://github.com/PSDev/slf4j-android-logger) - [Apache License 2.0](https://github.com/PSDev/slf4j-android-logger/blob/master/LICENSE.txt)
+* [gson](https://github.com/google/gson) - [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
+* [Retrofit](https://github.com/square/retrofit) - [Apache License 2.0](https://github.com/square/retrofit/blob/master/LICENSE.txt)
+* [OkHttp](https://github.com/square/okhttp) - [Apache License 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+* [cron-utils](https://github.com/jmrozanec/cron-utils) - [Apache License 2.0](https://github.com/jmrozanec/cron-utils/blob/master/LICENSE)
 
 ## Authors
-* **Daniele Sergio** - *Initial work* - [danielesergio](https://github.com/danielesergio)
-* **Andrea Zoleo** 
-* **Diego Rondini**
+* [Daniele Sergio](https://github.com/danielesergio) - *Initial work*
+* [Andrea Zoleo](https://github.com/andrea-zoleo) 
+* [Diego Rondini](https://github.com/diegorondini)
+* [Alberto Battiston](https://github.com/albertob13)
 
 See also the list of [contributors](https://github.com/Kynetics/UfAndroidClient/graphs/contributors) who participated in this project.
 
 ## License
-Copyright © 2017-2020, [Kynetics LLC](https://www.kynetics.com).
+Copyright © 2017-2022, [Kynetics LLC](https://www.kynetics.com).
 Released under the [EPLv1 License](http://www.eclipse.org/legal/epl-v10.html).
