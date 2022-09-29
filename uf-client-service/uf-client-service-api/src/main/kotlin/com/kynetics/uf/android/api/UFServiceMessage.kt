@@ -28,6 +28,7 @@ class UFServiceMessage(
 ) : Serializable {
     val dateTime: String
 
+    @Deprecated(message = "As of release 1.0.0")
     enum class Suspend {
         NONE, DOWNLOAD, UPDATE
     }
@@ -37,6 +38,7 @@ class UFServiceMessage(
         this.dateTime = dateFormat.format(Date())
     }
 
+    @Deprecated(message = "As of release 1.0.0")
     companion object {
         private const val serialVersionUID = -7571115123564137773L
     }
