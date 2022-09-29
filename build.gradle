@@ -35,7 +35,7 @@ buildscript {
 plugins {
     id "kotlinx-serialization" version "1.6.10" apply true
     id "io.gitlab.arturbosch.detekt" version "1.0.0-RC16"
-    id "org.jetbrains.dokka-android" version "0.9.18"
+    id "org.jetbrains.dokka" version "1.7.10"
     id 'org.ajoberstar.grgit' version '5.0.0'
 
     // ... another plugins
@@ -123,4 +123,33 @@ task checkJitpackBuild(){
 
     }
 
+}
+
+void configureDokka(String taskName, Project pr){
+    def currentYear = new Date().getYear() + 1900
+
+    if(pr.tasks.findByName(taskName)) {
+        pr.tasks.named(taskName).configure {
+            pluginsMapConfiguration.set(
+                    [
+                            "org.jetbrains.dokka.base.DokkaBase": """{
+                                "footerMessage": "Copyright @ $currentYear Kynetics"
+                            }"""
+                    ]
+            )
+        }
+    }
+}
+
+def dokkaProjects = ['uf-client-service-api']
+configureDokka('dokkaHtmlMultiModule', project)
+
+subprojects{
+    if(dokkaProjects.contains(it.name)){
+        apply plugin: "org.jetbrains.dokka"
+        it.afterEvaluate {
+            configureDokka('dokkaHtml', it)
+            configureDokka('dokkaHtmlPartial', it)
+        }
+    }
 }
