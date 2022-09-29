@@ -9,6 +9,9 @@
 
 package com.kynetics.uf.android.api
 
+/**
+ * Utility constants related to the Update Factory Service
+ */
 object UFServiceInfo {
     /**
      * Package name of the Update Factory Service
@@ -21,7 +24,7 @@ object UFServiceInfo {
     const val SERVICE_ACTION = "com.kynetics.action.BIND_UF_SERVICE"
 
     /**
-     * Action to open the Update Factory Settings
+     * Action to open the Update Factory Service settings
      */
     const val ACTION_SETTINGS = "com.kynetics.action.SETTINGS"
 }

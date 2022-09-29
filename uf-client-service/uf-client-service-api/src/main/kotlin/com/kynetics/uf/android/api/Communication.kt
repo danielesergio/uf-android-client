@@ -15,8 +15,9 @@ import android.os.Messenger
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 
 /**
- * Transform an instance of [android.os.Message] to [Communication.V1.Out]
+ * Transform an instance of [Message] to [Communication.V1.Out]
  *
+ * @receiver [Message] to be converted into a [Communication.V1.Out]
  * @throws IllegalArgumentException if the message can't be transformed to an
  *   [Communication.V1.Out] instance.
  */
@@ -64,6 +65,9 @@ sealed class Communication(val id: Int) {
         const val SERVICE_API_VERSION_KEY = "API_VERSION_KEY"
     }
 
+    /**
+     * Communication messages available in V1.x communication api
+     */
     sealed class V1(id: Int) : Communication(id) {
 
         companion object {
@@ -79,7 +83,12 @@ sealed class Communication(val id: Int) {
          * @property id message code so that the recipient can identify what this message is about
          *  ([android.os.Message.what])
          */
-        sealed class In(id: Int) : V1(id) {
+        sealed class In(
+            /**
+             * message code so that the recipient can identify what this message is about
+             */
+            id: Int
+        ) : V1(id) {
 
             /**
              * Convert the object to the corresponding [android.os.Message] instance.
@@ -100,7 +109,16 @@ sealed class Communication(val id: Int) {
              * @property id message code so that the recipient can identify what this message is about
              *  ([android.os.Message.what])
              */
-            abstract class WithReplyTo(val replyTo: Messenger, id: Int) : In(id) {
+            abstract class WithReplyTo(
+                /**
+                 * [Messenger] where replies to this message is sent
+                 */
+                val replyTo: Messenger,
+                /**
+                 * message code so that the recipient can identify what this message is about
+                 */
+                id: Int
+            ) : In(id) {
                 override fun toMessage(): Message {
                     val msg = super.toMessage()
                     msg.replyTo = replyTo
@@ -121,7 +139,11 @@ sealed class Communication(val id: Int) {
              */
             @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.Communication.V1.In.ConfigureServiceV2")
             @Suppress("DEPRECATION")
-            class ConfigureService(@Suppress("MemberVisibilityCanBePrivate") val conf: UFServiceConfiguration) : In(ID) {
+            class ConfigureService(
+                /**
+                 * the service configuration
+                 */
+                @Suppress("MemberVisibilityCanBePrivate") val conf: UFServiceConfiguration) : In(ID) {
                 companion object {
                     const val ID = 1
                 }
@@ -142,7 +164,12 @@ sealed class Communication(val id: Int) {
              *  @property conf the service configuration
              *  @see UFServiceConfigurationV2
              */
-            class ConfigureServiceV2(@Suppress("MemberVisibilityCanBePrivate") val conf: UFServiceConfigurationV2) : In(ID) {
+            class ConfigureServiceV2(
+                @Suppress("MemberVisibilityCanBePrivate")
+                /**
+                 * the service configuration
+                 */
+                val conf: UFServiceConfigurationV2) : In(ID) {
                 companion object {
                     const val ID = 10
                 }
@@ -161,9 +188,14 @@ sealed class Communication(val id: Int) {
              * Class use to build a message to subscribe a [Messenger] to the service notification
              * system.
              *
-             * @property replyTo the client that it want to subscribe to service notification
+             * @property replyTo the [Messenger] that it want to subscribe to service notification
              */
-            class RegisterClient(replyTo: Messenger) : WithReplyTo(replyTo, ID) {
+            class RegisterClient(
+                /**
+                 * [Messenger] where replies to this message is sent
+                 */
+                replyTo: Messenger
+            ) : WithReplyTo(replyTo, ID) {
                 companion object {
                     const val ID = 2
                 }
@@ -173,9 +205,14 @@ sealed class Communication(val id: Int) {
              * Class use to build a message to unsubscribe a [Messenger] to the service notification
              * system.
              *
-             * @property replyTo the client that it want to unsubscribe to service notification
+             * @property replyTo the [Messenger] that it want to unsubscribe to service notification
              */
-            class UnregisterClient(replyTo: Messenger) : WithReplyTo(replyTo, ID) {
+            class UnregisterClient(
+                /**
+                 * [Messenger] where replies to this message is sent
+                 */
+                replyTo: Messenger
+            ) : WithReplyTo(replyTo, ID) {
                 companion object {
                     const val ID = 3
                 }
@@ -184,8 +221,15 @@ sealed class Communication(val id: Int) {
             /**
              * Class use to build a message to grant / denied  an authorization
              *
+             * @property granted, true to grant the auth, false otherwise
              */
-            class AuthorizationResponse(@Suppress("MemberVisibilityCanBePrivate")  val granted: Boolean) : In(ID) {
+            class AuthorizationResponse(
+                @Suppress("MemberVisibilityCanBePrivate")
+                /**
+                 * true to grant the auth, false otherwise
+                 */
+                val granted: Boolean
+            ) : In(ID) {
                 companion object {
                     const val ID = 6
                 }
@@ -206,11 +250,17 @@ sealed class Communication(val id: Int) {
              * the first message contains the service's state and the second message contains the
              * service's configuration
              *
+             * @property replyTo the [Messenger] that it want to unsubscribe to service notification*
              * @see Communication.V1.Out.ServiceNotification
              * @see Communication.V1.Out.CurrentServiceConfiguration
              *
              */
-            class Sync(replyTo: Messenger) : WithReplyTo(replyTo, ID) {
+            class Sync(
+                /**
+                 * [Messenger] where replies to this message is sent
+                 */
+                replyTo: Messenger
+            ) : WithReplyTo(replyTo, ID) {
                 companion object {
                     const val ID = 8
                 }
@@ -231,7 +281,12 @@ sealed class Communication(val id: Int) {
          * @property id message code so that the recipient can identify what this message is about
          *  ([android.os.Message.what])
          */
-        sealed class Out(id: Int) : V1(id) {
+        sealed class Out(
+            /**
+             * message code so that the recipient can identify what this message is about
+             */
+            id: Int
+        ) : V1(id) {
             /**
              * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
              * sends to clients with the information about its state. This message is sent after each
@@ -240,7 +295,11 @@ sealed class Communication(val id: Int) {
              * @property content is the representation of the current service's state
              * @see UFServiceMessageV1
              */
-            class ServiceNotification(val content: UFServiceMessageV1) : Out(ID) {
+            class ServiceNotification(
+                /**
+                 * The notification content
+                 */
+                val content: UFServiceMessageV1) : Out(ID) {
                 /**
                  * @suppress
                  */
@@ -255,7 +314,11 @@ sealed class Communication(val id: Int) {
              *
              * @property authName is the kind of authorization, it is one between *DOWNLOAD* and *UPDATE*
              */
-            class AuthorizationRequest(val authName: String) : Out(ID) {
+            class AuthorizationRequest(
+                /**
+                 *  the kind of authorization, it is one between *DOWNLOAD* and *UPDATE*
+                 */
+                val authName: String) : Out(ID) {
                 /**
                  * @suppress
                  */
@@ -268,10 +331,16 @@ sealed class Communication(val id: Int) {
              * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
              * sends to the client as response of a [Communication.V1.In.Sync] message.
              * @property conf is the service's configuration
+             * @see UFServiceConfiguration
              */
             @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.Communication.V1.Out.CurrentServiceConfigurationV2")
             @Suppress("DEPRECATION", "MemberVisibilityCanBePrivate")
-            class CurrentServiceConfiguration(val conf: UFServiceConfiguration) : Out(ID) {
+            class CurrentServiceConfiguration(
+                /**
+                 * the service's configuration
+                 */
+                val conf: UFServiceConfiguration
+            ) : Out(ID) {
                 /**
                  * @suppress
                  */
@@ -284,8 +353,15 @@ sealed class Communication(val id: Int) {
              * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
              * sends to the client as response of a [Communication.V1.In.Sync] message.
              * @property conf is the service's configuration
+             * @see UFServiceConfigurationV2
              */
-            class CurrentServiceConfigurationV2(@Suppress("MemberVisibilityCanBePrivate")  val conf: UFServiceConfigurationV2) : Out(ID) {
+            class CurrentServiceConfigurationV2(
+                @Suppress("MemberVisibilityCanBePrivate")
+                /**
+                 * the service's configuration
+                 */
+                val conf: UFServiceConfigurationV2
+            ) : Out(ID) {
                 /**
                  * @suppress
                  */

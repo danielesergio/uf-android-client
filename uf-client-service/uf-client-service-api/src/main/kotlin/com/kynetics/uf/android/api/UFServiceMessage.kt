@@ -19,7 +19,7 @@ import java.util.*
  * @see ApiCommunicationVersion.V0_1
  * @see com.kynetics.uf.android.api.v1.UFServiceMessageV1
  */
-@Deprecated("As of release 1.0.0 replaced by com.kynetics.uf.android.api.v1.UFServiceMessageV1")
+@Deprecated(message = "As of release 1.0.0 replaced by com.kynetics.uf.android.api.v1.UFServiceMessageV1")
 class UFServiceMessage(
     val eventName: String,
     val oldState: String,

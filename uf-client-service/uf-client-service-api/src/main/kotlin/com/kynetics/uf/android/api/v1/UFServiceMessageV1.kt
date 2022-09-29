@@ -259,6 +259,7 @@ sealed class UFServiceMessageV1 {
          * @throws [IllegalArgumentException] if given input isn't a UFServiceMessageV1 json serialization
          */
         @Suppress("ComplexMethod")
+        @JvmStatic
         fun fromJson(jsonContent: String): UFServiceMessageV1 {
             val jsonElement = json.parseToJsonElement(jsonContent)
             return when (jsonElement.jsonObject["name"]?.jsonPrimitive?.content) {

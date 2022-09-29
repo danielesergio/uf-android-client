@@ -31,7 +31,11 @@ import kotlinx.serialization.json.Json
  *  Hawkbit server
  * @property targetAttributes target's tags
  */
-@Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2")
+@Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2",
+    ReplaceWith(
+        "UFServiceConfigurationV2",
+        "com.kynetics.uf.android.api.UFServiceConfigurationV2"
+    ))
 data class UFServiceConfiguration(
         val tenant: String,
         val controllerId: String,
@@ -236,6 +240,7 @@ data class UFServiceConfiguration(
         }
     }
 
+    @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2")
     companion object {
         private val json = Json { encodeDefaults = true }
         private const val serialVersionUID = -6025361892414738765L
@@ -244,6 +249,12 @@ data class UFServiceConfiguration(
          * Instantiate a builder
          */
         @JvmStatic
+        @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2",
+            ReplaceWith(
+                "UFServiceConfigurationV2",
+                "com.kynetics.uf.android.api.UFServiceConfigurationV2"
+            )
+        )
         fun builder(): Builder {
             return Builder()
         }

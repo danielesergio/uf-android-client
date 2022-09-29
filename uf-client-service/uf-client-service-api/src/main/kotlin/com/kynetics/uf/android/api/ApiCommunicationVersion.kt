@@ -16,18 +16,44 @@ package com.kynetics.uf.android.api
  * @property versionName the ApiCommunicationVersion's version name
  */
 @Suppress("MemberVisibilityCanBePrivate")
-enum class ApiCommunicationVersion(val versionCode: Int, val versionName: String) {
+enum class ApiCommunicationVersion(
+    /**
+     * the ApiCommunicationVersion's version code number
+     */
+    val versionCode: Int,
+    /**
+     * the ApiCommunicationVersion's version name
+     */
+    val versionName: String) {
+
+    /**
+     * Api version 0.1
+     */
     V0_1(0, "0.1"),
+
+    /**
+     * Api version 1.0
+     */
     V1(1, "1.0"),
+
+    /**
+     * Api version 1.1
+     */
     V1_1(2, "1.1.0");
 
     companion object {
 
         /**
+         * Utility method to obtains an [ApiCommunicationVersion] from its version code
          * @return the ApiCommunicationVersion object matching the given [versionCode].
          * @throws [NoSuchElementException] if no such element is found.
          */
-        fun fromVersionCode(versionCode: Int): ApiCommunicationVersion {
+        @JvmStatic
+        fun fromVersionCode(
+            /**
+             * ApiCommunicationVersion's version code
+             */
+            versionCode: Int): ApiCommunicationVersion {
             return values()
                 .first {
                     it.versionCode == versionCode

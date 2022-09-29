@@ -23,23 +23,65 @@ import kotlinx.serialization.json.Json
  * @property url of update server
  * @property targetToken target token
  * @property gatewayToken gateway token
- * @property isApiMode true to ask user authorization sending message to client, false to use dialog
+ * @property isApiMode true to handle authorization via service messages
+ *  [com.kynetics.uf.android.api.Communication.V1.In.AuthorizationResponse], false to use dialog
  * @property isEnable true to enable the service, false to disable it
  * @property isUpdateFactoryServe true when the server is an UpdateServer, false when the server is an
  *  Hawkbit server
- * @property targetAttributes target's tags
+ * @property targetAttributes target metadata sent to the server
  * @property updateWindows configuration parameters for time-windows updates
  */
 data class UFServiceConfigurationV2(
+    /**
+     * The tenant
+     */
     val tenant: String,
+
+    /**
+     * Id of the controller
+     */
     val controllerId: String,
+
+    /**
+     * the update server url
+     */
     val url: String,
+
+    /**
+     * Target token
+     */
     val targetToken: String,
+
+    /**
+     * Gateway token
+     */
     val gatewayToken: String,
+
+    /**
+     * true to handle authorization via service messages, false to use dialog
+     *
+     * @see com.kynetics.uf.android.api.Communication.V1.In.AuthorizationResponse
+     */
     val isApiMode: Boolean,
+
+    /**
+     * true to enable the service, false otherwise
+     */
     val isEnable: Boolean,
+
+    /**
+     * true when the server is an UpdateServer, false when the server is an Hawkbit server
+     */
     val isUpdateFactoryServe: Boolean,
+
+    /**
+     * target metadata sent to the server
+     */
     val targetAttributes: Map<String, String> = emptyMap(),
+
+    /**
+     * configuration parameters for time-windows updates
+     */
     val updateWindows: TimeWindows = TimeWindows()
 ){
     @Serializable
@@ -52,7 +94,15 @@ data class UFServiceConfigurationV2(
      * @property windowSize, duration of update windows in seconds. Min value is 1.
      */
     data class TimeWindows(
+        /**
+         * A cron expression (QUARTZ) that defines the update windows beginning time.
+         * Default value: * * * ? * *
+         */
         val cronExpression:String = ALWAYS,
+        /**
+         * Duration of update windows in seconds. Min value is 1.
+         * Default value: 3600
+         */
         val windowSize: Long = DEFAULT_WINDOW_SIZE
     ) {
         companion object{
@@ -62,6 +112,9 @@ data class UFServiceConfigurationV2(
         val isValid:Boolean = windowSize > 1
     }
 
+    /**
+     * True if the configuration is valid
+     */
     val isValid:Boolean by lazy{
         tenant.isNotEmpty() &&
                 url.isNotEmpty() &&
@@ -84,6 +137,7 @@ data class UFServiceConfigurationV2(
          * Deserializes given json [data] into a corresponding object of type [UFServiceConfigurationV2].
          * @throws [JsonException] in case of malformed json
          * @throws [SerializationException] if given input can not be deserialized
+         * @return the [UFServiceConfigurationV2] parsed from [data]
          */
         @JvmStatic
         fun fromJson(data: String): UFServiceConfigurationV2 {
