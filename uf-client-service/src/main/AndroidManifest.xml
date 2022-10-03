@@ -65,6 +65,17 @@
 
         </receiver>
 
+        <receiver
+            android:name="com.kynetics.uf.android.receiver.TimeChangeReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name="com.kynetics.uf.android.ui.MainActivity"
             android:label="@string/title_activity_main"

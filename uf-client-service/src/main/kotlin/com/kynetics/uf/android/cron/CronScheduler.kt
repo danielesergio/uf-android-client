@@ -16,15 +16,29 @@ import kotlinx.coroutines.*
 import java.time.ZonedDateTime
 import java.util.*
 
-@OptIn(DelicateCoroutinesApi::class)
 object CronScheduler {
     private val TAG:String = CronScheduler::class.java.simpleName
 
-    private var scheduledJobs: MutableMap<String, Job> = mutableMapOf()
+    private var scheduledJobs: MutableMap<String, ScheduledJob> = mutableMapOf()
+
+    private class ScheduledJob(
+        val job:Job,
+        val timeWindows: UFServiceConfigurationV2.TimeWindows,
+        val action: () -> Unit)
 
     sealed interface Status{
         data class Error(val details:List<String>):Status
         data class Scheduled(val seconds:Long):Status
+    }
+
+    private val scope = CoroutineScope(Dispatchers.Default)
+
+    fun reschedule(tag:String):Status?{
+        Log.i(TAG, "Rescheduling job[$tag]")
+        return scheduledJobs[tag]?.run {
+            removeScheduledJob(tag)
+            schedule(tag, timeWindows, action)
+        }
     }
 
     fun schedule(tag:String,
@@ -34,7 +48,7 @@ object CronScheduler {
             val now: ZonedDateTime = ZonedDateTime.now()
             val lastExecution = lastExecution(now)
             val nextExecution = timeToNextExecution(now)
-            scheduledJobs[tag]?.cancel()
+            scheduledJobs[tag]?.job?.cancel()
             return when{
                 isInTimeWindows(now, lastExecution, timeWindows) ->{
                     action()
@@ -44,14 +58,18 @@ object CronScheduler {
                 nextExecution.isPresent -> {
                     runCatching{
                         val delay = nextExecution.get().toMillis()
-                        scheduledJobs[tag] = GlobalScope.launch(Dispatchers.IO) {
-                            delay(delay)
-                            action()
-                        }
-                        Log.i(TAG, "Job scheduled will start in ${nextExecution.get().seconds} seconds")
+                        scheduledJobs[tag] = scope.launch{
+                            try{
+                                delay(delay)
+                                action()
+                            } finally {
+                                Log.i(TAG, "Scheduled job[$tag] stopped")
+                            }
+                        }.run { ScheduledJob(this, timeWindows, action) }
+                        Log.i(TAG, "Job[$tag] scheduled will start in ${nextExecution.get().seconds} seconds")
                         Status.Scheduled(nextExecution.get().seconds)
                     }.onFailure { exception ->
-                        Log.w(TAG, "Error on scheduling next job", exception)
+                        Log.w(TAG, "Error on scheduling next job[$tag]", exception)
                         return Status.Error(listOf("Error on scheduling next job", exception.message?:""))
                     }.getOrThrow()
                 }
@@ -64,7 +82,7 @@ object CronScheduler {
         }
     }
 
-    fun removeScheduledJob(tag:String) = scheduledJobs[tag]?.cancel()
+    fun removeScheduledJob(tag:String) = scheduledJobs.remove(tag)?.job?.cancel()
 
     private fun isInTimeWindows(now:ZonedDateTime,
                                 lastExecution: Optional<ZonedDateTime>,

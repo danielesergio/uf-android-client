@@ -72,7 +72,7 @@ class RestartableClientService constructor(
                     listeners)
         }
 
-        private const val CRON_TAG = "ForceDeploymentTag"
+        const val CRON_TAG = "ForceDeploymentTag"
     }
 
     fun restartService(conf:ConfigurationHandler) = channel.trySend(conf)
