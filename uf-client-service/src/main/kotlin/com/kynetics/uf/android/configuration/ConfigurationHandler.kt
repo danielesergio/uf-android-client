@@ -19,7 +19,7 @@ import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.ALWAYS
-import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.DEFAULT_WINDOW_SIZE
+import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.DEFAULT_WINDOW_DURATION
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.update.CurrentUpdateState
@@ -78,8 +78,8 @@ data class ConfigurationHandler(
             putString(sharedPreferencesServerUrlKey, configuration.url)
             putString(sharedPreferencesGatewayToken, configuration.gatewayToken)
             putString(sharedPreferencesTargetToken, configuration.targetToken)
-            putString(sharedPreferencesCronExpression, configuration.updateWindows.cronExpression)
-            putString(sharedPreferencesUpdateWindowSize, "${configuration.updateWindows.windowSize}")
+            putString(sharedPreferencesCronExpression, configuration.timeWindows.cronExpression)
+            putString(sharedPreferencesTimeWindowsDuration, "${configuration.timeWindows.duration}")
             putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode)
             putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable)
             putBoolean(sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)
@@ -101,14 +101,14 @@ data class ConfigurationHandler(
                 isEnable = getBoolean(sharedPreferencesServiceEnableKey, false),
                 isUpdateFactoryServe = getBoolean(sharedPreferencesIsUpdateFactoryServerType, true),
                 targetAttributes = getTargetAttributes(),
-                updateWindows = getUpdateWindows()
+                timeWindows = getTimeWindows()
             )
         }
     }
 
-    private fun getUpdateWindows():UFServiceConfigurationV2.TimeWindows =
+    private fun getTimeWindows():UFServiceConfigurationV2.TimeWindows =
         with(sharedPreferences){
-            UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesUpdateWindowSize, "$DEFAULT_WINDOW_SIZE")!!.toLong())
+            UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesTimeWindowsDuration, "$DEFAULT_WINDOW_DURATION")!!.toLong())
         }
 
     private fun getTargetToken():String{
@@ -205,9 +205,9 @@ data class ConfigurationHandler(
         targetAttributes[DEVICE_NAME_TARGET_ATTRIBUTE_KEY] = Build.DEVICE
         targetAttributes[SYSTEM_UPDATE_TYPE] = systemUpdateType!!.name
         targetAttributes[DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY] = TimeZone.getDefault().displayName
-        val updateWindow = getUpdateWindows()
-        targetAttributes[UPDATE_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY] = updateWindow.cronExpression
-        targetAttributes[UPDATE_WINDOWS_DURATION_ATTRIBUTE_KEY] = updateWindow.windowSize.toDuration(DurationUnit.SECONDS).toString()
+        val timeWindows = getTimeWindows()
+        targetAttributes[TIME_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY] = timeWindows.cronExpression
+        targetAttributes[TIME_WINDOWS_DURATION_ATTRIBUTE_KEY] = timeWindows.duration.toDuration(DurationUnit.SECONDS).toString()
         return targetAttributes
     }
 
@@ -277,8 +277,8 @@ data class ConfigurationHandler(
     private val sharedPreferencesTargetTokenReceivedFromServer = context.getString(R.string.shared_preferences_target_token_received_from_server_key)
     private val sharedPreferencesTargetAttributes = context.getString(R.string.shared_preferences_args_key)
     private val sharedPreferencesIsUpdateFactoryServerType = context.getString(R.string.shared_preferences_is_update_factory_server_type_key)
-    private val sharedPreferencesCronExpression = context.getString(R.string.shared_preferences_schedule_update_cron_expresison_key)
-    private val sharedPreferencesUpdateWindowSize = context.getString(R.string.shared_preferences_schedule_update_windows_size_key)
+    private val sharedPreferencesCronExpression = context.getString(R.string.shared_preferences_time_windows_cron_expression_key)
+    private val sharedPreferencesTimeWindowsDuration = context.getString(R.string.shared_preferences_time_windows_duration_key)
 
     private val currentUpdateState: CurrentUpdateState = CurrentUpdateState(context)
 
@@ -294,8 +294,8 @@ data class ConfigurationHandler(
         private const val DEVICE_NAME_TARGET_ATTRIBUTE_KEY = "device_name"
         private const val SYSTEM_UPDATE_TYPE = "system_update_type"
         private const val DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY = "device_time_zone"
-        private const val UPDATE_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY = "update_windows_cron_expression"
-        private const val UPDATE_WINDOWS_DURATION_ATTRIBUTE_KEY = "update_windows_duration"
+        private const val TIME_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY = "time_windows_cron_expression"
+        private const val TIME_WINDOWS_DURATION_ATTRIBUTE_KEY = "time_windows_duration"
         private const val CLIENT_TYPE_TARGET_TOKEN_KEY = "client"
         @SuppressLint("SdCardPath")
         private const val UF_CONF_FILE = "/sdcard/UpdateFactoryConfiguration/ufConf.conf"

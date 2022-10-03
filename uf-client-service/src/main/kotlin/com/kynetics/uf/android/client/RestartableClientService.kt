@@ -51,7 +51,7 @@ class RestartableClientService constructor(
                 Log.d(TAG, "Restarting service")
                 stop()
                 client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider,
-                    AndroidForceDeploymentPermitProvider.build(CRON_TAG, conf.getCurrentConfiguration().updateWindows),
+                    AndroidForceDeploymentPermitProvider.build(CRON_TAG, conf.getCurrentConfiguration().timeWindows),
                     _listeners)
                 client.startAsync()
                 Log.d(TAG, "Service restarted")

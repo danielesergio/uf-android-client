@@ -106,7 +106,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         if (preference is EditTextPreference) {
             val editTextPreference = preference as EditTextPreference?
 
-            if(editTextPreference?.key == getString(R.string.shared_preferences_schedule_update_cron_expresison_key)){
+            if(editTextPreference?.key == getString(R.string.shared_preferences_time_windows_cron_expression_key)){
                 val cronExpression = editTextPreference.text ?: UFServiceConfigurationV2.TimeWindows.ALWAYS
                 val cronDescription = CronDescriptor.instance().describe(HaraCronParser.parse(cronExpression))
                 editTextPreference.summary = "$cronDescription ( $cronExpression )"

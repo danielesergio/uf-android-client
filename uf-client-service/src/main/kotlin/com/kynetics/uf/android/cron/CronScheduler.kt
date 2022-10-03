@@ -89,6 +89,6 @@ object CronScheduler {
                                 timeWindows: UFServiceConfigurationV2.TimeWindows):Boolean{
         return lastExecution.isPresent &&
                 now.isAfter(lastExecution.get()) &&
-                now.isBefore(lastExecution.get().plusSeconds(timeWindows.windowSize))
+                now.isBefore(lastExecution.get().plusSeconds(timeWindows.duration))
     }
 }

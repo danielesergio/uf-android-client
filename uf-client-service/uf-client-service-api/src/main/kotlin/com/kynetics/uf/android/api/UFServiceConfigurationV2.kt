@@ -29,7 +29,7 @@ import kotlinx.serialization.json.Json
  * @property isUpdateFactoryServe true when the server is an UpdateServer, false when the server is an
  *  Hawkbit server
  * @property targetAttributes target metadata sent to the server
- * @property updateWindows configuration parameters for time-windows updates
+ * @property timeWindows configuration parameters for time-windows updates
  */
 data class UFServiceConfigurationV2(
     /**
@@ -82,7 +82,7 @@ data class UFServiceConfigurationV2(
     /**
      * configuration parameters for time-windows updates
      */
-    val updateWindows: TimeWindows = TimeWindows()
+    val timeWindows: TimeWindows = TimeWindows()
 ){
     @Serializable
     /**
@@ -91,7 +91,7 @@ data class UFServiceConfigurationV2(
      *
      * @property cronExpression, a cron expression (QUARTZ) that defines the update windows
      *  beginning time.
-     * @property windowSize, duration of update windows in seconds. Min value is 1.
+     * @property duration, duration of update windows in seconds. Min value is 1.
      */
     data class TimeWindows(
         /**
@@ -103,13 +103,13 @@ data class UFServiceConfigurationV2(
          * Duration of update windows in seconds. Min value is 1.
          * Default value: 3600
          */
-        val windowSize: Long = DEFAULT_WINDOW_SIZE
+        val duration: Long = DEFAULT_WINDOW_DURATION
     ) {
         companion object{
             const val ALWAYS:String = "* * * ? * *"
-            const val DEFAULT_WINDOW_SIZE: Long = 3600
+            const val DEFAULT_WINDOW_DURATION: Long = 3600
         }
-        val isValid:Boolean = windowSize > 1
+        val isValid:Boolean = duration > 1
     }
 
     /**
@@ -120,7 +120,7 @@ data class UFServiceConfigurationV2(
                 url.isNotEmpty() &&
                 controllerId.isNotEmpty() &&
                 (targetToken.isNotEmpty() || gatewayToken.isNotEmpty()) &&
-                updateWindows.isValid
+                timeWindows.isValid
     }
 
     /**
