@@ -40,7 +40,7 @@ class RestartableClientService constructor(
     private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
     private val channel: Channel<ConfigurationHandler> = Channel(Channel.CONFLATED)
 
-    private var job:Job = scope.launch {
+    private val job:Job = scope.launch {
         for(conf in channel){
             runCatching {
                 Log.i(TAG,"Try to restart the service")
@@ -49,8 +49,7 @@ class RestartableClientService constructor(
                     delay(10000)
                 }
                 Log.d(TAG, "Restarting service")
-                client.stop()
-                CronScheduler.removeScheduledJob(CRON_TAG)
+                stop()
                 client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider,
                     AndroidForceDeploymentPermitProvider.build(CRON_TAG, conf.getCurrentConfiguration().updateWindows),
                     _listeners)
@@ -79,7 +78,7 @@ class RestartableClientService constructor(
 
     override fun stop() {
         client.stop()
-        scope.cancel()
+        CronScheduler.removeScheduledJob(CRON_TAG)
     }
 
     private fun serviceRestartable():Boolean{
