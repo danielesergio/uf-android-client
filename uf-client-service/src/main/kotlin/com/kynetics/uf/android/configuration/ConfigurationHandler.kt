@@ -33,6 +33,8 @@ import java.io.File
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 data class ConfigurationHandler(
     private val context: UpdateFactoryService,
@@ -99,10 +101,15 @@ data class ConfigurationHandler(
                 isEnable = getBoolean(sharedPreferencesServiceEnableKey, false),
                 isUpdateFactoryServe = getBoolean(sharedPreferencesIsUpdateFactoryServerType, true),
                 targetAttributes = getTargetAttributes(),
-                updateWindows = UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesUpdateWindowSize, "$DEFAULT_WINDOW_SIZE")!!.toLong())
+                updateWindows = getUpdateWindows()
             )
         }
     }
+
+    private fun getUpdateWindows():UFServiceConfigurationV2.TimeWindows =
+        with(sharedPreferences){
+            UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesUpdateWindowSize, "$DEFAULT_WINDOW_SIZE")!!.toLong())
+        }
 
     private fun getTargetToken():String{
         val targetToken = sharedPreferences.getString(sharedPreferencesTargetToken,"")
@@ -197,6 +204,10 @@ data class ConfigurationHandler(
         targetAttributes[ANDROID_VERSION_TARGET_ATTRIBUTE_KEY] = Build.VERSION.RELEASE
         targetAttributes[DEVICE_NAME_TARGET_ATTRIBUTE_KEY] = Build.DEVICE
         targetAttributes[SYSTEM_UPDATE_TYPE] = systemUpdateType!!.name
+        targetAttributes[DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY] = TimeZone.getDefault().displayName
+        val updateWindow = getUpdateWindows()
+        targetAttributes[UPDATE_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY] = updateWindow.cronExpression
+        targetAttributes[UPDATE_WINDOWS_DURATION_ATTRIBUTE_KEY] = updateWindow.windowSize.toDuration(DurationUnit.SECONDS).toString()
         return targetAttributes
     }
 
@@ -282,6 +293,9 @@ data class ConfigurationHandler(
         private const val ANDROID_VERSION_TARGET_ATTRIBUTE_KEY = "android_version"
         private const val DEVICE_NAME_TARGET_ATTRIBUTE_KEY = "device_name"
         private const val SYSTEM_UPDATE_TYPE = "system_update_type"
+        private const val DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY = "device_time_zone"
+        private const val UPDATE_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY = "update_windows_cron_expression"
+        private const val UPDATE_WINDOWS_DURATION_ATTRIBUTE_KEY = "update_windows_duration"
         private const val CLIENT_TYPE_TARGET_TOKEN_KEY = "client"
         @SuppressLint("SdCardPath")
         private const val UF_CONF_FILE = "/sdcard/UpdateFactoryConfiguration/ufConf.conf"
