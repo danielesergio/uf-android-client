@@ -124,7 +124,7 @@ object MessageHandlerFactory{
             when(msg){
                 is UFServiceMessageV1.State.WaitingUpdateWindow ->{ UFServiceMessageV1.State.WaitingUpdateAuthorization }
                 else -> msg
-            }.also { Log.i("v1", "mapping $msg to $this") }
+            }.also { newMsg -> Log.i("v1", "mapping $msg to $newMsg") }
         }
     )
 
