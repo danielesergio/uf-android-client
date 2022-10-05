@@ -25,11 +25,12 @@ import kotlinx.serialization.json.Json
  * @property url of update server
  * @property targetToken target token
  * @property gatewayToken gateway token
- * @property isApiMode true to ask user authorization sending message to client, false to use dialog
+ * @property isApiMode true to ask user authorization sending message to client, false to use service
+ *  built-in dialog
  * @property isEnable true to enable the service, false to disable it
- * @property isUpdateFactoryServe true when the server is an UpdateServer, false when the server is an
- *  Hawkbit server
- * @property targetAttributes target's tags
+ * @property isUpdateFactoryServe true when the server is Update Factory, false when the server
+ *  is hawkBit
+ * @property targetAttributes target metadata sent to the server
  */
 @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.UFServiceConfigurationV2",
     ReplaceWith(
@@ -74,11 +75,12 @@ data class UFServiceConfiguration(
      * @property url of update server
      * @property targetToken target token
      * @property gatewayToken gateway token
-     * @property isApiMode true to ask user authorization sending message to client, false to use dialog, default value is true
+     * @property isApiMode true to handle authorization via service messages, false to use service
+     *  built-in dialog. Default value is true
      * @property isEnable true to enable the service, false to disable it, default value is true
-     * @property isUpdateFactoryServe true when the server is an UpdateServer, false when the server is an default value is true
-     *  Hawkbit server
-     * @property targetAttributes target's tags
+     * @property isUpdateFactoryServe true when the server is Update Factory, false when the server
+     *  is hawkBit
+     * @property targetAttributes target metadata sent to the server
      */
     class Builder internal constructor() {
 
@@ -101,7 +103,7 @@ data class UFServiceConfiguration(
         }
 
         /**
-         * Configure the controller id  parameter
+         * Configure the controller id parameter
          */
         fun withControllerId(controllerId: String?): Builder {
             this.controllerId = controllerId
@@ -109,7 +111,7 @@ data class UFServiceConfiguration(
         }
 
         /**
-         * Configure the gateway token  parameter
+         * Configure the gateway token parameter
          *
          * @see withGatewayToken
          */
@@ -120,7 +122,7 @@ data class UFServiceConfiguration(
         }
 
         /**
-         * Configure the gateway token  parameter
+         * Configure the gateway token parameter
          */
         fun withGatewayToken(gatewayToken: String?): Builder {
             this.gatewayToken = gatewayToken

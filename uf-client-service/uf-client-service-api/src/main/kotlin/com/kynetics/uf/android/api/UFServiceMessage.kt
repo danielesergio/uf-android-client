@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * This class represents the service's state (api version 0.1)
+ * This class represents the service state (API version 0.1)
  *
  * @see ApiCommunicationVersion.V0_1
  * @see com.kynetics.uf.android.api.v1.UFServiceMessageV1

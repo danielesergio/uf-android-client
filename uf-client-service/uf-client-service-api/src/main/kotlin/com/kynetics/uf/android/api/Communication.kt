@@ -57,7 +57,7 @@ sealed class Communication(val id: Int) {
 
     companion object {
         /**
-         * [android.os.Bundle]'s key where the ApiCommunicationVersion of the message is stored
+         * [android.os.Bundle] key where the ApiCommunicationVersion of the message is stored
          *
          * @property id message code so that the recipient can identify what this message is about
          *  ([android.os.Message.what])
@@ -72,7 +72,7 @@ sealed class Communication(val id: Int) {
 
         companion object {
             /**
-             * [android.os.Bundle]'s key where the additional info are stored
+             * [android.os.Bundle] key where the additional info are stored
              */
             const val SERVICE_DATA_KEY = "DATA_KEY"
         }
@@ -105,13 +105,13 @@ sealed class Communication(val id: Int) {
              * Class that maps all messages that are sent to [com.kynetics.uf.android.UpdateFactoryService]
              * that must receive a response.
              *
-             * @property replyTo [Messenger] where replies to this message is sent
+             * @property replyTo [Messenger] where replies to this message are sent
              * @property id message code so that the recipient can identify what this message is about
              *  ([android.os.Message.what])
              */
             abstract class WithReplyTo(
                 /**
-                 * [Messenger] where replies to this message is sent
+                 * [Messenger] where replies to this message are sent
                  */
                 val replyTo: Messenger,
                 /**
@@ -159,7 +159,7 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             *  Class use to build a message to configure the service
+             *  Class to build a message to configure the service
              *
              *  @property conf the service configuration
              *  @see UFServiceConfigurationV2
@@ -185,14 +185,14 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             * Class use to build a message to subscribe a [Messenger] to the service notification
+             * Class to build a message to subscribe a [Messenger] to the service notification
              * system.
              *
-             * @property replyTo the [Messenger] that it want to subscribe to service notification
+             * @property replyTo the [Messenger] to subscribe to the service notification system
              */
             class RegisterClient(
                 /**
-                 * [Messenger] where replies to this message is sent
+                 * [Messenger] where replies to this message are sent
                  */
                 replyTo: Messenger
             ) : WithReplyTo(replyTo, ID) {
@@ -202,14 +202,14 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             * Class use to build a message to unsubscribe a [Messenger] to the service notification
+             * Class to build a message to unsubscribe a [Messenger] from the service notification
              * system.
              *
-             * @property replyTo the [Messenger] that it want to unsubscribe to service notification
+             * @property replyTo the [Messenger] to unsubscribe from the service notification system
              */
             class UnregisterClient(
                 /**
-                 * [Messenger] where replies to this message is sent
+                 * [Messenger] where replies to this message are sent
                  */
                 replyTo: Messenger
             ) : WithReplyTo(replyTo, ID) {
@@ -219,14 +219,14 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             * Class use to build a message to grant / denied  an authorization
+             * Class to build a message to grant / deny an authorization
              *
-             * @property granted, true to grant the auth, false otherwise
+             * @property granted, true to grant the authorization, false otherwise
              */
             class AuthorizationResponse(
                 @Suppress("MemberVisibilityCanBePrivate")
                 /**
-                 * true to grant the auth, false otherwise
+                 * true to grant the authorization, false otherwise
                  */
                 val granted: Boolean
             ) : In(ID) {
@@ -245,19 +245,19 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             * Class use to build a sync message.
-             * When the service receive a sync message it responses with two messages,
-             * the first message contains the service's state and the second message contains the
-             * service's configuration
+             * Class to build a sync message.
+             * When the service receives a sync message it replies with two messages,
+             * the first message contains the service state and the second message contains the
+             * service configuration
              *
-             * @property replyTo the [Messenger] that it want to unsubscribe to service notification*
+             * @property replyTo the [Messenger] to unsubscribe from the service notification system
              * @see Communication.V1.Out.ServiceNotification
              * @see Communication.V1.Out.CurrentServiceConfiguration
              *
              */
             class Sync(
                 /**
-                 * [Messenger] where replies to this message is sent
+                 * [Messenger] to use for replies to this message
                  */
                 replyTo: Messenger
             ) : WithReplyTo(replyTo, ID) {
@@ -267,8 +267,8 @@ sealed class Communication(val id: Int) {
             }
 
             /**
-             * Class use to build ForcePing message.
-             * When the service receive a force ping message it pings the service
+             * Class to build ForcePing message.
+             * When the service receives a force ping message it polls the server
              */
             object ForcePing : In(7)
         }
@@ -292,7 +292,7 @@ sealed class Communication(val id: Int) {
              * sends to clients with the information about its state. This message is sent after each
              * polling request or as response of a [Communication.V1.In.Sync] message.
              *
-             * @property content is the representation of the current service's state
+             * @property content is the representation of the current service state
              * @see UFServiceMessageV1
              */
             class ServiceNotification(
@@ -330,14 +330,14 @@ sealed class Communication(val id: Int) {
             /**
              * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
              * sends to the client as response of a [Communication.V1.In.Sync] message.
-             * @property conf is the service's configuration
+             * @property conf is the service configuration
              * @see UFServiceConfiguration
              */
             @Deprecated("As of release 1.3.0 replaced by com.kynetics.uf.android.api.Communication.V1.Out.CurrentServiceConfigurationV2")
             @Suppress("DEPRECATION", "MemberVisibilityCanBePrivate")
             class CurrentServiceConfiguration(
                 /**
-                 * the service's configuration
+                 * the service configuration
                  */
                 val conf: UFServiceConfiguration
             ) : Out(ID) {
@@ -352,13 +352,13 @@ sealed class Communication(val id: Int) {
             /**
              * This class represents a message that the [com.kynetics.uf.android.UpdateFactoryService]
              * sends to the client as response of a [Communication.V1.In.Sync] message.
-             * @property conf is the service's configuration
+             * @property conf is the service configuration
              * @see UFServiceConfigurationV2
              */
             class CurrentServiceConfigurationV2(
                 @Suppress("MemberVisibilityCanBePrivate")
                 /**
-                 * the service's configuration
+                 * the service configuration
                  */
                 val conf: UFServiceConfigurationV2
             ) : Out(ID) {

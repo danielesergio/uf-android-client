@@ -81,9 +81,9 @@ sealed class UFServiceMessageV1 {
             /**
              * This class represent a file to download
              *
-             * @property name file's name
-             * @property size file's size in byte
-             * @property md5 file's md5
+             * @property name file name
+             * @property size file size in byte
+             * @property md5 file md5
              */
             @Serializable
             data class Artifact(val name: String, val size: Long, val md5: String)
@@ -151,7 +151,7 @@ sealed class UFServiceMessageV1 {
         /**
          * A file downloading is started
          *
-         * @property fileName file's name
+         * @property fileName file name
          */
         @Serializable
         data class StartDownloadFile(val fileName: String) : Event(MessageName.START_DOWNLOAD_FILE, "A file downloading is started") {
@@ -175,7 +175,7 @@ sealed class UFServiceMessageV1 {
         /**
          * Percent of file downloaded
          *
-         * @property fileName file's name
+         * @property fileName file name
          * @property percentage percentage of file that it is downloaded
          */
         @Serializable
@@ -232,7 +232,7 @@ sealed class UFServiceMessageV1 {
         /**
          * An update is available on cloud
          *
-         * @property id update's id
+         * @property id update id
          */
         @Serializable
         data class UpdateAvailable(val id: String) : Event(MessageName.UPDATE_AVAILABLE, "An update is available on cloud") {
