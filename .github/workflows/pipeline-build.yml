@@ -18,9 +18,6 @@ jobs:
       - name: Setup gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Override Android SDK
-        run: ./install_android-hidden-api-jar.sh
-
       - name: Gradle build
         env:
           KYNETICS_KEYSTORE_PASS: ${{ secrets.KYNETICS_KEYSTORE_PASS }}
