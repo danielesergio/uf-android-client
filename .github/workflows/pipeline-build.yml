@@ -2,9 +2,13 @@ name: build-action
 
 on:
   push:
+    tags:
+      - '*'
     branches-ignore:
       - 'gh-pages'
   pull_request:
+    tags:
+      - '*'
     branches-ignore:
       - 'gh-pages'
 
@@ -25,3 +29,11 @@ jobs:
           KYNETICS_KEY_ALIAS: ${{ secrets.KYNETICS_KEY_ALIAS }}
 
         run: ./gradlew build
+      - name: Create release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "uf-client-*/build/outputs/apk/*_key/*.apk"
+          tags: true
+          draft: false
