@@ -30,7 +30,7 @@ import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.AndroidMessageListener
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 import com.kynetics.uf.android.content.SharedPreferencesWithObject
-import com.kynetics.uf.android.content.UFSharedPreferences
+import com.kynetics.uf.android.content.SharedPreferencesFactory
 import com.kynetics.uf.android.ui.MainActivity
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.system.SystemUpdateType
@@ -163,7 +163,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
     }
 
     override fun getSharedPreferences(name: String?, mode: Int): SharedPreferencesWithObject {
-        return UFSharedPreferences.get(applicationContext, name, mode)
+        return SharedPreferencesFactory.get(applicationContext, name, mode)
     }
 
     private fun startForeground() {

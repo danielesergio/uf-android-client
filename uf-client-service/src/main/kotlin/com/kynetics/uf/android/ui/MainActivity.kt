@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.content.SharedPreferencesWithObject
-import com.kynetics.uf.android.content.UFSharedPreferences
+import com.kynetics.uf.android.content.SharedPreferencesFactory
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment.OnAuthorization
 import com.kynetics.uf.android.ui.fragment.UFPreferenceFragment
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnAuthorization {
     }
 
     override fun getSharedPreferences(name: String?, mode: Int): SharedPreferencesWithObject {
-        return UFSharedPreferences.get(applicationContext, name, mode)
+        return SharedPreferencesFactory.get(applicationContext, name, mode)
     }
 
     companion object {
