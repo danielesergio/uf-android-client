@@ -13,12 +13,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.kynetics.uf.android.R
-import java.io.Serializable
 
 class UFSharedPreferences private constructor(
-        private val sharedPreferencesWithObject: SharedPreferencesWithObject,
-        private val secureSharedPreferences: SharedPreferences,
-        private val secureKeys: Array<String>): SharedPreferences by sharedPreferencesWithObject {
+    private val sharedPreferencesWithObject: SharedPreferencesWithObjectImpl,
+    private val secureSharedPreferences: SharedPreferences,
+    private val secureKeys: Array<String>): SharedPreferencesWithObject by sharedPreferencesWithObject {
 
     private val errorOnMovingSharedPreference:Boolean
 
@@ -26,7 +25,7 @@ class UFSharedPreferences private constructor(
         private val TAG = UFSharedPreferences::class.java.simpleName
 
         fun get(context: Context, name:String?, mode:Int):UFSharedPreferences = UFSharedPreferences(
-                SharedPreferencesWithObject(context.getSharedPreferences(name, mode)),
+                SharedPreferencesWithObjectImpl(context.getSharedPreferences(name, mode)),
                 EncryptedSharedPreferences.get(context),
                 arrayOf(context.getString(R.string.shared_preferences_gateway_token_key),
                         context.getString(R.string.shared_preferences_target_token_key),
@@ -87,15 +86,6 @@ class UFSharedPreferences private constructor(
     override fun getString(key: String?, defValue: String?): String? {
         return selectSP(key).getString(key, defValue)
     }
-
-    fun <T : Serializable?> getObject(objKey: String?): T? =
-            sharedPreferencesWithObject.getObject(objKey)
-
-    fun <T : Serializable?> getObject(objKey: String?, defaultObj: T?): T? =
-            sharedPreferencesWithObject.getObject(objKey, defaultObj)
-
-    fun <T> putAndCommitObject(key: String?, obj: T) =
-            sharedPreferencesWithObject.putAndCommitObject(key, obj)
 
     @Suppress("UNCHECKED_CAST")
     private fun moveSharedPreferences(sp1:SharedPreferences, sp2:SharedPreferences, moveTo:(Map.Entry<String, Any?>) -> Boolean){

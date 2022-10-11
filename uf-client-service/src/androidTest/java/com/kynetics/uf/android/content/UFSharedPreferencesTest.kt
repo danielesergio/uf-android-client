@@ -77,7 +77,7 @@ class UFSharedPreferencesTest() {
     }
 
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val spPlain = SharedPreferencesWithObject(context.getSharedPreferences("file1",Context.MODE_PRIVATE))
+    private val spPlain = SharedPreferencesWithObjectImpl(context.getSharedPreferences("file1",Context.MODE_PRIVATE))
     private val spSecure = EncryptedSharedPreferences.get(context);
 
     @Test
@@ -149,7 +149,7 @@ class UFSharedPreferencesTest() {
     }
 
     private fun buildSharedPreferences(
-        sharedPreferencesWithObject: SharedPreferencesWithObject,
+        sharedPreferencesWithObject: SharedPreferencesWithObjectImpl,
         secureSharedPreferences: SharedPreferences,
         secureKeys: Array<String>):UFSharedPreferences{
 
