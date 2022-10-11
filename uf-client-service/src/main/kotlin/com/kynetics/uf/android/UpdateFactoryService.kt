@@ -29,6 +29,7 @@ import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.AndroidMessageListener
 import com.kynetics.uf.android.configuration.ConfigurationHandler
+import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.ui.MainActivity
 import com.kynetics.uf.android.update.CurrentUpdateState
@@ -161,7 +162,7 @@ class UpdateFactoryService : Service(), UpdateFactoryServiceCommand {
         return mMessenger.binder
     }
 
-    override fun getSharedPreferences(name: String?, mode: Int): UFSharedPreferences {
+    override fun getSharedPreferences(name: String?, mode: Int): SharedPreferencesWithObject {
         return UFSharedPreferences.get(applicationContext, name, mode)
     }
 

@@ -16,6 +16,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
+import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.content.UFSharedPreferences
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment
 import com.kynetics.uf.android.ui.fragment.AuthorizationDialogFragment.OnAuthorization
@@ -99,7 +100,7 @@ class MainActivity : AppCompatActivity(), OnAuthorization {
         Handler(Looper.myLooper()!!).postDelayed({ finish() }, 500)
     }
 
-    override fun getSharedPreferences(name: String?, mode: Int): UFSharedPreferences {
+    override fun getSharedPreferences(name: String?, mode: Int): SharedPreferencesWithObject {
         return UFSharedPreferences.get(applicationContext, name, mode)
     }
 

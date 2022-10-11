@@ -21,7 +21,7 @@ import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.ALWAYS
 import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.DEFAULT_WINDOW_DURATION
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
-import com.kynetics.uf.android.content.UFSharedPreferences
+import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.update.CurrentUpdateState
 import com.kynetics.uf.android.update.system.SystemUpdateType
 import com.kynetics.uf.android.update.application.ApkUpdater
@@ -39,7 +39,7 @@ import kotlin.time.toDuration
 
 data class ConfigurationHandler(
     private val context: UpdateFactoryService,
-    private val sharedPreferences: UFSharedPreferences
+    private val sharedPreferences: SharedPreferencesWithObject
 ):ConfigurationLoaderFromIntent {
 
     fun getConfigurationFromFile(): UFServiceConfigurationV2? = configurationFile.newFileConfiguration
