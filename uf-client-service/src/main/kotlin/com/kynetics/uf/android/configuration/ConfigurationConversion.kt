@@ -13,8 +13,9 @@ package com.kynetics.uf.android.configuration
 
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 
-fun com.kynetics.uf.android.api.UFServiceConfiguration.toUFServiceConfiguration(): UFServiceConfigurationV2 =
-    UFServiceConfigurationV2(
+fun com.kynetics.uf.android.api.UFServiceConfiguration.toUFServiceConfiguration(): UFServiceConfigurationV2{
+    @Suppress("USELESS_ELVIS")
+    return     UFServiceConfigurationV2(
         tenant = tenant,
         controllerId = controllerId,
         url = url,
@@ -23,8 +24,10 @@ fun com.kynetics.uf.android.api.UFServiceConfiguration.toUFServiceConfiguration(
         isApiMode = isApiMode(),
         isEnable = isEnable(),
         isUpdateFactoryServe = isUpdateFactoryServe,
-        targetAttributes = targetAttributes
+        // targetAttributes could be null when the UFServiceConfiguration is provided from ConfigureService message
+        targetAttributes = targetAttributes ?: emptyMap()
     )
+}
 
 fun UFServiceConfigurationV2.toUFServiceConfiguration(): com.kynetics.uf.android.api.UFServiceConfiguration =
     com.kynetics.uf.android.api.UFServiceConfiguration.builder()
