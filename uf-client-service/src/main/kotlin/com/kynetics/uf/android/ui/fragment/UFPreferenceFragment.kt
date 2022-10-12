@@ -11,17 +11,22 @@ package com.kynetics.uf.android.ui.fragment
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.*
 import com.cronutils.descriptor.CronDescriptor
-import com.kynetics.uf.android.cron.HaraCronParser
 import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
+import com.kynetics.uf.android.cron.HaraCronParser
+import com.kynetics.uf.android.formatter.toPwdFormat
+
 
 /**
  * A simple [PreferenceFragmentCompat] subclass.
@@ -35,6 +40,23 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         setPreferencesFromResource(R.xml.pref_general, rootKey)
         preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
         startingSharedPreferences = preferenceScreen.sharedPreferences.all
+
+
+        preferenceManager.sharedPreferences.all.forEach { (key, _) ->
+            if(key.contains("token", true)){
+                val pref = findPreference<Preference>(key)
+                if(pref is EditTextPreference){
+                    pref.setOnBindEditTextListener {
+                        with(it){
+                            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                            transformationMethod = PasswordTransformationMethod.getInstance()
+                            selectAll()
+                            filters = arrayOf(InputFilter.LengthFilter(99))
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -104,15 +126,19 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         }
 
         if (preference is EditTextPreference) {
-            val editTextPreference = preference as EditTextPreference?
+            preference.setSummaryProvider {
+                when {
+                    preference.key.contains("token", true) -> preference.text.toPwdFormat()
+                    preference.key == getString(R.string.shared_preferences_time_windows_cron_expression_key) ->{
+                        val cronExpression = preference.text ?: UFServiceConfigurationV2.TimeWindows.ALWAYS
+                        val cronDescription = CronDescriptor.instance().describe(HaraCronParser.parse(cronExpression))
+                        "$cronDescription ( $cronExpression )"
+                    }
+                    else -> preference.text
+                }
 
-            if(editTextPreference?.key == getString(R.string.shared_preferences_time_windows_cron_expression_key)){
-                val cronExpression = editTextPreference.text ?: UFServiceConfigurationV2.TimeWindows.ALWAYS
-                val cronDescription = CronDescriptor.instance().describe(HaraCronParser.parse(cronExpression))
-                editTextPreference.summary = "$cronDescription ( $cronExpression )"
-            } else {
-                editTextPreference!!.summary = editTextPreference.text
             }
+
         }
 
         if (key == getString(R.string.shared_preferences_current_state_key)) {
@@ -133,7 +159,7 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         }
 
         if (key == getString(R.string.shared_preferences_target_token_received_from_server_key)){
-            preference.summary = sharedPrefs.getString(key, "")
+            preference.summary = sharedPrefs.getString(key, "").toPwdFormat()
         }
     }
 
@@ -143,9 +169,9 @@ class UFPreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSha
         sp.edit().apply()
 
         if(startingSharedPreferences[getString(R.string.shared_preferences_server_url_key)] != sp.getString(getString(R.string.shared_preferences_server_url_key), null)
-                || startingSharedPreferences[getString(R.string.shared_preferences_tenant_key)] != sp.getString(getString(R.string.shared_preferences_tenant_key), null)
-                || startingSharedPreferences[getString(R.string.shared_preferences_controller_id_key)] != sp.getString(getString(R.string.shared_preferences_controller_id_key), null)
-                ){
+            || startingSharedPreferences[getString(R.string.shared_preferences_tenant_key)] != sp.getString(getString(R.string.shared_preferences_tenant_key), null)
+            || startingSharedPreferences[getString(R.string.shared_preferences_controller_id_key)] != sp.getString(getString(R.string.shared_preferences_controller_id_key), null)
+        ){
             sp.edit().remove(getString(R.string.shared_preferences_target_token_received_from_server_key)).apply()
         }
 
