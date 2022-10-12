@@ -55,7 +55,7 @@ abstract class AbstractCommunicationApi(
         }
 
         MessengerHandler.response(
-            configurationHandler.getCurrentConfiguration().toUFServiceConfiguration(),
+            configurationHandler.getSecureConfiguration().toUFServiceConfiguration(),
             Communication.V1.Out.CurrentServiceConfiguration.ID,
             messenger
         )
