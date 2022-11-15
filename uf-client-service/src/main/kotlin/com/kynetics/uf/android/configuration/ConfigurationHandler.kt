@@ -87,7 +87,7 @@ data class ConfigurationHandler(
             apply()
         }
 
-        sharedPreferences.putAndCommitObject(sharedPreferencesTargetAttributes, configuration.targetAttributes)
+        sharedPreferences.putAndCommitObject(sharedPreferencesTargetAttributesFromConfiguration, configuration.targetAttributes)
     }
 
     fun getCurrentConfiguration(): UFServiceConfigurationV2 {
@@ -101,7 +101,7 @@ data class ConfigurationHandler(
                 isApiMode = getBoolean(sharedPreferencesApiModeKey, true),
                 isEnable = getBoolean(sharedPreferencesServiceEnableKey, false),
                 isUpdateFactoryServe = getBoolean(sharedPreferencesIsUpdateFactoryServerType, true),
-                targetAttributes = getTargetAttributes(),
+                targetAttributes = getConfigurationTargetAttributes(),
                 timeWindows = getTimeWindows()
             )
         }
@@ -174,6 +174,10 @@ data class ConfigurationHandler(
         }
     }
 
+    fun addTargetAttributes(targetAttributes: Map<String,String>){
+        sharedPreferences.putAndCommitObject(sharedPreferencesAddTargetAttributes, targetAttributes)
+    }
+
     private fun getTargetTokenListener(): TargetTokenFoundListener {
         return object : TargetTokenFoundListener {
             override fun onFound(targetToken: String){
@@ -185,14 +189,28 @@ data class ConfigurationHandler(
         }
     }
 
-    private fun getTargetAttributes(): MutableMap<String, String> {
+    private fun mergeThirdPartyAppTargetAttributes():MutableMap<String,String>{
+        return getConfigurationTargetAttributes()
+            .apply {
+                putAll(getAddTargetAttributes())
+            }.filter { (key,_) -> key.startsWith("UF_", true)}
+            .toMutableMap()
+    }
+
+    private fun getConfigurationTargetAttributes(): MutableMap<String, String> {
         val targetAttributes: MutableMap<String, String>? = sharedPreferences
-                .getObject(sharedPreferencesTargetAttributes)
+                .getObject(sharedPreferencesTargetAttributesFromConfiguration)
+        return targetAttributes ?: mutableMapOf()
+    }
+
+    private fun getAddTargetAttributes():MutableMap<String, String> {
+        val targetAttributes: MutableMap<String, String>? = sharedPreferences
+            .getObject(sharedPreferencesAddTargetAttributes)
         return targetAttributes ?: mutableMapOf()
     }
 
     private fun decorateTargetAttribute(): Map<String, String> {
-        val targetAttributes = getTargetAttributes().toMutableMap()
+        val targetAttributes = mergeThirdPartyAppTargetAttributes()
         targetAttributes[CLIENT_TYPE_TARGET_TOKEN_KEY] = "Android"
         targetAttributes[CLIENT_VERSION_TARGET_ATTRIBUTE_KEY] = BuildConfig.VERSION_NAME // TODO: 4/17/18 refactor
         targetAttributes[CLIENT_VERSION_CODE_ATTRIBUTE_KEY] = BuildConfig.VERSION_CODE.toString()
@@ -277,7 +295,8 @@ data class ConfigurationHandler(
     private val sharedPreferencesGatewayToken = context.getString(R.string.shared_preferences_gateway_token_key)
     private val sharedPreferencesTargetToken = context.getString(R.string.shared_preferences_target_token_key)
     private val sharedPreferencesTargetTokenReceivedFromServer = context.getString(R.string.shared_preferences_target_token_received_from_server_key)
-    private val sharedPreferencesTargetAttributes = context.getString(R.string.shared_preferences_args_key)
+    private val sharedPreferencesTargetAttributesFromConfiguration = context.getString(R.string.shared_preferences_args_key)
+    private val sharedPreferencesAddTargetAttributes = context.getString(R.string.shared_preferences_add_target_attributes_key)
     private val sharedPreferencesIsUpdateFactoryServerType = context.getString(R.string.shared_preferences_is_update_factory_server_type_key)
     private val sharedPreferencesCronExpression = context.getString(R.string.shared_preferences_time_windows_cron_expression_key)
     private val sharedPreferencesTimeWindowsDuration = context.getString(R.string.shared_preferences_time_windows_duration_key)

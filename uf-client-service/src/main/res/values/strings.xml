@@ -40,6 +40,7 @@
     <string name="shared_preferences_target_token_key" translatable="false">TARGET_TOKEN_KEY</string>
     <string name="shared_preferences_gateway_token_key" translatable="false">GATEWAY_TOKEN_KEY</string>
     <string name="shared_preferences_args_key" translatable="false">UF_ARGS_KEY</string>
+    <string name="shared_preferences_add_target_attributes_key" translatable="false">UF_ADD_TARGET_ATTRIBUTES_KEY</string>
     <string name="shared_preferences_is_update_factory_server_type_key" translatable="false">IS_UF_SERVER_TYPE_KEY</string>
     <string name="shared_preferences_target_token_received_from_server_key" translatable="false">TARGET_TOKEN_SERVER_KEY</string>
     <string name="shared_preferences_target_token_received_from_server_title" translatable="false">Target token received from server</string>
