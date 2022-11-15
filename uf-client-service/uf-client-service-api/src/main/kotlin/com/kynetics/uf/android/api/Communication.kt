@@ -96,7 +96,7 @@ sealed class Communication(val id: Int) {
             open fun toMessage(): Message {
                 val msg = Message.obtain(null, id)
                 val bundleWithApiVersion = bundle()
-                bundleWithApiVersion.putInt(SERVICE_API_VERSION_KEY, ApiCommunicationVersion.V1_1.versionCode)
+                bundleWithApiVersion.putInt(SERVICE_API_VERSION_KEY, ApiCommunicationVersion.latest().versionCode)
                 msg.data = bundleWithApiVersion
                 return msg
             }
