@@ -17,6 +17,7 @@ import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.impl.CommunicationApiV0_1Impl
 import com.kynetics.uf.android.communication.impl.CommunicationApiV1Impl
 import com.kynetics.uf.android.communication.impl.CommunicationApiV1_1Impl
+import com.kynetics.uf.android.communication.impl.CommunicationApiV1_2Impl
 import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
@@ -61,6 +62,12 @@ class CommunicationApiStrategy private constructor(
                     ),
 
                     ApiCommunicationVersion.V1_1 to CommunicationApiV1_1Impl(
+                        configurationHandler,
+                        restartableClientService,
+                        softDeploymentPermitProvider
+                    ),
+
+                    ApiCommunicationVersion.V1_2 to CommunicationApiV1_2Impl(
                         configurationHandler,
                         restartableClientService,
                         softDeploymentPermitProvider
