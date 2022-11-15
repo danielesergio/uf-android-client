@@ -65,5 +65,12 @@ enum class ApiCommunicationVersion(
                     it.versionCode == versionCode
                 }
         }
+
+        /**
+         * Return the latest version of ApiCommunicationVersion
+         */
+        internal fun latest(): ApiCommunicationVersion{
+            return values().maxByOrNull { it.versionCode }!!
+        }
     }
 }
