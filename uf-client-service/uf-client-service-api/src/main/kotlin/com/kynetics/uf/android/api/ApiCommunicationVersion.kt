@@ -39,7 +39,13 @@ enum class ApiCommunicationVersion(
     /**
      * Api version 1.1
      */
-    V1_1(2, "1.1.0");
+    V1_1(2, "1.1.0"),
+
+    /**
+     * Api version 1.2
+     */
+    V1_2(3, "1.2.0");
+
 
     companion object {
 
