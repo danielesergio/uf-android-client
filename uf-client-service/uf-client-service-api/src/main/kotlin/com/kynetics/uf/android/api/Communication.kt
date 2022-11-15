@@ -271,6 +271,32 @@ sealed class Communication(val id: Int) {
              * When the service receives a force ping message it polls the server
              */
             object ForcePing : In(7)
+
+            /**
+             * Class to build a message to add target attributes
+             *
+             * @property targetAttributes, a map [String] to [String] of target attributes
+             */
+            class AddTargetAttributes(
+                @Suppress("MemberVisibilityCanBePrivate")
+                /**
+                 * true to grant the authorization, false otherwise
+                 */
+                val targetAttributes: Map<String,String>
+            ) : In(ID) {
+                companion object {
+                    const val ID = 12
+                }
+
+                /**
+                 * @suppress
+                 */
+                override fun bundle(): Bundle {
+                    return super.bundle().apply {
+                        putSerializable(SERVICE_DATA_KEY, HashMap(targetAttributes))
+                    }
+                }
+            }
         }
 
 
