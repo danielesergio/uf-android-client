@@ -23,7 +23,7 @@ import com.kynetics.uf.android.configuration.AndroidDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 
 @Suppress("ClassName")
-class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
+open class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
                                ufService: RestartableClientService,
                                softDeploymentPermitProvider: AndroidDeploymentPermitProvider
 ):
