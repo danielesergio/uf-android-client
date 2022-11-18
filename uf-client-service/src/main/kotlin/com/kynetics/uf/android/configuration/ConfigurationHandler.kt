@@ -11,10 +11,8 @@ package com.kynetics.uf.android.configuration
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
+import android.content.SharedPreferences
 import android.util.Log
-import com.kynetics.uf.android.BuildConfig
-import com.kynetics.uf.android.R
 import com.kynetics.uf.android.UpdateFactoryService
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
@@ -23,24 +21,21 @@ import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companio
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.update.CurrentUpdateState
-import com.kynetics.uf.android.update.system.SystemUpdateType
 import com.kynetics.uf.android.update.application.ApkUpdater
 import com.kynetics.uf.android.update.system.OtaUpdater
 import com.kynetics.uf.ddiclient.HaraClientFactory
 import com.kynetics.uf.ddiclient.TargetTokenFoundListener
 import org.eclipse.hara.ddiclient.api.*
 import java.io.File
-import java.security.MessageDigest
-import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
 import java.util.*
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
-data class ConfigurationHandler(
+data class ConfigurationHandler (
     private val context: UpdateFactoryService,
     private val sharedPreferences: SharedPreferencesWithObject
-):ConfigurationLoaderFromIntent {
+):ConfigurationLoaderFromIntent, TargetAttributesHandler by TargetAttributesHandlerImpl(
+    sharedPreferences,
+    SharedPreferencesKeys.getInstance(context),
+    getTimeWindows(sharedPreferences, SharedPreferencesKeys.getInstance(context))) {
 
     fun getConfigurationFromFile(): UFServiceConfigurationV2? = configurationFile.newFileConfiguration
 
@@ -72,50 +67,45 @@ data class ConfigurationHandler(
         }
         sharedPreferences.edit().apply {
             if(isTargetTokenReceivedFromServerOld(configuration)){
-                remove(sharedPreferencesTargetTokenReceivedFromServer)
+                remove(keys.sharedPreferencesTargetTokenReceivedFromServer)
             }
-            putString(sharedPreferencesControllerIdKey, configuration.controllerId)
-            putString(sharedPreferencesTenantKey, configuration.tenant)
-            putString(sharedPreferencesServerUrlKey, configuration.url)
-            putString(sharedPreferencesGatewayToken, configuration.gatewayToken)
-            putString(sharedPreferencesTargetToken, configuration.targetToken)
-            putString(sharedPreferencesCronExpression, configuration.timeWindows.cronExpression)
-            putString(sharedPreferencesTimeWindowsDuration, "${configuration.timeWindows.duration}")
-            putBoolean(sharedPreferencesApiModeKey, configuration.isApiMode)
-            putBoolean(sharedPreferencesServiceEnableKey, configuration.isEnable)
-            putBoolean(sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)
+            putString(keys.sharedPreferencesControllerIdKey, configuration.controllerId)
+            putString(keys.sharedPreferencesTenantKey, configuration.tenant)
+            putString(keys.sharedPreferencesServerUrlKey, configuration.url)
+            putString(keys.sharedPreferencesGatewayToken, configuration.gatewayToken)
+            putString(keys.sharedPreferencesTargetToken, configuration.targetToken)
+            putString(keys.sharedPreferencesCronExpression, configuration.timeWindows.cronExpression)
+            putString(keys.sharedPreferencesTimeWindowsDuration, "${configuration.timeWindows.duration}")
+            putBoolean(keys.sharedPreferencesApiModeKey, configuration.isApiMode)
+            putBoolean(keys.sharedPreferencesServiceEnableKey, configuration.isEnable)
+            putBoolean(keys.sharedPreferencesIsUpdateFactoryServerType, configuration.isUpdateFactoryServe)
             apply()
         }
 
-        sharedPreferences.putAndCommitObject(sharedPreferencesTargetAttributesFromConfiguration, configuration.targetAttributes)
+        saveConfigurationTargetAttributes(configuration.targetAttributes)
     }
 
     fun getCurrentConfiguration(): UFServiceConfigurationV2 {
         return with(sharedPreferences){
             UFServiceConfigurationV2(
-                tenant = getString(sharedPreferencesTenantKey, "")!!,
-                controllerId = getString(sharedPreferencesControllerIdKey, "")!!,
-                url = getString(sharedPreferencesServerUrlKey, "")!!,
+                tenant = getString(keys.sharedPreferencesTenantKey, "")!!,
+                controllerId = getString(keys.sharedPreferencesControllerIdKey, "")!!,
+                url = getString(keys.sharedPreferencesServerUrlKey, "")!!,
                 targetToken = getTargetToken(),
-                gatewayToken = getString(sharedPreferencesGatewayToken, "")!!,
-                isApiMode = getBoolean(sharedPreferencesApiModeKey, true),
-                isEnable = getBoolean(sharedPreferencesServiceEnableKey, false),
-                isUpdateFactoryServe = getBoolean(sharedPreferencesIsUpdateFactoryServerType, true),
+                gatewayToken = getString(keys.sharedPreferencesGatewayToken, "")!!,
+                isApiMode = getBoolean(keys.sharedPreferencesApiModeKey, true),
+                isEnable = getBoolean(keys.sharedPreferencesServiceEnableKey, false),
+                isUpdateFactoryServe = getBoolean(keys.sharedPreferencesIsUpdateFactoryServerType, true),
                 targetAttributes = getConfigurationTargetAttributes(),
-                timeWindows = getTimeWindows()
+                timeWindows = getTimeWindows(sharedPreferences, keys)
             )
         }
     }
 
-    private fun getTimeWindows():UFServiceConfigurationV2.TimeWindows =
-        with(sharedPreferences){
-            UFServiceConfigurationV2.TimeWindows(getString(sharedPreferencesCronExpression, ALWAYS)!!, getString(sharedPreferencesTimeWindowsDuration, "$DEFAULT_WINDOW_DURATION")!!.toLong())
-        }
-
     private fun getTargetToken():String{
-        val targetToken = sharedPreferences.getString(sharedPreferencesTargetToken,"")
+        val targetToken = sharedPreferences.getString(keys.sharedPreferencesTargetToken,"")
         return if(targetToken == null || targetToken == ""){
-            sharedPreferences.getString(sharedPreferencesTargetTokenReceivedFromServer, "")!!
+            sharedPreferences.getString(keys.sharedPreferencesTargetTokenReceivedFromServer, "")!!
         } else {
             targetToken
         }
@@ -128,7 +118,7 @@ data class ConfigurationHandler(
                 || currentConf.url != newConf.url
     }
 
-    fun apiModeIsEnabled() = sharedPreferences.getBoolean(sharedPreferencesApiModeKey, false)
+    fun apiModeIsEnabled() = sharedPreferences.getBoolean(keys.sharedPreferencesApiModeKey, false)
 
     fun buildServiceFromPreferences(
         softDeploymentPermitProvider: DeploymentPermitProvider,
@@ -155,91 +145,17 @@ data class ConfigurationHandler(
                 oldConf?.copy(targetAttributes = mutableMapOf())
     }
 
-    private fun buildConfigDataProvider(): ConfigDataProvider {
-        return object : ConfigDataProvider {
-            override fun configData(): Map<String, String> {
-                return decorateTargetAttribute()
-            }
-
-            override fun isUpdated(): Boolean {
-                val md5 = decorateTargetAttribute().toMD5()
-                return md5 == sharedPreferences.getString(LAST_TARGET_ATTRIBUTES_MD5_SENT_KEY, "")
-            }
-
-            override fun onConfigDataUpdate() {
-                val md5 = decorateTargetAttribute().toMD5()
-                sharedPreferences.edit().putString(LAST_TARGET_ATTRIBUTES_MD5_SENT_KEY, md5)
-                        .apply()
-            }
-        }
-    }
-
-    fun addTargetAttributes(targetAttributes: Map<String,String>){
-        sharedPreferences.putAndCommitObject(sharedPreferencesAddTargetAttributes, targetAttributes)
-    }
-
     private fun getTargetTokenListener(): TargetTokenFoundListener {
         return object : TargetTokenFoundListener {
             override fun onFound(targetToken: String){
                 Log.d(TAG, "New target token received")
                 sharedPreferences.edit()
-                        .putString(sharedPreferencesTargetTokenReceivedFromServer, targetToken)
+                        .putString(keys.sharedPreferencesTargetTokenReceivedFromServer, targetToken)
                         .apply()
             }
         }
     }
 
-    private fun mergeThirdPartyAppTargetAttributes():MutableMap<String,String>{
-        return getConfigurationTargetAttributes()
-            .apply {
-                putAll(getAddTargetAttributes())
-            }.filter { (key,_) -> key.startsWith("UF_", true)}
-            .toMutableMap()
-    }
-
-    private fun getConfigurationTargetAttributes(): MutableMap<String, String> {
-        val targetAttributes: MutableMap<String, String>? = sharedPreferences
-                .getObject(sharedPreferencesTargetAttributesFromConfiguration)
-        return targetAttributes ?: mutableMapOf()
-    }
-
-    private fun getAddTargetAttributes():MutableMap<String, String> {
-        val targetAttributes: MutableMap<String, String>? = sharedPreferences
-            .getObject(sharedPreferencesAddTargetAttributes)
-        return targetAttributes ?: mutableMapOf()
-    }
-
-    private fun decorateTargetAttribute(): Map<String, String> {
-        val targetAttributes = mergeThirdPartyAppTargetAttributes()
-        targetAttributes[CLIENT_TYPE_TARGET_TOKEN_KEY] = "Android"
-        targetAttributes[CLIENT_VERSION_TARGET_ATTRIBUTE_KEY] = BuildConfig.VERSION_NAME // TODO: 4/17/18 refactor
-        targetAttributes[CLIENT_VERSION_CODE_ATTRIBUTE_KEY] = BuildConfig.VERSION_CODE.toString()
-        val buildDate = Date(Build.TIME)
-        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.UK)
-        targetAttributes[ANDROID_BUILD_DATE_TARGET_ATTRIBUTE_KEY] = dateFormat.format(buildDate)
-        targetAttributes[ANDROID_BUILD_TYPE_TARGET_ATTRIBUTE_KEY] = Build.TYPE
-        targetAttributes[ANDROID_FINGERPRINT_TARGET_ATTRIBUTE_KEY] = Build.FINGERPRINT
-        targetAttributes[ANDROID_KEYS_TARGET_ATTRIBUTE_KEY] = Build.TAGS
-        targetAttributes[ANDROID_VERSION_TARGET_ATTRIBUTE_KEY] = Build.VERSION.RELEASE
-        targetAttributes[DEVICE_NAME_TARGET_ATTRIBUTE_KEY] = Build.DEVICE
-        targetAttributes[SYSTEM_UPDATE_TYPE] = systemUpdateType!!.name
-        targetAttributes[DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY] = TimeZone.getDefault().id
-        targetAttributes[DEVICE_UTC_TARGET_ATTRIBUTE_KEY] = "${OffsetDateTime.now().offset}"
-        val timeWindows = getTimeWindows()
-        targetAttributes[TIME_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY] = timeWindows.cronExpression
-        targetAttributes[TIME_WINDOWS_DURATION_ATTRIBUTE_KEY] = timeWindows.duration.toDuration(DurationUnit.SECONDS).toString()
-        return targetAttributes
-    }
-
-    private fun Map<String, String>.toMD5(): String {
-        val content = entries.sortedBy { it.key }.joinToString("-") { "${it.key}_${it.value}" }
-        val bytes = MessageDigest.getInstance("MD5").digest(content.toByteArray())
-        return bytes.toMD5()
-    }
-
-    private fun ByteArray.toMD5(): String {
-        return this.joinToString("") { "%02x".format(it) }
-    }
 
     private fun UFServiceConfigurationV2.toService(
         deploymentPermitProvider: DeploymentPermitProvider,
@@ -252,7 +168,7 @@ data class ConfigurationHandler(
                     object : DirectoryForArtifactsProvider {
                         override fun directoryForArtifacts(): File = currentUpdateState.rootDir()
                     },
-                    buildConfigDataProvider(),
+                    newConfigDataProvider(),
                     deploymentPermitProvider,
                     listeners,
                     listOf(OtaUpdater(context),ApkUpdater(context)),
@@ -265,7 +181,7 @@ data class ConfigurationHandler(
                     object : DirectoryForArtifactsProvider {
                         override fun directoryForArtifacts(): File = currentUpdateState.rootDir()
                     },
-                    buildConfigDataProvider(),
+                    newConfigDataProvider(),
                     deploymentPermitProvider,
                     listeners,
                     forceDeploymentPermitProvider,
@@ -284,43 +200,22 @@ data class ConfigurationHandler(
         )
     }
 
-    private var systemUpdateType: SystemUpdateType? = SystemUpdateType.getSystemUpdateType()
     private val configurationFile = ConfigurationFileLoader(sharedPreferences, UF_CONF_FILE, context)
 
-    private val sharedPreferencesServerUrlKey = context.getString(R.string.shared_preferences_server_url_key)
-    private val sharedPreferencesApiModeKey = context.getString(R.string.shared_preferences_api_mode_key)
-    private val sharedPreferencesTenantKey = context.getString(R.string.shared_preferences_tenant_key)
-    private val sharedPreferencesControllerIdKey = context.getString(R.string.shared_preferences_controller_id_key)
-    private val sharedPreferencesServiceEnableKey = context.getString(R.string.shared_preferences_is_enable_key)
-    private val sharedPreferencesGatewayToken = context.getString(R.string.shared_preferences_gateway_token_key)
-    private val sharedPreferencesTargetToken = context.getString(R.string.shared_preferences_target_token_key)
-    private val sharedPreferencesTargetTokenReceivedFromServer = context.getString(R.string.shared_preferences_target_token_received_from_server_key)
-    private val sharedPreferencesTargetAttributesFromConfiguration = context.getString(R.string.shared_preferences_args_key)
-    private val sharedPreferencesAddTargetAttributes = context.getString(R.string.shared_preferences_add_target_attributes_key)
-    private val sharedPreferencesIsUpdateFactoryServerType = context.getString(R.string.shared_preferences_is_update_factory_server_type_key)
-    private val sharedPreferencesCronExpression = context.getString(R.string.shared_preferences_time_windows_cron_expression_key)
-    private val sharedPreferencesTimeWindowsDuration = context.getString(R.string.shared_preferences_time_windows_duration_key)
 
     private val currentUpdateState: CurrentUpdateState = CurrentUpdateState(context)
+    private val keys:SharedPreferencesKeys = SharedPreferencesKeys.getInstance(context)
 
     companion object {
-        private const val LAST_TARGET_ATTRIBUTES_MD5_SENT_KEY = "LAST_TARGET_ATTRIBUTES_MD5_SET_KEY"
-        private const val CLIENT_VERSION_TARGET_ATTRIBUTE_KEY = "client_version"
-        private const val CLIENT_VERSION_CODE_ATTRIBUTE_KEY = "client_version_code"
-        private const val ANDROID_BUILD_DATE_TARGET_ATTRIBUTE_KEY = "android_build_date"
-        private const val ANDROID_BUILD_TYPE_TARGET_ATTRIBUTE_KEY = "android_build_type"
-        private const val ANDROID_FINGERPRINT_TARGET_ATTRIBUTE_KEY = "android_fingerprint"
-        private const val ANDROID_KEYS_TARGET_ATTRIBUTE_KEY = "android_keys"
-        private const val ANDROID_VERSION_TARGET_ATTRIBUTE_KEY = "android_version"
-        private const val DEVICE_NAME_TARGET_ATTRIBUTE_KEY = "device_name"
-        private const val SYSTEM_UPDATE_TYPE = "system_update_type"
-        private const val DEVICE_UTC_TARGET_ATTRIBUTE_KEY = "utc_offset"
-        private const val DEVICE_TIME_ZONE_TARGET_ATTRIBUTE_KEY = "time_zone"
-        private const val TIME_WINDOWS_CRON_EXPRESSION_ATTRIBUTE_KEY = "time_windows_cron_expression"
-        private const val TIME_WINDOWS_DURATION_ATTRIBUTE_KEY = "time_windows_duration"
-        private const val CLIENT_TYPE_TARGET_TOKEN_KEY = "client"
         @SuppressLint("SdCardPath")
         private const val UF_CONF_FILE = "/sdcard/UpdateFactoryConfiguration/ufConf.conf"
         private val TAG: String = ConfigurationHandler::class.java.simpleName
+
+        private fun getTimeWindows(sharedPreferences:SharedPreferences, keys:SharedPreferencesKeys):UFServiceConfigurationV2.TimeWindows =
+            with(sharedPreferences){
+                UFServiceConfigurationV2.TimeWindows(getString(keys.sharedPreferencesCronExpression,
+                    ALWAYS
+                )!!, getString(keys.sharedPreferencesTimeWindowsDuration, "$DEFAULT_WINDOW_DURATION")!!.toLong())
+            }
     }
 }

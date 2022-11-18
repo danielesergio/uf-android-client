@@ -36,7 +36,7 @@ class CommunicationApiV1_2Impl(configurationHandler: ConfigurationHandler,
     }
 
     override fun addTargetAttributes(targetAttributes: Map<String, String>) {
-        configurationHandler.addTargetAttributes(targetAttributes)
+        configurationHandler.saveAddTargetAttributes(targetAttributes)
     }
 
     companion object{
