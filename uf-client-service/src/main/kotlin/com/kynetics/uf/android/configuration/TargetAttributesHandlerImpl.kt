@@ -4,9 +4,9 @@ import android.os.Build
 import com.kynetics.uf.android.BuildConfig
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.content.SharedPreferencesWithObject
+import com.kynetics.uf.android.md5.toMD5
 import com.kynetics.uf.android.update.system.SystemUpdateType
 import org.eclipse.hara.ddiclient.api.ConfigDataProvider
-import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.OffsetDateTime
 import java.util.*
@@ -91,13 +91,10 @@ class TargetAttributesHandlerImpl(
     }
 
     private fun Map<String, String>.toMD5(): String {
-        val content = entries.sortedBy { it.key }.joinToString("-") { "${it.key}_${it.value}" }
-        val bytes = MessageDigest.getInstance("MD5").digest(content.toByteArray())
-        return bytes.toMD5()
-    }
-
-    private fun ByteArray.toMD5(): String {
-        return this.joinToString("") { "%02x".format(it) }
+        return entries
+            .sortedBy { it.key }
+            .joinToString("-") { "${it.key}_${it.value}" }
+            .toMD5()
     }
 
     companion object {
