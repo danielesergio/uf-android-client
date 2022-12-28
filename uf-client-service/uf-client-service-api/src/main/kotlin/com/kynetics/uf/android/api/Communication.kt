@@ -13,6 +13,8 @@ import android.os.Bundle
 import android.os.Message
 import android.os.Messenger
 import com.kynetics.uf.android.api.v1.UFServiceMessageV1
+ import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 /**
  * Transform an instance of [Message] to [Communication.V1.Out]
@@ -275,14 +277,14 @@ sealed class Communication(val id: Int) {
             /**
              * Class to build a message to add target attributes
              *
-             * @property targetAttributes, a map [String] to [String] of target attributes
+             * @property targetAttributesWithPolicy, a Map of target attributes with an aggregation policy
              */
             class AddTargetAttributes(
                 @Suppress("MemberVisibilityCanBePrivate")
                 /**
-                 * true to grant the authorization, false otherwise
+                 * @property targetAttributesWithPolicy, the target attributes with the aggregation policy
                  */
-                val targetAttributes: Map<String,String>
+                val targetAttributesWithPolicy: TargetAttributesWithPolicy
             ) : In(ID) {
                 companion object {
                     const val ID = 12
@@ -293,10 +295,11 @@ sealed class Communication(val id: Int) {
                  */
                 override fun bundle(): Bundle {
                     return super.bundle().apply {
-                        putSerializable(SERVICE_DATA_KEY, HashMap(targetAttributes))
+                        putSerializable(SERVICE_DATA_KEY,targetAttributesWithPolicy.toJson())
                     }
                 }
             }
+
         }
 
 
@@ -396,5 +399,53 @@ sealed class Communication(val id: Int) {
                 }
             }
         }
+
     }
+
+}
+
+@Serializable
+/**
+ * A Map of target attributes with an aggregation policy
+ *
+ * @property attributes, a map [String] to [String] of target attributes
+ * @property policy, an aggregation policy
+ */
+data class TargetAttributesWithPolicy(
+    /**
+     * @property attributes, a map [String] to [String] of target attributes
+     */
+    val attributes: Map<String,String>,
+    /**
+     * @property policy, an aggregation policy
+     */
+    val policy: AggregationPolicy = AggregationPolicy.REPLACE
+){
+
+    companion object{
+        private val json = Json { encodeDefaults = true }
+        @JvmStatic
+        fun parse(jsonData:String): TargetAttributesWithPolicy = json.decodeFromString(serializer(), jsonData)
+    }
+
+    fun toJson():String = json.encodeToString(serializer(), this)
+}
+
+/**
+ *  The aggregation policy of targetAttributes
+ */
+@Serializable
+enum class AggregationPolicy{
+    /**
+     * Merge previous target attributes added using the AddTargetAttributes message.
+     * (Old target attributes with same key are updated with the new values, the others
+     * are keep unchanged)
+     */
+    MERGE,
+
+    /**
+     * Replace previous target attributes added using the AddTargetAttributes message
+     * (Old target attributes are removed)
+     */
+    REPLACE
 }

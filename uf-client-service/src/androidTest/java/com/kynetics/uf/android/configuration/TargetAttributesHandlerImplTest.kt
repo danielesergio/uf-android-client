@@ -33,7 +33,8 @@ internal class TargetAttributesHandlerImplTest {
     fun testTargetAttributesDoesNotContainsKeyStartingWithUFDefinedByThirdPartyApp() {
         targetAttributesHandler.saveAddTargetAttributes(mapOf(
             UF_KEY_1 to targetAttributeValueRandomValue(),
-            UF_KEY_2 to targetAttributeValueRandomValue())
+            UF_KEY_2 to targetAttributeValueRandomValue()),
+            false
         )
 
         val targetAttributes = configDataProvider.configData()
@@ -50,7 +51,8 @@ internal class TargetAttributesHandlerImplTest {
         val originalTAValue = configDataProvider.configData()[UF_KEY_DEFINED_BY_UF_ANDROID_CLIENT]
 
         targetAttributesHandler.saveAddTargetAttributes(mapOf(
-            UF_KEY_DEFINED_BY_UF_ANDROID_CLIENT to newTAValue)
+            UF_KEY_DEFINED_BY_UF_ANDROID_CLIENT to newTAValue),
+            false
         )
 
         val targetAttributes = configDataProvider.configData()
@@ -67,7 +69,8 @@ internal class TargetAttributesHandlerImplTest {
         val targetAttributeValue = targetAttributeValueRandomValue()
 
         targetAttributesHandler.saveAddTargetAttributes(mapOf(
-            THIRD_PARTY_KEY to targetAttributeValue)
+            THIRD_PARTY_KEY to targetAttributeValue),
+            false
         )
 
         val targetAttributes = configDataProvider.configData()

@@ -24,8 +24,17 @@ class TargetAttributesHandlerImpl(
         saveMap(keys.sharedPreferencesTargetAttributesFromConfiguration, targetAttributes)
 
 
-    override fun saveAddTargetAttributes(targetAttributes: Map<String, String>)  =
-        saveMap(keys.sharedPreferencesAddTargetAttributes, targetAttributes)
+    override fun saveAddTargetAttributes(targetAttributes: Map<String, String>, merge:Boolean){
+        if(merge){
+            getAddTargetAttributes().apply {
+                putAll(targetAttributes)
+            }
+        } else {
+            targetAttributes
+        }.let {
+            saveMap(keys.sharedPreferencesAddTargetAttributes, it)
+        }
+    }
 
     override fun getConfigurationTargetAttributes(): MutableMap<String, String> =
         getMap (keys.sharedPreferencesTargetAttributesFromConfiguration)

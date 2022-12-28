@@ -9,7 +9,9 @@
 
 package com.kynetics.uf.android.communication
 
+import com.kynetics.uf.android.api.TargetAttributesWithPolicy
+
 @Suppress("ClassName")
 interface CommunicationApiV1_2:CommunicationApiV1_1{
-    fun addTargetAttributes(targetAttributes: Map<String,String>)
+    fun addTargetAttributes(targetAttributesWithPolicy: TargetAttributesWithPolicy)
 }
