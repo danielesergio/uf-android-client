@@ -45,7 +45,7 @@ open class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
             ufService.restartService(configurationHandler)
             Log.i(TAG, "configuration updated - restarting service")
         } else {
-            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.Started(configurationHandler.getSecureConfiguration()))
+            MessengerHandler.notifyMessage(UFServiceMessageV1.Event.Started(configurationHandler.getSecureConfiguration()))
             Log.i(TAG, "configuration updated - service not restarted")
         }
     }

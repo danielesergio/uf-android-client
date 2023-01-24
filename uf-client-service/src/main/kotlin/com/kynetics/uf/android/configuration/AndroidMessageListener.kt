@@ -35,7 +35,7 @@ class AndroidMessageListener(private val service: UpdateFactoryService) : Messag
             else -> {}
         }
 
-        MessengerHandler.onMessageReceived(message)
+        MessengerHandler.notifyHaraMessage(message)
 
         mNotificationManager.notify(UpdateFactoryService.NOTIFICATION_ID, service.getNotification(message.toString()))
         Log.i(TAG, message.toString())

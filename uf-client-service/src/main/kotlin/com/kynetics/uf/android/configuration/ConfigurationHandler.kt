@@ -132,7 +132,7 @@ data class ConfigurationHandler (
                 newService = serviceConfiguration.toService(softDeploymentPermitProvider, forceDeploymentPermitProvider, listeners)
             } catch (e: RuntimeException) {
                 newService = null
-                MessengerHandler.onConfigurationError(listOf(e.message ?: "Error"))
+                MessengerHandler.notifyConfigurationError(listOf(e.message ?: "Error"))
                 Log.e(TAG, e.message, e)
             }
         }

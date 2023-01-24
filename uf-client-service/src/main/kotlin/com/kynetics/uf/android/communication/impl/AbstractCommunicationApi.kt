@@ -90,7 +90,7 @@ abstract class AbstractCommunicationApi(
             ufService.restartService(configurationHandler)
             Log.i(tag, "configuration updated - restarting service")
         } else {
-            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.ConfigurationUpdated(configurationHandler.getCurrentConfiguration()))
+            MessengerHandler.notifyMessage(UFServiceMessageV1.Event.ConfigurationUpdated(configurationHandler.getCurrentConfiguration()))
             Log.i(tag, "configuration updated - service not restarted")
         }
     }

@@ -41,11 +41,11 @@ object MessengerHandler {
 
     fun onAction(action: MessageHandler.Action) = updateMessage { mh -> mh.onAction(action) }
 
-    fun onMessageReceived(msg: MessageListener.Message) = updateMessageAndNotify { mh -> mh.onMessage(msg) }
+    fun notifyHaraMessage(msg: MessageListener.Message) = updateMessageAndNotify { mh -> mh.onMessage(msg) }
 
-    fun onConfigurationError(details: List<String>) = updateMessageAndNotify{ mh -> mh.onConfigurationError(details)}
+    fun notifyConfigurationError(details: List<String>) = updateMessageAndNotify{ mh -> mh.onConfigurationError(details)}
 
-    fun onAndroidMessage(msg: UFServiceMessageV1) = updateMessageAndNotify { mh -> mh.onAndroidMessage( msg) }
+    fun notifyMessage(msg: UFServiceMessageV1) = updateMessageAndNotify { mh -> mh.onAndroidMessage( msg) }
 
     private fun updateMessage(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>?) = lastSharedMessagesByVersion.forEach {
         map(it.value)?.let{ newMessage ->  lastSharedMessagesByVersion[it.key] = newMessage }

@@ -47,7 +47,7 @@ class RestartableClientService constructor(
 
     override fun startAsync() {
         if(currentSecureConf != null){
-            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.Started(currentSecureConf!!))
+            MessengerHandler.notifyMessage(UFServiceMessageV1.Event.Started(currentSecureConf!!))
             client.startAsync()
         }
     }
@@ -58,7 +58,7 @@ class RestartableClientService constructor(
                 Log.i(TAG,"Try to restart the service")
                 while (!serviceRestartable()) {
                     Log.i(TAG, "Service not restartable yet.")
-                    MessengerHandler.onAndroidMessage(
+                    MessengerHandler.notifyMessage(
                         UFServiceMessageV1.Event.CantBeStopped(currentSecureConf!!, RETRY_SERVICE_RESTART)
                     )
                     delay(RETRY_SERVICE_RESTART)
@@ -95,7 +95,7 @@ class RestartableClientService constructor(
 
     override fun stop() {
         if(currentSecureConf!=null){
-            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.Stopped(currentSecureConf!!))
+            MessengerHandler.notifyMessage(UFServiceMessageV1.Event.Stopped(currentSecureConf!!))
             client.stop()
             CronScheduler.removeScheduledJob(CRON_TAG)
         }
