@@ -10,6 +10,7 @@
 package com.kynetics.uf.android.api.v1
 
 import com.kynetics.uf.android.api.Communication
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -46,6 +47,10 @@ sealed class UFServiceMessageV1 {
         UPDATE_AVAILABLE,
         CONFIGURATION_ERROR,
         WAITING_UPDATE_WINDOW,
+        STARTED,
+        STOPPED,
+        CONFIGURATION_UPDATED,
+        CANT_BE_STOPPED
     }
 
     override fun toString(): String {
@@ -240,6 +245,34 @@ sealed class UFServiceMessageV1 {
                 return json.encodeToString(serializer(), this)
             }
         }
+
+        @Serializable
+        data class Started(val configuration: UFServiceConfigurationV2): Event(MessageName.STARTED, "The service is started"){
+            override fun toJson(): String {
+                return json.encodeToString(serializer(), this)
+            }
+        }
+
+        @Serializable
+        data class Stopped(val configuration: UFServiceConfigurationV2): Event(MessageName.STOPPED, "The service is stopped"){
+            override fun toJson(): String {
+                return json.encodeToString(serializer(), this)
+            }
+        }
+
+        @Serializable
+        data class CantBeStopped(val configuration: UFServiceConfigurationV2, val retryIn:Long): Event(MessageName.CANT_BE_STOPPED, "The service can't be stopped during an update"){
+            override fun toJson(): String {
+                return json.encodeToString(serializer(), this)
+            }
+        }
+
+        @Serializable
+        data class ConfigurationUpdated(val configuration: UFServiceConfigurationV2): Event(MessageName.CONFIGURATION_UPDATED, "The service configuration is updated"){
+            override fun toJson(): String {
+                return json.encodeToString(serializer(), this)
+            }
+        }
     }
 
     @Serializable
@@ -282,6 +315,10 @@ sealed class UFServiceMessageV1 {
                 MessageName.UPDATE_AVAILABLE.name -> json.decodeFromString(Event.UpdateAvailable.serializer(), jsonContent)
                 MessageName.CONFIGURATION_ERROR.name -> json.decodeFromString(State.ConfigurationError.serializer(), jsonContent)
                 MessageName.WAITING_UPDATE_WINDOW.name -> json.decodeFromString(State.WaitingUpdateWindow.serializer(), jsonContent)
+                MessageName.STARTED.name -> json.decodeFromString(Event.Started.serializer(), jsonContent)
+                MessageName.STOPPED.name -> json.decodeFromString(Event.Stopped.serializer(), jsonContent)
+                MessageName.CANT_BE_STOPPED.name -> json.decodeFromString(Event.CantBeStopped.serializer(), jsonContent)
+                MessageName.CONFIGURATION_UPDATED.name -> json.decodeFromString(Event.ConfigurationUpdated.serializer(), jsonContent)
 
                 else -> throw IllegalArgumentException("$jsonContent is not obtained by toJson method of ${UFServiceMessageV1::class.java.simpleName}")
             }
