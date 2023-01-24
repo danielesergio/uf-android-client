@@ -10,6 +10,10 @@
 package com.kynetics.uf.android.client
 
 import android.util.Log
+import com.kynetics.uf.android.api.UFServiceConfigurationV2
+import com.kynetics.uf.android.api.v1.UFServiceMessageV1
+import com.kynetics.uf.android.communication.impl.getSecureConfiguration
+import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.configuration.AndroidForceDeploymentPermitProvider
 import com.kynetics.uf.android.configuration.ConfigurationHandler
 import com.kynetics.uf.android.cron.CronScheduler
@@ -39,6 +43,14 @@ class RestartableClientService constructor(
 
     private val scope:CoroutineScope = CoroutineScope(Dispatchers.IO)
     private val channel: Channel<ConfigurationHandler> = Channel(Channel.CONFLATED)
+    private var currentSecureConf:UFServiceConfigurationV2? = null
+
+    override fun startAsync() {
+        if(currentSecureConf != null){
+            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.Started(currentSecureConf!!))
+            client.startAsync()
+        }
+    }
 
     private val job:Job = scope.launch {
         for(conf in channel){
@@ -46,14 +58,18 @@ class RestartableClientService constructor(
                 Log.i(TAG,"Try to restart the service")
                 while (!serviceRestartable()) {
                     Log.i(TAG, "Service not restartable yet.")
-                    delay(10000)
+                    MessengerHandler.onAndroidMessage(
+                        UFServiceMessageV1.Event.CantBeStopped(currentSecureConf!!, RETRY_SERVICE_RESTART)
+                    )
+                    delay(RETRY_SERVICE_RESTART)
                 }
                 Log.d(TAG, "Restarting service")
                 stop()
+                currentSecureConf = conf.getSecureConfiguration()
                 client.delegate = conf.buildServiceFromPreferences(softDeploymentPermitProvider,
                     AndroidForceDeploymentPermitProvider.build(CRON_TAG, conf.getCurrentConfiguration().timeWindows),
                     _listeners)
-                client.startAsync()
+                startAsync()
                 Log.d(TAG, "Service restarted")
             }.onFailure {
                 Log.d(TAG, "Error on restarting service", it)
@@ -71,14 +87,18 @@ class RestartableClientService constructor(
                     listeners)
         }
 
-        const val CRON_TAG = "ForceDeploymentTag"
+        const val CRON_TAG:String = "ForceDeploymentTag"
+        private const val RETRY_SERVICE_RESTART:Long = 10000
     }
 
     fun restartService(conf:ConfigurationHandler) = channel.trySend(conf)
 
     override fun stop() {
-        client.stop()
-        CronScheduler.removeScheduledJob(CRON_TAG)
+        if(currentSecureConf!=null){
+            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.Stopped(currentSecureConf!!))
+            client.stop()
+            CronScheduler.removeScheduledJob(CRON_TAG)
+        }
     }
 
     private fun serviceRestartable():Boolean{

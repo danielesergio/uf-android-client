@@ -17,6 +17,7 @@ import android.util.Log
 import com.kynetics.uf.android.api.ApiCommunicationVersion
 import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfiguration
+import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.android.client.RestartableClientService
 import com.kynetics.uf.android.communication.GenericCommunicationApi
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
@@ -89,6 +90,7 @@ abstract class AbstractCommunicationApi(
             ufService.restartService(configurationHandler)
             Log.i(tag, "configuration updated - restarting service")
         } else {
+            MessengerHandler.onAndroidMessage(UFServiceMessageV1.Event.ConfigurationUpdated(configurationHandler.getCurrentConfiguration()))
             Log.i(tag, "configuration updated - service not restarted")
         }
     }
