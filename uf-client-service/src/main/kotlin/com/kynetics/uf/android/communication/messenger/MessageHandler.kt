@@ -33,19 +33,19 @@ interface MessageHandler<out T : Serializable?> {
 
     fun hasMessage(): Boolean = messageToSendOnSync != null
 
-    fun onAction(action: Action): MessageHandler<T> {
+    fun onAction(action: Action): MessageHandler<T>? {
         return this
     }
 
-    fun onMessage(msg: MessageListener.Message): MessageHandler<T> {
+    fun onMessage(msg: MessageListener.Message): MessageHandler<T>? {
         return this
     }
 
-    fun onAndroidMessage(msg: UFServiceMessageV1): MessageHandler<T> {
+    fun onAndroidMessage(msg: UFServiceMessageV1): MessageHandler<T>? {
         return this
     }
 
-    fun onConfigurationError(details: List<String>): MessageHandler<T>
+    fun onConfigurationError(details: List<String>): MessageHandler<T>?
 }
 
 data class V0(
@@ -89,10 +89,10 @@ data class V0(
 data class V1x(
     override val messageToSendOnSync: String? = null,
     override val currentMessage: String? = null,
-    val msgMapper: (UFServiceMessageV1) -> UFServiceMessageV1 = {msg -> msg}
+    val msgMapper: (UFServiceMessageV1) -> UFServiceMessageV1? = {msg -> msg}
 ) : MessageHandler<String?> {
 
-    override fun onMessage(msg: MessageListener.Message): MessageHandler<String?> {
+    override fun onMessage(msg: MessageListener.Message): MessageHandler<String?>? {
         return onAndroidMessage(msg.toUFMessage())
     }
 
@@ -101,7 +101,7 @@ data class V1x(
         return copy(messageToSendOnSync = state, currentMessage = state)
     }
 
-    override fun onAndroidMessage(msg: UFServiceMessageV1): MessageHandler<String?> {
+    override fun onAndroidMessage(msg: UFServiceMessageV1): MessageHandler<String?>? {
         Log.i("v1", "onAndroidMessage $msg")
         return when (val finalMsg = msgMapper(msg)) {
             is UFServiceMessageV1.Event -> {
@@ -112,6 +112,8 @@ data class V1x(
                 val currentMessage = finalMsg.toJson()
                 copy(messageToSendOnSync = currentMessage, currentMessage = currentMessage)
             }
+
+            null -> null
         }
     }
 }
@@ -122,12 +124,23 @@ object MessageHandlerFactory{
     fun newV1():V1x = V1x(
         msgMapper = { msg:UFServiceMessageV1 ->
             when(msg){
-                is UFServiceMessageV1.State.WaitingUpdateWindow ->{ UFServiceMessageV1.State.WaitingUpdateAuthorization }
+                is UFServiceMessageV1.State.WaitingUpdateWindow -> UFServiceMessageV1.State.WaitingUpdateAuthorization
+                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated -> null
                 else -> msg
             }.also { newMsg -> Log.i("v1", "mapping $msg to $newMsg") }
         }
     )
 
     @Suppress("FunctionName")
-    fun newV1_1():V1x = V1x()
+    fun newV1_1():V1x = V1x(
+        msgMapper = { msg:UFServiceMessageV1 ->
+            when(msg){
+                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated -> null
+                else -> msg
+            }.also { newMsg -> Log.i("v1.1", "mapping $msg to $newMsg") }
+        }
+    )
+
+    @Suppress("FunctionName")
+    fun newV1_2():V1x = V1x()
 }

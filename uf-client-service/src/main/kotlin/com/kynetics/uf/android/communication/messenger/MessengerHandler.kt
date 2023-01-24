@@ -24,13 +24,11 @@ object MessengerHandler {
 
     private val TAG = MessengerHandler::class.java.simpleName
 
-    private val v1_1 = MessageHandlerFactory.newV1_1()
-
     private val lastSharedMessagesByVersion = mutableMapOf(
             ApiCommunicationVersion.V0_1 to MessageHandlerFactory.newV0(),
             ApiCommunicationVersion.V1 to MessageHandlerFactory.newV1(),
-            ApiCommunicationVersion.V1_1 to v1_1,
-            ApiCommunicationVersion.V1_2 to v1_1,
+            ApiCommunicationVersion.V1_1 to MessageHandlerFactory.newV1_1(),
+            ApiCommunicationVersion.V1_2 to MessageHandlerFactory.newV1_2(),
     )
 
     private val mClients = mutableMapOf<Messenger, ApiCommunicationVersion>()
@@ -49,11 +47,11 @@ object MessengerHandler {
 
     fun onAndroidMessage(msg: UFServiceMessageV1) = updateMessageAndNotify { mh -> mh.onAndroidMessage( msg) }
 
-    private fun updateMessage(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) = lastSharedMessagesByVersion.forEach {
-        lastSharedMessagesByVersion[it.key] = map(it.value)
+    private fun updateMessage(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>?) = lastSharedMessagesByVersion.forEach {
+        map(it.value)?.let{ newMessage ->  lastSharedMessagesByVersion[it.key] = newMessage }
     }
 
-    private fun updateMessageAndNotify(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>) =
+    private fun updateMessageAndNotify(map: (MessageHandler<Serializable?>) -> MessageHandler<Serializable?>?) =
         updateMessage(map).also { sendBroadcastMessage(Communication.V1.Out.ServiceNotification.ID) }
 
     internal fun response(messageContent: Serializable?, code: Int, replyTo: Messenger?) {
