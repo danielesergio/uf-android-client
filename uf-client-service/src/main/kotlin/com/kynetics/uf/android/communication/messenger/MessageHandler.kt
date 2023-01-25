@@ -125,7 +125,7 @@ object MessageHandlerFactory{
         msgMapper = { msg:UFServiceMessageV1 ->
             when(msg){
                 is UFServiceMessageV1.State.WaitingUpdateWindow -> UFServiceMessageV1.State.WaitingUpdateAuthorization
-                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated -> null
+                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated, is UFServiceMessageV1.Event.NewTargetTokenReceived -> null
                 else -> msg
             }.also { newMsg -> Log.i("v1", "mapping $msg to $newMsg") }
         }
@@ -135,7 +135,7 @@ object MessageHandlerFactory{
     fun newV1_1():V1x = V1x(
         msgMapper = { msg:UFServiceMessageV1 ->
             when(msg){
-                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated -> null
+                is UFServiceMessageV1.Event.Stopped, is UFServiceMessageV1.Event.Started, is UFServiceMessageV1.Event.CantBeStopped, is UFServiceMessageV1.Event.ConfigurationUpdated, is UFServiceMessageV1.Event.NewTargetTokenReceived -> null
                 else -> msg
             }.also { newMsg -> Log.i("v1.1", "mapping $msg to $newMsg") }
         }

@@ -18,6 +18,7 @@ import com.kynetics.uf.android.api.Communication
 import com.kynetics.uf.android.api.UFServiceConfigurationV2
 import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.ALWAYS
 import com.kynetics.uf.android.api.UFServiceConfigurationV2.TimeWindows.Companion.DEFAULT_WINDOW_DURATION
+import com.kynetics.uf.android.api.v1.UFServiceMessageV1
 import com.kynetics.uf.android.communication.messenger.MessengerHandler
 import com.kynetics.uf.android.content.SharedPreferencesWithObject
 import com.kynetics.uf.android.update.CurrentUpdateState
@@ -149,9 +150,14 @@ data class ConfigurationHandler (
         return object : TargetTokenFoundListener {
             override fun onFound(targetToken: String){
                 Log.d(TAG, "New target token received")
-                sharedPreferences.edit()
-                        .putString(keys.sharedPreferencesTargetTokenReceivedFromServer, targetToken)
-                        .apply()
+                with(sharedPreferences){
+                    if(targetToken != getString(keys.sharedPreferencesTargetTokenReceivedFromServer, null)){
+                        edit()
+                            .putString(keys.sharedPreferencesTargetTokenReceivedFromServer, targetToken)
+                            .apply()
+                        MessengerHandler.notifyMessage(UFServiceMessageV1.Event.NewTargetTokenReceived)
+                    }
+                }
             }
         }
     }
