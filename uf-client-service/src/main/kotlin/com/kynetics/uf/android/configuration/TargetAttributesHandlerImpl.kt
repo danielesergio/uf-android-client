@@ -38,6 +38,7 @@ class TargetAttributesHandlerImpl(
 
     override fun getConfigurationTargetAttributes(): MutableMap<String, String> =
         getMap (keys.sharedPreferencesTargetAttributesFromConfiguration)
+            .toMutableMap()
 
     override fun newConfigDataProvider(): ConfigDataProvider {
         return object : ConfigDataProvider {
