@@ -247,6 +247,11 @@ sealed class UFServiceMessageV1 {
             }
         }
 
+        /**
+         * The service is started
+         *
+         * @property configuration the service configuration
+         */
         @Serializable
         data class Started(val configuration: UFServiceConfigurationV2): Event(MessageName.STARTED, "The service is started"){
             override fun toJson(): String {
@@ -254,6 +259,11 @@ sealed class UFServiceMessageV1 {
             }
         }
 
+        /**
+         * The service is stopped
+         *
+         * @property configuration the service configuration
+         */
         @Serializable
         data class Stopped(val configuration: UFServiceConfigurationV2): Event(MessageName.STOPPED, "The service is stopped"){
             override fun toJson(): String {
@@ -261,6 +271,12 @@ sealed class UFServiceMessageV1 {
             }
         }
 
+        /**
+         * The service can't be stopped. It typically happens when an update is already started.
+         *
+         * @property configuration the current service configuration
+         * @property retryIn the number of milliseconds before retry stopping the service
+         */
         @Serializable
         data class CantBeStopped(val configuration: UFServiceConfigurationV2, val retryIn:Long): Event(MessageName.CANT_BE_STOPPED, "The service can't be stopped during an update"){
             override fun toJson(): String {
@@ -268,6 +284,12 @@ sealed class UFServiceMessageV1 {
             }
         }
 
+        /**
+         * The configuration used by the service is updated.
+         * This event is notified when the change of the configuration doesn't cause service reboot.
+         *
+         * @property configuration the new service configuration
+         */
         @Serializable
         data class ConfigurationUpdated(val configuration: UFServiceConfigurationV2): Event(MessageName.CONFIGURATION_UPDATED, "The service configuration is updated"){
             override fun toJson(): String {
@@ -275,6 +297,9 @@ sealed class UFServiceMessageV1 {
             }
         }
 
+        /**
+         * The client has received a new target token from the update-server
+         */
         @Serializable
         object NewTargetTokenReceived: Event(MessageName.NEW_TARGET_TOKEN_RECEIVED, "New target token received from the update-server")
     }
