@@ -9,15 +9,15 @@
 The [Update Factory Android Client](https://docs.updatefactory.io/devices/android/android-client/) is an open-source project by [Kynetics](https://www.kynetics.com/) that provides an Android application that applies app (apk) and system (single copy or double copy OTA) software updates received from an [UpdateFactory](https://www.kynetics.com/iot-platform-update-factory) or [hawkBit](https://eclipse.org/hawkbit/) server.
 
 Links to official documentation:
-- [overview](https://docs.updatefactory.io/devices/android/android-client/)
-- [installation](https://docs.updatefactory.io/devices/android/android-client-packages/)
-- [configuration file](https://docs.updatefactory.io/devices/android/android-config-files/)
-- [third-party integration](https://docs.updatefactory.io/devices/android/third-party-integration-v1_1/)
-- [troubleshooting](https://docs.updatefactory.io/devices/android/android-troubleshooting/)
-- [kdocs API](https://kynetics.github.io/uf-android-client/)
+- [Overview](https://docs.updatefactory.io/devices/android/android-client/)
+- [Installation](https://docs.updatefactory.io/devices/android/android-client-packages/)
+- [Configuration file](https://docs.updatefactory.io/devices/android/android-config-files/)
+- [Third-party integration](https://docs.updatefactory.io/devices/android/third-party-integration-latest/)
+- [Troubleshooting](https://docs.updatefactory.io/devices/android/android-troubleshooting/)
+- [API documentation](https://kynetics.github.io/uf-android-client/)
 
 ## uf-client-service
-uf-client-service is an android service that run in background and manage the updates.
+uf-client-service is an Android service that runs in the background and manages the updates.
 
 uf-client-service must be install as **SYSTEM** application.
 
@@ -28,11 +28,11 @@ uf-client-service must be install as **SYSTEM** application.
 ![UF STM Update](https://drive.google.com/uc?export=view&id=1OMwLV1RwluYuMvEukEcDgLAbb9OjEVMa)
 
 ## Modules
-- **uf-client-service**: service implementation that apply the updates received by the update factory server
-- **uf-client-service-api**: service api used by the third-party apps to communicate with the *uf-client-service*
-- **os-mock**: mock implementation of the android hidden api used by the *uf-client-service*
-- **uf-ddiclient**: hara-ddiclient customization for Android and Update Factory
-- **uf-client-ui-example**: an example of application that use the uf-client-service via *uf-client-service-api*
+- **uf-client-service**: service implementation that applies the updates received by the Update Factory server
+- **uf-client-service-api**: service API used by the third-party applications to communicate with the *uf-client-service*
+- **os-mock**: mock implementation of the Android hidden api used by the *uf-client-service*
+- **uf-ddiclient**: customization of hara-ddiclient library for Android and Update Factory
+- **uf-client-ui-example**: example graphical application that uses the uf-client-service via *uf-client-service-api*
 
 ## Third-Party Libraries
 * [hara-ddiclient](https://github.com/eclipse/hara-ddiclient) - [Eclipse Public License 2.0](https://github.com/eclipse/hara-ddiclient/blob/master/LICENSE)
@@ -51,5 +51,6 @@ uf-client-service must be install as **SYSTEM** application.
 See also the list of [contributors](https://github.com/Kynetics/UfAndroidClient/graphs/contributors) who participated in this project.
 
 ## License
-Copyright © 2017-2022, [Kynetics LLC](https://www.kynetics.com).
+Copyright © 2017-2023, [Kynetics LLC](https://www.kynetics.com).
+
 Released under the [EPLv1 License](http://www.eclipse.org/legal/epl-v10.html).
