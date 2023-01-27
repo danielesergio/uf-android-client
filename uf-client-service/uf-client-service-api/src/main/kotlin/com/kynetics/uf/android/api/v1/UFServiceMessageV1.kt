@@ -272,10 +272,10 @@ sealed class UFServiceMessageV1 {
         }
 
         /**
-         * The service can't be stopped. It typically happens when an update is already started.
+         * The service can't be stopped. It typically happens when an update is currently being installed.
          *
          * @property configuration the current service configuration
-         * @property retryIn the number of milliseconds before retry stopping the service
+         * @property retryIn the number of milliseconds to the next service self stop attempt
          */
         @Serializable
         data class CantBeStopped(val configuration: UFServiceConfigurationV2, val retryIn:Long): Event(MessageName.CANT_BE_STOPPED, "The service can't be stopped during an update"){
@@ -285,8 +285,8 @@ sealed class UFServiceMessageV1 {
         }
 
         /**
-         * The configuration used by the service is updated.
-         * This event is notified when the change of the configuration doesn't cause service reboot.
+         * The configuration used by the service has been updated.
+         * This event is notified when the configuration change doesn't require a restart of the service.
          *
          * @property configuration the new service configuration
          */
@@ -298,7 +298,7 @@ sealed class UFServiceMessageV1 {
         }
 
         /**
-         * The client has received a new target token from the update-server
+         * The client has received a new target token from the update server.
          */
         @Serializable
         object NewTargetTokenReceived: Event(MessageName.NEW_TARGET_TOKEN_RECEIVED, "New target token received from the update-server")

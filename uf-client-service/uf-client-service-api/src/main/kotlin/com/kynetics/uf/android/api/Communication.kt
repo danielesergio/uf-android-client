@@ -134,10 +134,10 @@ sealed class Communication(val id: Int) {
             internal open fun bundle(): Bundle = Bundle()
 
             /**
-             * Class use to build a message to configure the service.
+             * Class to build a message to configure the service.
              * When the new configuration can be applied live, a [UFServiceMessageV1.Event.ConfigurationUpdated] is notified.
-             * When the new configuration required a service reboot a [UFServiceMessageV1.Event.Stopped] and
-             * [UFServiceMessageV1.Event.Started] messages are notified
+             * When the new configuration requires a restart of the service, a [UFServiceMessageV1.Event.Stopped] and a
+             * [UFServiceMessageV1.Event.Started] are notified.
              *
              *  @property conf the service configuration
              *  @see UFServiceConfiguration
@@ -166,8 +166,8 @@ sealed class Communication(val id: Int) {
             /**
              * Class to build a message to configure the service.
              * When the new configuration can be applied live, a [UFServiceMessageV1.Event.ConfigurationUpdated] is notified.
-             * When the new configuration required a service reboot a [UFServiceMessageV1.Event.Stopped] and
-             * [UFServiceMessageV1.Event.Started] messages are notified
+             * When the new configuration requires a restart of the service, a [UFServiceMessageV1.Event.Stopped] and a
+             * [UFServiceMessageV1.Event.Started] are notified.
              *
              *  @property conf the service configuration
              *  @see UFServiceConfigurationV2
