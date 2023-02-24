@@ -9,6 +9,7 @@
 
 package com.kynetics.uf.android.client
 
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.OkHttpClient
 import org.eclipse.hara.ddiclient.api.*
 
@@ -25,7 +26,8 @@ class UpdateFactoryClientWrapper(@Volatile var delegate: HaraClient? = null): Ha
                       updaters: List<Updater>,
                       downloadBehavior: DownloadBehavior,
                       forceDeploymentPermitProvider: DeploymentPermitProvider,
-                      httpBuilder: OkHttpClient.Builder) {
+                      httpBuilder: OkHttpClient.Builder,
+                      scope:CoroutineScope) {
         delegate?.init(haraClientData,
             directoryForArtifactsProvider,
             configDataProvider,
@@ -34,7 +36,8 @@ class UpdateFactoryClientWrapper(@Volatile var delegate: HaraClient? = null): Ha
             updaters.toList(),
             downloadBehavior,
             forceDeploymentPermitProvider,
-            httpBuilder)
+            httpBuilder,
+            scope)
     }
 
     override fun startAsync() {

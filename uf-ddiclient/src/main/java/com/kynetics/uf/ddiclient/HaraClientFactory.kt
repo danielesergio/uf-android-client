@@ -9,6 +9,8 @@
 
 package com.kynetics.uf.ddiclient
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import org.eclipse.hara.ddi.security.Authentication
 import org.eclipse.hara.ddiclient.api.*
@@ -34,7 +36,9 @@ object HaraClientFactory {
             updaters,
             DownloadBehaviorImpl(),
             forceDeploymentPermitProvider,
-            builder)
+            builder,
+            CoroutineScope(Dispatchers.Default)
+        )
     }
 
     fun newUFClient(
