@@ -33,16 +33,16 @@ internal object ABOtaInstaller : OtaInstaller {
     private const val PROPERTY_FILE = "payload_properties.txt"
     private const val PAYLOAD_FILE = "payload.bin"
     private val UPDATE_STATUS = mapOf(
-        UpdateEngine.UpdateStatusConstants.IDLE to "Idle",
-        UpdateEngine.UpdateStatusConstants.CHECKING_FOR_UPDATE to "Checking for update",
-        UpdateEngine.UpdateStatusConstants.UPDATE_AVAILABLE to "Update available",
-        UpdateEngine.UpdateStatusConstants.DOWNLOADING to "Copying file",
-        UpdateEngine.UpdateStatusConstants.VERIFYING to "Verifying",
-        UpdateEngine.UpdateStatusConstants.FINALIZING to "Finalizing",
-        UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT to "Rebooting",
-        UpdateEngine.UpdateStatusConstants.REPORTING_ERROR_EVENT to "Reporting error event",
-        UpdateEngine.UpdateStatusConstants.ATTEMPTING_ROLLBACK to "Attempting rollback",
-        UpdateEngine.UpdateStatusConstants.DISABLED to "Disable")
+        UpdateEngine.UpdateStatusConstants.IDLE to "Android Update Engine: Idle",
+        UpdateEngine.UpdateStatusConstants.CHECKING_FOR_UPDATE to "Android Update Engine: Checking for update",
+        UpdateEngine.UpdateStatusConstants.UPDATE_AVAILABLE to "Android Update Engine: Update available",
+        UpdateEngine.UpdateStatusConstants.DOWNLOADING to "Android Update Engine: Copying file",
+        UpdateEngine.UpdateStatusConstants.VERIFYING to "Android Update Engine: Verifying",
+        UpdateEngine.UpdateStatusConstants.FINALIZING to "Android Update Engine: Finalizing",
+        UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT to "Android Update Engine: Rebooting",
+        UpdateEngine.UpdateStatusConstants.REPORTING_ERROR_EVENT to "Android Update Engine: Reporting error event",
+        UpdateEngine.UpdateStatusConstants.ATTEMPTING_ROLLBACK to "Android Update Engine: Attempting rollback",
+        UpdateEngine.UpdateStatusConstants.DISABLED to "Android Update Engine: Disable")
 
     @Suppress("MagicNumber")
     private val errorCodeToDescription = mapOf(
