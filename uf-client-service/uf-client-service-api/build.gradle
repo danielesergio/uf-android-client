@@ -16,7 +16,7 @@ group='com.kynetics.uf.android.api'
 version versionFromGit(project)
 
 android {
-    compileSdkVersion 30
+    compileSdk 31
     defaultConfig {
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion

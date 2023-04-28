@@ -15,7 +15,7 @@ import java.util.function.BinaryOperator
 
 buildscript {
     ext{
-        kotlin_version = '1.6.10'
+        kotlin_version = '1.8.21'
     }
     repositories {
         google()
@@ -23,7 +23,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.1'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
@@ -33,7 +33,7 @@ buildscript {
 }
 
 plugins {
-    id "kotlinx-serialization" version "1.6.10" apply true
+    id "kotlinx-serialization" version "1.8.21" apply true
     id "io.gitlab.arturbosch.detekt" version "1.0.0-RC16"
     id "org.jetbrains.dokka" version "1.7.10"
     id 'org.ajoberstar.grgit' version '5.0.0'

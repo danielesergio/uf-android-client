@@ -11,7 +11,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdk 31
     defaultConfig {
         applicationId "com.kynetics.uf.service"
         minSdkVersion 19
