@@ -9,7 +9,7 @@
 # http://www.eclipse.org/legal/epl-v10.html
 #
 
-#Script used for generating public.jks keystore containing aosp and nxp platform keys.
+#Script used for generating public.jks keystore containing publicly available platform keys.
 
 BASE_PWD=$PWD
 
