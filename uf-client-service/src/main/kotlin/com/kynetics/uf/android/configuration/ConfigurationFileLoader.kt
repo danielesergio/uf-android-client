@@ -28,7 +28,7 @@ class ConfigurationFileLoader(private val sh: SharedPreferences, private val con
     private val map: MutableMap<String, String> = HashMap()
     val newFileConfiguration: UFServiceConfigurationV2?
         get() {
-            if (!configurationFileFound() || !isNewConfigurationFile) {
+            if (!configurationFileFound() || isServiceConfiguredWithApi || !isNewConfigurationFile) {
                 return null
             }
 
@@ -83,6 +83,12 @@ class ConfigurationFileLoader(private val sh: SharedPreferences, private val con
                 e.printStackTrace()
             }
             return false
+        }
+
+    private val isServiceConfiguredWithApi: Boolean
+        get() {
+            val keys = SharedPreferencesKeys.getInstance(context)
+            return sh.getBoolean(keys.sharedPreferencesConfigurationLoadedFromApi, false)
         }
 
     private fun configurationFileFound(): Boolean {

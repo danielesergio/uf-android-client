@@ -62,7 +62,8 @@ data class ConfigurationHandler (
     }
 
     fun saveServiceConfigurationToSharedPreferences(
-        configuration: UFServiceConfigurationV2?
+        configuration: UFServiceConfigurationV2?,
+        configurationLoadedFromApi: Boolean = false
     ) {
         if (configuration == null) {
             return
@@ -71,6 +72,9 @@ data class ConfigurationHandler (
             if(isTargetTokenReceivedFromServerOld(configuration)){
                 remove(keys.sharedPreferencesTargetTokenReceivedFromServer)
             }
+
+            putBoolean(keys.sharedPreferencesConfigurationLoadedFromApi, configurationLoadedFromApi)
+
             putString(keys.sharedPreferencesControllerIdKey, configuration.controllerId)
             putString(keys.sharedPreferencesTenantKey, configuration.tenant)
             putString(keys.sharedPreferencesServerUrlKey, configuration.url)

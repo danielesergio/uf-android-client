@@ -27,6 +27,7 @@ class SharedPreferencesKeys private constructor(context: Context){
     val sharedPreferencesTimeWindowsDuration:String = context.getString(R.string.shared_preferences_time_windows_duration_key)
     val sharedPreferencesTargetAttributesFromConfiguration:String = context.getString(R.string.shared_preferences_args_key)
     val sharedPreferencesAddTargetAttributes:String = context.getString(R.string.shared_preferences_add_target_attributes_key)
+    val sharedPreferencesConfigurationLoadedFromApi:String = context.getString(R.string.shared_preferences_configuration_loaded_from_api)
 
     companion object{
         private var instance: SharedPreferencesKeys? = null

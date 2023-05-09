@@ -81,7 +81,7 @@ abstract class AbstractCommunicationApi(
         val currentConf = configurationHandler.getCurrentConfiguration()
 
         if (currentConf != newConf.toUFServiceConfiguration()) {
-            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf.toUFServiceConfiguration())
+            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf.toUFServiceConfiguration(), true)
             Log.i(tag, "configuration updated")
         } else {
             Log.i(tag, "new configuration equals to current configuration")

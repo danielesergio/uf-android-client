@@ -36,7 +36,7 @@ open class CommunicationApiV1_1Impl(configurationHandler: ConfigurationHandler,
         val currentConf = configurationHandler.getCurrentConfiguration()
 
         if (currentConf != newConf) {
-            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf)
+            configurationHandler.saveServiceConfigurationToSharedPreferences(newConf, true)
             Log.i(TAG, "configuration updated")
         } else {
             Log.i(TAG, "new configuration equals to current configuration")
