@@ -105,60 +105,84 @@ internal object ABOtaInstaller : OtaInstaller {
 
     private val updateEngine: UpdateEngine = UpdateEngine()
 
+    private fun isOtaMalformed(artifact: Updater.SwModuleWithPath.Artifact): Boolean {
+        val zipFile = ZipFile(artifact.path)
+        val payloadEntry = zipFile.getEntry(PAYLOAD_FILE)
+        val propEntry = zipFile.getEntry(PROPERTY_FILE)
+        return payloadEntry == null || propEntry == null
+    }
+
     override fun install(
         artifact: Updater.SwModuleWithPath.Artifact,
         currentUpdateState: CurrentUpdateState,
         messenger: Updater.Messenger,
         context: Context
     ): CurrentUpdateState.InstallationResult {
-        if (currentUpdateState.isABInstallationPending(artifact)) {
-            val result = currentUpdateState.lastABInstallationResult()
-            val message = "Installation result of Ota named ${artifact.filename} is " +
-                if (result is CurrentUpdateState.InstallationResult.Success) "success" else "failure"
-            messenger.sendMessageToServer(message + result.details)
-            Log.i(TAG, message)
-            return result
-        }
-
-        currentUpdateState.saveSlotName()
         val updateStatus = CompletableFuture<Int>()
-        val zipFile = ZipFile(artifact.path)
 
-        val payloadEntry = zipFile.getEntry(PAYLOAD_FILE)
-        val propEntry = zipFile.getEntry(PROPERTY_FILE)
-        if (payloadEntry == null || propEntry == null) {
-            Log.d(TAG, "Malformed AB ota")
-            return CurrentUpdateState.InstallationResult.Error(
-                listOf(
-                    "Malformed ota for AB update.",
-                    "An AB ota update must contain a payload file named $PAYLOAD_FILE and a property file named " +
-                        PROPERTY_FILE
+        val abInstallationPending = currentUpdateState.isABInstallationPending(artifact)
+        val deviceRebootedOnABInstallation =
+            currentUpdateState.isDeviceRebootedOnABInstallation()
+
+        return when {
+            abInstallationPending && !deviceRebootedOnABInstallation -> {
+                updateEngine.bind(
+                    MyUpdateEngineCallback(
+                        context,
+                        messenger,
+                        updateStatus, currentUpdateState
+                    )
                 )
-            )
+                installationResult(updateStatus, messenger, artifact)
+            }
+            abInstallationPending -> {
+                val result = currentUpdateState.lastABInstallationResult()
+                val message = "Installation result of Ota named ${artifact.filename} is " +
+                        if (result is CurrentUpdateState.InstallationResult.Success) "success" else "failure"
+                messenger.sendMessageToServer(message + result.details)
+                Log.i(TAG, message)
+                result
+            }
+            isOtaMalformed(artifact) -> {
+                Log.d(TAG, "Malformed AB ota")
+                CurrentUpdateState.InstallationResult.Error(
+                    listOf(
+                        "Malformed ota for AB update.",
+                        "An AB ota update must contain a payload file named $PAYLOAD_FILE and a property file named " +
+                                PROPERTY_FILE
+                    )
+                )
+            }
+            else -> {
+                currentUpdateState.saveSlotName()
+                val zipFile = ZipFile(artifact.path)
+
+                val prop = zipFile.getInputStream(zipFile.getEntry(PROPERTY_FILE))
+                    .bufferedReader().lines().toList().toTypedArray()
+
+                Log.d(TAG, prop.joinToString())
+
+                updateEngine.bind(
+                    MyUpdateEngineCallback(
+                        context,
+                        messenger,
+                        updateStatus, currentUpdateState
+                    )
+                )
+                currentUpdateState.addPendingABInstallation(artifact)
+                messenger.sendMessageToServer(
+                    "Applying A/B ota update (${artifact.filename})...")
+                val zipPath = "file://${artifact.path}"
+                Log.d(TAG, zipPath)
+                updateEngine.applyPayload(zipPath, zipFile.getEntryOffset(PAYLOAD_FILE), 0,
+                    prop)
+                return installationResult(
+                    updateStatus,
+                    messenger,
+                    artifact
+                )
+            }
         }
-
-        val prop = zipFile.getInputStream(zipFile.getEntry(PROPERTY_FILE))
-            .bufferedReader().lines().toList().toTypedArray()
-
-        Log.d(TAG, prop.joinToString())
-
-        updateEngine.bind(
-            MyUpdateEngineCallback(
-                context,
-                messenger,
-                updateStatus
-            )
-        )
-        currentUpdateState.addPendingABInstallation(artifact)
-        messenger.sendMessageToServer("Applying A/B ota update (${artifact.filename})...")
-        val zipPath = "file://${artifact.path}"
-        Log.d(TAG, zipPath)
-        updateEngine.applyPayload(zipPath, zipFile.getEntryOffset(PAYLOAD_FILE), 0, prop)
-        return installationResult(
-            updateStatus,
-            messenger,
-            artifact
-        )
     }
 
     private fun installationResult(
@@ -186,7 +210,8 @@ internal object ABOtaInstaller : OtaInstaller {
                 }
 
                 UpdateEngine.ErrorCodeConstants.UPDATED_BUT_NOT_ACTIVE -> {
-                    messenger.sendMessageToServer("Update is successfully applied but system failed to reboot")
+                    messenger.sendMessageToServer(
+                        "Update is successfully applied but system failed to reboot")
                     CurrentUpdateState.InstallationResult.Success()
                 }
 
@@ -207,6 +232,7 @@ internal object ABOtaInstaller : OtaInstaller {
                         messages
                     )
                 }
+
                 else -> {
                     Log.w(TAG, "Exception on apply AB update (${artifact.filename})", e)
                     CurrentUpdateState.InstallationResult.Error(
@@ -220,7 +246,8 @@ internal object ABOtaInstaller : OtaInstaller {
     private class MyUpdateEngineCallback(
         private val context: Context,
         private val messenger: Updater.Messenger,
-        private val updateStatus: CompletableFuture<Int>
+        private val updateStatus: CompletableFuture<Int>,
+        private val currentUpdateState: CurrentUpdateState
     ) : UpdateEngineCallback() {
 
         companion object {
@@ -233,13 +260,14 @@ internal object ABOtaInstaller : OtaInstaller {
         override fun onStatusUpdate(status: Int, percent: Float) { // i==status  v==percent
             Log.d(TAG, "status:$status")
             Log.d(TAG, "percent:$percent")
-            val currentPhaseProgress = min(percent.toDouble(),100.0)
+            val currentPhaseProgress = min(percent.toDouble(), 100.0)
             val newPhase = previousState != status
             if (newPhase) {
                 previousState = status
                 messenger.sendMessageToServer(UPDATE_STATUS.getValue(status))
                 queue.clear()
-                queue.addAll((1 until MAX_MESSAGES_PER_PHASE).map { it.toDouble() / MAX_MESSAGES_PER_PHASE })
+                queue.addAll(
+                    (1 until MAX_MESSAGES_PER_PHASE).map { it.toDouble() / MAX_MESSAGES_PER_PHASE })
             }
 
             val limit = queue.peek() ?: 1.0
@@ -256,9 +284,11 @@ internal object ABOtaInstaller : OtaInstaller {
 
             if (status == UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT) {
                 val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                currentUpdateState.setDeviceRebootedOnABInstallation()
                 pm!!.reboot(null)
                 Log.w(TAG, "Reboot fail")
-                messenger.sendMessageToServer("Update is successfully applied but system failed to reboot",
+                messenger.sendMessageToServer(
+                    "Update is successfully applied but system failed to reboot",
                     "Waiting manual reboot")
                 updateStatus.complete(UpdateEngine.UpdateStatusConstants.UPDATED_NEED_REBOOT)
             }

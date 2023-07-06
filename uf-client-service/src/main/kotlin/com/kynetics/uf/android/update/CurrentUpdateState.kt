@@ -10,6 +10,7 @@
 
 package com.kynetics.uf.android.update
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -143,6 +144,15 @@ class CurrentUpdateState(context: Context) {
         sharedPreferences.edit().putString(PENDING_AB_SHAREDPREFERENCES_KEY, artifact.hashes.md5).apply()
     }
 
+    fun isDeviceRebootedOnABInstallation(): Boolean {
+        return sharedPreferences.getBoolean(PENDING_AB_REBOOT_SHAREDPREFERENCES_KEY, false)
+    }
+
+    @SuppressLint("ApplySharedPref")
+    fun setDeviceRebootedOnABInstallation() {
+        sharedPreferences.edit().putBoolean(PENDING_AB_REBOOT_SHAREDPREFERENCES_KEY, true).commit()
+    }
+
     enum class InstallationState {
         PENDING, NONE, SUCCESS, ERROR
     }
@@ -192,6 +202,7 @@ class CurrentUpdateState(context: Context) {
                 .remove(LAST_SLOT_NAME_SHAREDPREFERENCES_KEY)
                 .remove(PENDING_AB_SHAREDPREFERENCES_KEY)
                 .remove(UPDATE_IS_STARTED_KEY)
+                .remove(PENDING_AB_REBOOT_SHAREDPREFERENCES_KEY)
                 .apply()
     }
 
@@ -233,6 +244,7 @@ class CurrentUpdateState(context: Context) {
         private const val LAST_LOST_NAME_PROPERTY_KEY = "ro.boot.slot_suffix"
         private const val LAST_SLOT_NAME_SHAREDPREFERENCES_KEY = "slot_suffix"
         private const val PENDING_AB_SHAREDPREFERENCES_KEY = "PENDING_AB_OTA_KEY"
+        private const val PENDING_AB_REBOOT_SHAREDPREFERENCES_KEY = "PENDING_AB_REBOOT_OTA_KEY"
         private const val TAG = "CurrentUpdateState"
         private val SHARED_PREFERENCES_FILE_NAME = "CURRENT_UPDATE_STATE"
         private val APK_DISTRIBUTION_REPORT_SUCCESS_KEY = "APK_DISTRIBUTION_REPORT_SUCCESS"
