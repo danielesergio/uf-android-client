@@ -17,4 +17,5 @@ pluginManagement {
     }
 }
 include ':uf-client-service', ':uf-client-service:uf-client-service-api', ':uf-ddiclient'
-include ':os-mock'
+if (!System.env.JITPACK)
+    include ':os-mock'

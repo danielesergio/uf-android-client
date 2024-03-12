@@ -18,7 +18,7 @@ android {
         minSdkVersion 19
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 30
-        versionCode 34
+        versionCode 35
         versionName versionFromGit(project)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -111,7 +111,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(":uf-ddiclient")
-    compileOnly project(":os-mock")
+    if (!System.env.JITPACK)
+        compileOnly(project(":os-mock"))
     implementation 'de.psdev.slf4j-android-logger:slf4j-android-logger:1.0.5'
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation "com.google.android.material:material:1.0.0"
